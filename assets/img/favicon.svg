@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Circular Textile Alliance">
+  <title>Circular Textile Alliance</title>
+  <defs>
+    <clipPath id="fav-interlock">
+      <rect x="29" y="35" width="10" height="14"/>
+    </clipPath>
+  </defs>
+  <rect width="64" height="64" fill="#1a2b28"/>
+  <g fill="none" stroke-width="6" transform="translate(0,0)">
+    <circle cx="24" cy="32" r="14" stroke="#e8936a"/>
+    <circle cx="40" cy="32" r="14" stroke="#7eada0"/>
+    <circle cx="24" cy="32" r="14" stroke="#e8936a" clip-path="url(#fav-interlock)"/>
+  </g>
+</svg>

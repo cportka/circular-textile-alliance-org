@@ -1,0 +1,917 @@
+/* ===========================================================================
+   Circular Textile Alliance — site stylesheet
+   Ported from the Figma Make design "Redesign Institutional Website"
+   (file pYrwXChqTORzVAjL3X3DI5). Tokens below mirror that file's `@theme`
+   block one-for-one; the handful of deliberate deviations are marked
+   `DEVIATION:` and listed in full in README.md.
+   =========================================================================== */
+
+/* --- Fonts: self-hosted (SIL OFL). Licences in assets/fonts/. ------------- */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url('../fonts/inter-normal-300-600-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url('../fonts/inter-normal-300-600-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../fonts/playfair-display-normal-400-700-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../fonts/playfair-display-normal-400-700-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: italic;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../fonts/playfair-display-italic-400-700-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: italic;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../fonts/playfair-display-italic-400-700-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* --- Design tokens ------------------------------------------------------- */
+:root {
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --cream: #faf8f3;
+  --cream-dark: #f2ede3;
+  --cream-darker: #ede6d8;   /* card hover on --cream-dark */
+  --ink: #1a2b28;
+  --ink-deep: #111e1b;       /* footer */
+  --ink-light: #3a4f4b;
+  --peach: #e8936a;
+  --peach-hover: #d67a55;
+  --sage: #7eada0;
+  --sage-light: #a8c5bd;
+  --sage-dark: #547870;
+  --border: #d8d0c4;
+  --border-soft: #ede8df;
+
+  /* DEVIATION (contrast). The Figma's muted/accent text tones fail WCAG AA on
+     the cream backgrounds. These keep the exact hue + saturation and lower only
+     lightness until each clears 4.5:1. The undarkened tokens above stay in use
+     for fills, rules and dots, where contrast rules don't apply. */
+  --ink-muted: #5f6f6c;      /* was #6b7e7a — 3.68:1 on --cream-dark */
+  --peach-text: #b34d1c;     /* was #e8936a — 2.04:1 on --cream-dark */
+  --sage-text: #4a7469;      /* was #7eada0 — 2.15:1 on --cream-dark */
+
+  --wrap: 80rem;             /* Tailwind max-w-7xl */
+  --gutter: 1.5rem;          /* px-6 */
+  --section-y: 7rem;
+  --ease: 0.2s ease;
+}
+
+@media (min-width: 64em) {
+  :root { --gutter: 2.5rem; }  /* lg:px-10 */
+}
+
+/* --- Reset / base -------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  /* Fixed 5rem header must not cover the target of an in-page jump. */
+  scroll-padding-top: 5rem;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img, svg { display: block; max-width: 100%; }
+img { height: auto; }
+h1, h2, h3, h4, p, ul, ol, figure, dl, dd { margin: 0; }
+ul, ol { list-style: none; padding: 0; }
+a { color: inherit; }
+button, input { font: inherit; color: inherit; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+* { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+
+/* --- Accessibility helpers ----------------------------------------------- */
+/* DEVIATION (a11y): the Figma has no focus styling and no skip link. Both are
+   additive — neither changes the resting appearance of the page. */
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px;
+  padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: absolute; left: var(--gutter); top: 0;
+  z-index: 100; transform: translateY(-120%);
+  padding: 0.75rem 1.25rem;
+  background: var(--ink); color: var(--cream);
+  font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.06em;
+  text-transform: uppercase; text-decoration: none;
+  transition: transform var(--ease);
+}
+.skip-link:focus { transform: translateY(0); }
+
+:focus-visible {
+  outline: 2px solid var(--peach);
+  outline-offset: 3px;
+}
+.on-dark :focus-visible,
+.site-footer :focus-visible { outline-color: var(--sage-light); }
+
+/* --- Layout -------------------------------------------------------------- */
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section { padding-block: var(--section-y); }
+.section--cream { background: var(--cream); }
+.section--cream-dark { background: var(--cream-dark); }
+.section--ink { background: var(--ink); }
+
+/* --- Eyebrow (rule + label), used by every section ----------------------- */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.eyebrow::before {
+  content: "";
+  flex: none;
+  width: 32px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.85;
+}
+.eyebrow--peach { color: var(--peach-text); }
+.eyebrow--peach::before { background: var(--peach); opacity: 1; }
+.eyebrow--sage { color: var(--sage); }          /* on ink — 5.90:1, unchanged */
+.eyebrow--sage::before { background: var(--sage); }
+
+/* --- Headings ------------------------------------------------------------ */
+.h-display,
+.h-section {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.h-display {
+  font-size: clamp(2.5rem, 6vw, 5.25rem);
+  line-height: 1.08;
+}
+.h-section {
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  line-height: 1.18;
+}
+.h-display em, .h-section em { font-style: italic; }
+.h-display .accent { color: var(--peach); font-style: italic; }
+.h-section .accent { color: var(--sage-text); font-style: italic; }
+.on-dark .h-display, .on-dark .h-section { color: var(--cream); }
+.on-dark .h-section .accent { color: var(--sage); }
+
+/* --- Buttons and text links ---------------------------------------------- */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.75rem;
+  border: 1px solid transparent;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: background var(--ease), color var(--ease), border-color var(--ease);
+}
+/* DEVIATION (contrast): the Figma sets cream text on the peach fill — 2.25:1.
+   Ink on the same fill is 6.19:1, so the brand fill is preserved exactly and
+   only the label colour changes. */
+.btn--primary { background: var(--peach); color: var(--ink); }
+.btn--primary:hover { background: var(--peach-hover); }
+
+/* DEVIATION (contrast): the Figma's 0.3 alpha gives the control boundary
+   2.61:1 against the ink ground; WCAG 1.4.11 asks for 3:1. */
+.btn--ghost-light { border-color: rgb(250 248 243 / 0.4); color: var(--cream); }
+.btn--ghost-light:hover { border-color: rgb(250 248 243 / 0.7); }
+
+.btn--outline-ink {
+  padding: 0.5rem 1.25rem;
+  border: 1.5px solid currentColor;
+}
+.btn--outline-ink:hover { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+.on-dark .btn--outline-ink:hover { background: var(--cream); color: var(--ink); border-color: var(--cream); }
+
+.link-rule {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 2px;
+  border-bottom: 1px solid currentColor;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--ease);
+}
+.link-rule:hover { color: var(--peach-text); }
+
+/* Placeholder affordances -------------------------------------------------
+   DEVIATION (a11y): ~25 links in the Figma point at href="#", which scrolls to
+   the top of the page — a broken affordance, not a neutral one. They render
+   identically here but are inert and announced as unavailable until a real
+   destination exists. Replace `<span class="ph">` with `<a href="…">` to wire
+   one up; nothing else needs to change. See README.md. */
+.ph { cursor: not-allowed; }
+.ph:hover { color: inherit; }
+button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA's grey */
+
+/* --- Header / navigation ------------------------------------------------- */
+.site-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  transition: background 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
+}
+.site-header.is-scrolled {
+  background: rgb(250 248 243 / 0.96);
+  box-shadow: 0 1px 0 var(--border);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.site-header__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  height: 5rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  flex: none;
+}
+.brand__mark { width: auto; height: 2.5rem; }
+.brand__name {
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+.brand__name span { display: block; }
+.brand__name .is-alliance { color: var(--sage); }
+
+/* DEVIATION (contrast): over the dark hero the Figma renders the wordmark and
+   nav links in --ink (#1A2B28) on a near-black photograph — roughly 1.1:1. The
+   header starts in a light-on-dark state and swaps to the Figma's ink-on-cream
+   once scrolled, which is what the scrolled design already shows. */
+.site-header .brand__name { color: var(--cream); }
+.site-header .brand__name .is-alliance { color: var(--sage-light); }
+.site-header .nav__link,
+.site-header .btn--outline-ink { color: var(--cream); }
+
+.site-header.is-scrolled .brand__name { color: var(--ink); }
+.site-header.is-scrolled .brand__name .is-alliance { color: var(--sage-text); }
+.site-header.is-scrolled .nav__link { color: var(--ink-light); }
+.site-header.is-scrolled .btn--outline-ink { color: var(--ink); }
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-left: auto;
+}
+.nav__link {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color var(--ease);
+}
+.nav__link:hover { color: var(--peach); }
+.site-header.is-scrolled .nav__link:hover { color: var(--peach-text); }
+
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0.5rem;
+  margin-right: -0.5rem;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.nav-toggle__bar {
+  display: block;
+  width: 22px;
+  height: 1.5px;
+  background: var(--cream);
+  transition: transform var(--ease), opacity var(--ease), background var(--ease);
+}
+.site-header.is-scrolled .nav-toggle__bar { background: var(--ink); }
+.nav-toggle[aria-expanded="true"] .nav-toggle__bar:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] .nav-toggle__bar:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] .nav-toggle__bar:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+.nav-mobile {
+  background: var(--cream);
+  border-top: 1px solid var(--border);
+  padding: 1.5rem var(--gutter) 2rem;
+}
+.nav-mobile[hidden] { display: none; }
+.nav-mobile a {
+  display: block;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+}
+.nav-mobile .btn { margin-top: 1.5rem; width: 100%; }
+
+/* --- Hero ---------------------------------------------------------------- */
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: var(--ink);
+}
+.hero__media {
+  position: absolute;
+  inset: 0;
+  /* Backing colour shows through if the remote photograph fails to load, so the
+     hero degrades to flat ink rather than a blank band. */
+  background-color: var(--ink);
+  background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1800&h=1200&fit=crop&auto=format');
+  background-size: cover;
+  background-position: center 30%;
+  opacity: 0.22;
+}
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--ink) 35%, transparent 70%);
+}
+/* Decorative rings echoing the logo mark. */
+.hero__ring {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.hero__ring--lg {
+  top: 12%; right: -8%;
+  width: 520px; height: 520px;
+  border: 1.5px solid rgb(126 173 160 / 0.18);
+}
+.hero__ring--sm {
+  top: 22%; right: -2%;
+  width: 320px; height: 320px;
+  border: 1.5px solid rgb(232 147 106 / 0.14);
+}
+.hero__inner {
+  position: relative;
+  padding-block: 8rem 6rem;
+}
+.hero .eyebrow { margin-bottom: 2rem; }
+
+.hero__grid {
+  display: grid;
+  gap: 2rem;
+  align-items: end;
+}
+.hero__lede {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: rgb(250 248 243 / 0.65);
+  margin-bottom: 2rem;
+}
+.hero__actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+.stats {
+  margin-top: 4rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid rgb(216 208 196 / 0.2);
+  display: grid;
+  /* DEVIATION (responsive): the Figma pins this to 4 columns inline, which
+     overflows on a phone — its own class list asked for 2-up then 4-up. */
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+.stat__value {
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 0.4rem;
+  color: var(--cream);
+}
+.stat__label {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: rgb(250 248 243 / 0.6);
+}
+
+/* --- About --------------------------------------------------------------- */
+.about__head { margin-bottom: 4rem; }
+.about__grid { display: grid; gap: 3rem; }
+.about__lede {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--ink-light);
+}
+.about__lede--first { margin-top: 2rem; }
+.about__lede + .about__lede { margin-top: 1.5rem; }
+.about__cta { margin-top: 2.5rem; }
+
+/* Hairline grid: the 1px gap over a border-coloured bed draws the rules. */
+.principles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.principle {
+  background: var(--cream);
+  padding: 2rem;
+  transition: background var(--ease);
+}
+.principle:hover { background: var(--cream-dark); }
+.principle__number {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--sage-text);
+  margin-bottom: 0.75rem;
+}
+.principle__title {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 0.75rem;
+}
+.principle__body {
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--ink-muted);
+}
+
+/* --- Shared section head (title left, "all …" link right) ---------------- */
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+.section-head .eyebrow { margin-bottom: 1.25rem; }
+.section-head__title { max-width: 32rem; }
+
+/* --- Programmes ---------------------------------------------------------- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+/* The Figma gives the programmes grid the hairline bed but no outer rule. */
+.card-grid--bleed { border: 0; }
+.card {
+  background: var(--cream-dark);
+  transition: background var(--ease);
+  display: flex;
+  flex-direction: column;
+}
+.card:hover { background: var(--cream-darker); }
+.card__media {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  /* Brand-tinted bed: if the remote photo fails, the slot reads as a palette
+     block rather than a broken-image gap. */
+  background: var(--sage-light);
+}
+.card__body { padding: 1.75rem; }
+.card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.card__region {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sage-text);
+}
+.badge {
+  flex: none;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.badge--active { background: rgb(126 173 160 / 0.15); color: var(--sage-text); }
+.badge--pilot { background: rgb(232 147 106 / 0.15); color: var(--peach-text); }
+.card__title {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.35;
+  margin-bottom: 0.875rem;
+}
+.card__body p {
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--ink-muted);
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+.tag {
+  padding: 0.2rem 0.65rem;
+  border: 1px solid var(--border);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+}
+
+/* --- Members ------------------------------------------------------------- */
+.members__grid { display: grid; gap: 3rem; }
+.members__title { margin-top: 1.25rem; }
+.members__lede {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: rgb(250 248 243 / 0.7);
+  margin: 1.5rem 0 2.5rem;
+}
+.tier { border-top: 1px solid rgb(216 208 196 / 0.15); padding-block: 1.75rem; }
+.tier__head {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 1rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.tier__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+.tier--founding { color: var(--peach); }
+.tier--strategic { color: var(--sage); }
+/* DEVIATION (contrast): the Figma tints this tier --ink (#1A2B28) on an --ink
+   background — invisible. --sage-light keeps it a distinct third tone. */
+.tier--associate { color: var(--sage-light); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chip {
+  padding: 0.35rem 0.875rem;
+  border: 1px solid rgb(216 208 196 / 0.2);
+  font-size: 0.8125rem;
+  color: rgb(250 248 243 / 0.8);
+  transition: border-color var(--ease), color var(--ease);
+}
+.tier .chip:hover { border-color: currentColor; color: var(--cream); }
+.tier__more {
+  border-top: 1px solid rgb(216 208 196 / 0.15);
+  padding-top: 1rem;
+  font-size: 0.8125rem;
+  color: rgb(250 248 243 / 0.55);
+}
+
+/* --- Publications -------------------------------------------------------- */
+.pubs {
+  display: grid;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.pub {
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
+  gap: 2.5rem;
+  align-items: center;
+  padding: 2rem 2.5rem;
+  background: var(--cream);
+  transition: background var(--ease);
+}
+.pub:hover { background: var(--cream-dark); }
+.pub__type {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+.pub__type--peach { color: var(--peach-text); }
+.pub__type--sage { color: var(--sage-text); }
+.pub__year {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+.pub__title {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  line-height: 1.35;
+  margin-bottom: 0.6rem;
+}
+.pub__desc {
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--ink-muted);
+}
+.pub__aside { text-align: right; }
+.pub__pages {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  margin-bottom: 0.75rem;
+  white-space: nowrap;
+}
+.pub__download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--border);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* --- News ---------------------------------------------------------------- */
+.news-card__media { height: 200px; }
+.news-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.6875rem;
+}
+.news-card__category {
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sage-text);
+}
+.news-card__date { color: var(--ink-muted); }
+
+/* --- Newsletter ---------------------------------------------------------- */
+.newsletter {
+  margin-top: 4rem;
+  padding: 3rem;
+  background: var(--ink);
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+}
+.newsletter__title {
+  font-family: var(--font-serif);
+  font-size: 1.375rem;
+  font-weight: 500;
+  color: var(--cream);
+  margin-bottom: 0.5rem;
+}
+.newsletter__note {
+  font-size: 0.875rem;
+  color: rgb(250 248 243 / 0.65);
+}
+.newsletter__form { display: flex; flex-wrap: wrap; }
+.newsletter__input {
+  flex: 1 1 16rem;
+  min-width: 0;
+  padding: 0.75rem 1.25rem;
+  background: rgb(250 248 243 / 0.08);
+  /* DEVIATION (contrast): 0.4, not the Figma's 0.2 — a text field's boundary
+     needs 3:1 against its ground under WCAG 1.4.11. */
+  border: 1px solid rgb(250 248 243 / 0.4);
+  border-right: none;
+  font-size: 0.875rem;
+  color: var(--cream);
+}
+.newsletter__input::placeholder { color: rgb(250 248 243 / 0.55); }
+.newsletter__input:focus-visible { outline-offset: -2px; }
+.newsletter__form .btn { flex: none; }
+.newsletter__status {
+  flex-basis: 100%;
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--sage-light);
+}
+.newsletter__status:empty { margin-top: 0; }
+
+/* --- Footer -------------------------------------------------------------- */
+.site-footer { background: var(--ink-deep); color: var(--cream); }
+.site-footer__main { padding-block: 5rem 4rem; }
+.site-footer__grid { display: grid; gap: 3rem; }
+.site-footer .brand { margin-bottom: 1.5rem; }
+.site-footer .brand__mark { height: 2.25rem; }
+.site-footer .brand__name { color: rgb(250 248 243 / 0.9); font-size: 0.75rem; letter-spacing: 0.05em; }
+.site-footer__blurb {
+  font-size: 0.875rem;
+  line-height: 1.75;
+  /* DEVIATION (contrast): Figma alpha .45 → 4.25:1. */
+  color: rgb(250 248 243 / 0.6);
+  margin-bottom: 2rem;
+}
+.social { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.social span {
+  display: inline-block;
+  padding: 0.4rem 0.875rem;
+  border: 1px solid rgb(250 248 243 / 0.25);
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  color: rgb(250 248 243 / 0.6);
+}
+
+.footer-cols { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+.footer-col__title {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  /* DEVIATION (contrast): Figma alpha .40 → 3.63:1. */
+  color: rgb(250 248 243 / 0.6);
+  margin-bottom: 1.25rem;
+}
+.footer-col ul { display: flex; flex-direction: column; gap: 0.625rem; }
+.footer-col li { font-size: 0.875rem; color: rgb(250 248 243 / 0.6); }
+
+.site-footer__bottom { border-top: 1px solid rgb(250 248 243 / 0.08); }
+.site-footer__bottom .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-block: 1.5rem;
+}
+/* DEVIATION (contrast): Figma alpha .30 → 2.61:1. */
+.site-footer__legal, .site-footer__policies { font-size: 0.75rem; color: rgb(250 248 243 / 0.55); }
+.site-footer__policies { display: flex; gap: 2rem; flex-wrap: wrap; }
+
+/* --- Breakpoints --------------------------------------------------------- */
+@media (min-width: 40em) {   /* 640px */
+  .stats { grid-template-columns: repeat(4, 1fr); }
+  .footer-cols { grid-template-columns: repeat(4, 1fr); }
+  .newsletter { grid-template-columns: 1fr auto; }
+}
+
+@media (min-width: 64em) {   /* 1024px — Tailwind `lg` */
+  .about__grid,
+  .members__grid { grid-template-columns: repeat(12, 1fr); }
+  .about__grid { column-gap: 5rem; }
+  .about__intro { grid-column: span 5; }
+  .about__principles { grid-column: span 7; }
+  .members__intro { grid-column: span 5; }
+  .members__tiers { grid-column: span 7; }
+
+  .hero__grid { grid-template-columns: repeat(12, 1fr); }
+  .hero__headline { grid-column: span 8; }
+  .hero__aside { grid-column: span 4; padding-bottom: 0.5rem; }
+
+  .site-footer__grid { grid-template-columns: repeat(12, 1fr); }
+  .site-footer__brand { grid-column: span 3; }
+  .site-footer__links { grid-column: span 9; }
+}
+
+/* Below `lg` the desktop nav collapses into the disclosure menu. */
+@media (max-width: 63.99em) {
+  .nav, .site-header__bar .btn--outline-ink { display: none; }
+  .nav-toggle { display: flex; }
+  .hero__ring--lg { width: 340px; height: 340px; }
+  .hero__ring--sm { width: 210px; height: 210px; }
+  .principles { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 48em) {   /* 768px */
+  :root { --section-y: 4.5rem; }
+  .pub {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    padding: 1.75rem var(--gutter);
+  }
+  .pub__head { display: flex; align-items: baseline; gap: 0.75rem; }
+  .pub__type { margin-bottom: 0; }
+  .pub__year { font-size: 1.125rem; }
+  .pub__aside { text-align: left; }
+  .newsletter { padding: 2rem var(--gutter); }
+  .section-head { margin-bottom: 2.5rem; }
+  .hero__inner { padding-block: 7rem 4rem; }
+  .stats { margin-top: 3rem; padding-top: 2rem; gap: 1.5rem; }
+}
+
+/* --- 404 ----------------------------------------------------------------- */
+.notfound {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--ink);
+  position: relative;
+  overflow: hidden;
+}
+.notfound__inner { position: relative; }
+.notfound__code {
+  font-family: var(--font-serif);
+  font-size: clamp(4rem, 14vw, 9rem);
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1;
+  color: var(--peach);
+  margin: 2rem 0 1.5rem;
+}
+.notfound__lede { max-width: 34rem; margin-top: 1.25rem; }
+.notfound__actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
+
+/* --- Motion / print ------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  .site-header, .nav-mobile, .skip-link, .newsletter { display: none !important; }
+  .hero { min-height: auto; }
+  .hero__media, .hero__ring { display: none; }
+  body { background: #fff; color: #000; }
+}

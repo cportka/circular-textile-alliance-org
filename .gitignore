@@ -141,3 +141,10 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Python bytecode from the test helpers in tests/lib
+__pycache__/
+*.py[cod]
+
+# Local screenshot output from tools/screenshot.js
+/shots/

@@ -1,0 +1,75 @@
+# Changelog
+
+All notable changes to this project are documented here. The format follows Keep a Changelog
+(https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
+Every change bumps the version and adds an entry below.
+
+## [0.1.0] - 2026-08-06
+
+Initial site, ported from the Figma Make design
+[Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website).
+
+### Added
+- **The site.** `index.html` — a single page with seven sections (hero, about,
+  programmes, members, publications, news, footer), built as static HTML/CSS/JS
+  so GitHub Pages can serve `main` directly with no build step.
+- **Design tokens.** The design's `@theme` block ported one-for-one to `:root`
+  custom properties in `assets/css/site.css`.
+- **Self-hosted typefaces.** Inter and Playfair Display as `latin` + `latin-ext`
+  woff2 subsets (SIL OFL, licences shipped alongside), replacing the design's
+  `static.figma.com` font URLs. No third-party font CDN is contacted.
+- **Logo.** `assets/img/logo.svg` — the interlocking-rings mark redrawn as vector
+  art on a transparent ground, plus favicon, 192/512 app icons and a 1200×630
+  Open Graph card.
+- **Metadata.** Canonical link, full Open Graph and Twitter card sets, JSON-LD
+  (`Organization` + `WebSite`), `robots.txt`, `sitemap.xml`, `site.webmanifest`,
+  `llms.txt`, `.well-known/security.txt` (RFC 9116) and a styled `404.html`.
+- **Content-Security-Policy** declared in the page head, with no `unsafe-inline`
+  — the page carries no inline styles or scripts.
+- **Test suite.** 350+ stdlib-Python assertions across five suites in
+  `tests/cases/` covering document structure, link and asset resolution, static
+  accessibility, WCAG contrast and SEO metadata. Runs browser-free so CI needs
+  no extra install.
+- **`tools/screenshot.js`** — Playwright harness capturing eight viewport/state
+  combinations and failing on any console error. Not part of CI.
+- **Repository scaffold** via repo-bootstrap (Portka standard): branch-per-change
+  workflow, enforced SemVer sync, and CI.
+
+### Changed — deviations from the design
+
+Each is marked `DEVIATION:` in the stylesheet and tabulated in `README.md`.
+
+- **Contrast.** Nine of the design's text and border colours fail WCAG AA or
+  1.4.11. Fixes preserve each colour's hue and saturation and lower only
+  lightness: `--ink-muted` `#6B7E7A`→`#5F6F6C`, new `--peach-text` `#B34D1C` and
+  `--sage-text` `#4A7469` for small text on light grounds, ink rather than cream
+  as the primary button label (2.25:1 → 6.19:1, fill unchanged), the associate
+  members tier from `--ink`-on-`--ink` to `--sage-light`, footer text alphas
+  raised from 0.30–0.45 to 0.55–0.60, and control borders from 0.20–0.30 to 0.40.
+- **Header over the hero.** The design puts `--ink` text on a near-black
+  photograph (~1.1:1). The header now starts light-on-dark and swaps to the
+  design's ink-on-cream when scrolled.
+- **Dead links.** The design's 25 `href="#"` links no longer scroll to the top:
+  14 render identically as inert controls described by a shared visually-hidden
+  note, and the 20 footer items render as plain text.
+- **Responsive.** The hero stats bar and the newsletter row had fixed inline
+  grid columns overriding their own responsive classes and overflowed on a
+  phone; both now stack. Publications rows stack below 768px.
+- **Newsletter.** No endpoint exists, so submitting reports plainly that nothing
+  was recorded rather than faking success.
+
+### Added — beyond the design
+
+Skip link, visible focus styling, `prefers-reduced-motion` handling, a print
+stylesheet, and `scroll-padding-top` so the fixed header does not cover anchor
+targets. None change the page's resting appearance.
+
+### Notes
+
+- Photography is hotlinked from `images.unsplash.com` as the design specifies,
+  each slot backed by a brand colour so a failed load degrades to a palette
+  block. `README.md` documents how to vendor the images locally.
+- The site is addressed at `https://cportka.github.io/circular-textile-alliance-org/`.
+  No `CNAME` is committed — publishing one before DNS resolves would take the
+  site offline. `README.md` has the cutover steps for
+  `circulartextilealliance.org`.
