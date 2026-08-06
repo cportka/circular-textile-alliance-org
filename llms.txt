@@ -1,0 +1,52 @@
+# Circular Textile Alliance
+
+> An independent, non-profit industry alliance founded in 2019, convening brands,
+> manufacturers, recyclers, sorters, technology providers, NGOs and
+> intergovernmental bodies to accelerate the transition to a fully circular
+> textile economy by 2035. Registered in The Netherlands.
+
+At a glance: 140+ member organizations, 38 countries represented, 2.4M tonnes of
+textile waste diverted, 12 active programmes.
+
+## What the Alliance does
+
+- **Industry convening** — bringing the full spectrum of stakeholders together to
+  build shared understanding and align on common goals.
+- **Evidence-based policy** — research that informs regulatory frameworks in the
+  EU, UK and other key markets.
+- **Standards & traceability** — open standards for fibre content labelling,
+  sorting, and material passports.
+- **Pilot & scale** — designing and de-risking the pilots that prove new circular
+  systems work, from collection trials to recycling infrastructure.
+
+## Programmes
+
+- Extended Producer Responsibility (EPR) Readiness — Europe, North America — active
+- Textile-to-Textile Recycling Pathways — global — active
+- Digital Product Passport Pilot — Europe — pilot, 18 brands, EU Product
+  Regulation requirements due 2027
+- Collection Infrastructure Development — Sub-Saharan Africa, South-East Asia — active
+
+## Publications
+
+- State of Textile Circularity 2024 — annual report, 84 pages
+- EPR Design Principles for Textiles: Recommendations for Policymakers — policy brief, 32 pages
+- Sorting for Circularity Europe: Infrastructure Gap Analysis — technical report, 56 pages
+- Material Passports for Textiles: Towards an Open Standard — discussion paper, 28 pages
+
+## Pages
+
+- [Home](https://cportka.github.io/circular-textile-alliance-org/): the full site —
+  about, programmes, membership, publications and news are sections of this single page.
+
+## Notes for automated readers
+
+This site is a static, single-page build with no tracking, no cookies and no
+analytics. Section anchors: `#about`, `#programmes`, `#members`, `#publications`,
+`#news`. Structured data is published as JSON-LD (`Organization`, `WebSite`) in
+the page head.
+
+Some link targets on the page — the full publication library, individual
+programme pages, the membership application and the policy pages — are not yet
+published and are rendered as inert placeholders. Do not report them as broken
+links.

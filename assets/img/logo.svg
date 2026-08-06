@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 40" role="img" aria-label="Circular Textile Alliance">
+  <title>Circular Textile Alliance</title>
+  <defs>
+    <!-- Clips the peach ring's lower-right arc so it reads as passing OVER the sage ring
+         at the bottom crossing, while sage passes over at the top crossing. -->
+    <clipPath id="cta-interlock">
+      <rect x="29" y="25.5" width="8" height="11"/>
+    </clipPath>
+  </defs>
+  <g fill="none" stroke-width="4.6" stroke-linecap="round">
+    <circle cx="23" cy="20" r="13" stroke="#E8936A"/>
+    <circle cx="41" cy="20" r="13" stroke="#7EADA0"/>
+    <circle cx="23" cy="20" r="13" stroke="#E8936A" clip-path="url(#cta-interlock)"/>
+  </g>
+</svg>
