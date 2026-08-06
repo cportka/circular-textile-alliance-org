@@ -1,0 +1,58 @@
+name: pages
+
+# Publishes the site to GitHub Pages via Actions, rather than via the legacy
+# "deploy from a branch" path. Two things this buys us:
+#
+#   1. The test suite gates the deploy — a commit that fails validation never
+#      reaches the live site. Branch-based publishing has no such hook.
+#   2. It runs on the ordinary Actions runner pool, and can be re-run on demand
+#      from the Actions tab. The branch-based `pages build and deployment`
+#      workflow could not be retriggered when a run was lost to the incident of
+#      2026-08-06 — it simply sat queued until GitHub cancelled it.
+#
+# Requires Settings → Pages → Source = "GitHub Actions".
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never run two publishes at once. cancel-in-progress stays false so an
+# in-flight deploy is allowed to finish rather than leaving Pages half-updated.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # The gate: publishing a site that fails its own checks is worse than
+      # not publishing. Same suite CI runs on every PR.
+      - name: Validate the site
+        run: bash tests/run-tests.sh
+
+      - uses: actions/configure-pages@v5
+
+      # upload-pages-artifact excludes .git and .github itself; everything else
+      # at the root is the site, exactly as the branch-based deploy served it.
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

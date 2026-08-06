@@ -4,6 +4,33 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.2.0] - 2026-08-06
+
+Publishing moves from GitHub Pages' "deploy from a branch" path to an Actions
+workflow, after Settings → Pages → Source was switched to "GitHub Actions".
+
+### Added
+- **`.github/workflows/pages.yml`** — builds and deploys the site on every push
+  to `main`, using `actions/configure-pages`, `actions/upload-pages-artifact`
+  and `actions/deploy-pages`, bound to the `github-pages` environment.
+  - **The suite gates the deploy.** `tests/run-tests.sh` runs *before* the
+    artifact is uploaded, so a commit that fails validation never reaches the
+    live site. Branch-based publishing offered no such hook.
+  - `workflow_dispatch`, so a publish can be retriggered on demand. The
+    branch-based `pages build and deployment` workflow could not be: when its
+    run was lost to the GitHub Actions incident on 2026-08-06 it sat queued
+    until cancelled, with no way to re-run it.
+  - A `pages` concurrency group with `cancel-in-progress: false`, so two
+    publishes cannot race and an in-flight deploy is never cut off partway.
+- **`workflows` test suite** (`tests/cases/workflows.sh`) — 22 assertions
+  holding both workflows to their triggers, the `workflow_dispatch` escape
+  hatch, the Pages permissions and concurrency settings, the validate-before-
+  upload ordering, and non-deprecated action versions.
+
+### Changed
+- `actions/checkout` pinned to `v5` in both workflows. `v4` targets Node 20,
+  which the runners now force onto Node 24 with a deprecation warning.
+
 ## [0.1.0] - 2026-08-06
 
 Initial site, ported from the Figma Make design
