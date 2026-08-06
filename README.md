@@ -1,10 +1,10 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.1.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.2.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
-institutional site built from the Figma design above and served by GitHub Pages
-from the `main` branch.
+institutional site built from the Figma design above, published to GitHub Pages
+by an Actions workflow on every push to `main`.
 
 No build step, no framework, no package manager. `index.html` is the site; open
 it and you are looking at production.
@@ -47,9 +47,10 @@ so prefer the server.
 bash tests/run-tests.sh
 ```
 
-350+ assertions, stdlib Python only, no browser and no network — so the same
-command runs locally and in CI (`.github/workflows/validate.yml`, on every push
-and pull request). Five suites live in `tests/cases/`, backed by `tests/lib/`:
+370+ assertions, stdlib Python only, no browser and no network — so the same
+command runs locally, in CI (`.github/workflows/validate.yml`, on every push and
+pull request) and as the gate in front of every deploy. Six suites live in
+`tests/cases/`, backed by `tests/lib/`:
 
 | Suite | What it holds to account |
 | :-- | :-- |
@@ -57,6 +58,7 @@ and pull request). Five suites live in `tests/cases/`, backed by `tests/lib/`:
 | `links-assets` | every local `href`/`src` and every `url()` in the CSS resolves to a real file, every `#anchor` has a target, no `href="#"` survives, shipped fonts and referenced fonts agree, licences present |
 | `accessibility` | alt attributes, labelled form controls, named buttons, ARIA references that point at real ids, disclosure state, unique nav labels, skip link, live region, decorative layers hidden, reduced-motion and focus styling |
 | `contrast` | every text/background pair in the design measured against WCAG AA, translucent colours composited first, control boundaries against 1.4.11's 3:1, plus a regression guard on the three retuned tokens |
+| `workflows` | both workflows still trigger where they should, keep their `workflow_dispatch` escape hatch, hold the Pages permissions and concurrency group, **validate before uploading the artifact**, and pin non-deprecated action versions |
 | `seo-metadata` | title/description lengths, canonical, full Open Graph and Twitter sets, manifest and its icons, JSON-LD parses and carries `Organization` + `WebSite`, robots/sitemap/llms.txt agree on one host, `404` is `noindex`, security.txt valid |
 
 ### Visual checks
@@ -75,7 +77,16 @@ be verified. Set `NOSTUB=1` to see the real remote-image behaviour instead.
 
 ## Deployment
 
-GitHub Pages, `main` branch, `/` root. Merging to `main` publishes.
+GitHub Pages, published **from GitHub Actions** by
+`.github/workflows/pages.yml` on every push to `main`. Requires
+**Settings → Pages → Source = "GitHub Actions"**.
+
+The workflow runs `tests/run-tests.sh` *before* uploading the artifact, so a
+commit that fails validation never reaches the live site — a gate the older
+"deploy from a branch" path had no way to provide. It can also be re-run on
+demand from the Actions tab, which matters: when a run is lost to a GitHub
+incident rather than to a real failure, the branch-based
+`pages build and deployment` workflow cannot be retriggered at all.
 
 **Custom domain.** The site is currently addressed as
 `https://cportka.github.io/circular-textile-alliance-org/`, and that URL is
@@ -99,9 +110,9 @@ is not committed here.
 
 The design is a Figma Make project: React + Vite + Tailwind, one `App.tsx` and
 eight components, styled almost entirely with inline `style` objects. That was
-ported to static HTML/CSS rather than shipped as-is, because Pages serves this
-repository's `main` branch directly and a build step would mean committing
-`dist/` output.
+ported to static HTML/CSS rather than shipped as-is: the repository root *is*
+the published site, so a build step would mean committing `dist/` output on
+every change.
 
 The `@theme` block in the design's `index.css` became the `:root` custom
 properties in `assets/css/site.css`, one for one. Section structure, copy,
