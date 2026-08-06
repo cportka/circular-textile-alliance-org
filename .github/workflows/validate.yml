@@ -3,6 +3,16 @@ name: validate
 on:
   push:
   pull_request:
+  # Lets the suite be re-run on demand from the Actions tab. Worth having: when
+  # a run is lost to a GitHub incident rather than to a real failure, re-running
+  # the stale run can wedge, and an empty commit is a poor way to retrigger.
+  workflow_dispatch:
+
+# A newer push supersedes an in-flight run for the same ref instead of queueing
+# behind it — which also stops abandoned runs piling up during an outage.
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate:
