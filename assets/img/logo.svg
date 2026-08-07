@@ -1,15 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 40" role="img" aria-label="Circular Textile Alliance">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 101 72" role="img" aria-label="Circular Textile Alliance">
   <title>Circular Textile Alliance</title>
   <defs>
-    <!-- Clips the peach ring's lower-right arc so it reads as passing OVER the sage ring
-         at the bottom crossing, while sage passes over at the top crossing. -->
-    <clipPath id="cta-interlock">
-      <rect x="29" y="25.5" width="8" height="11"/>
-    </clipPath>
+    <!-- Both gradients run the same diagonal — pale at lower-left, saturated at
+         upper-right — so the two rings read as one lighting scheme. -->
+    <linearGradient id="cta-peach" gradientUnits="userSpaceOnUse"
+                    x1="8" y1="62" x2="56" y2="12">
+      <stop offset="0" stop-color="#F4D9A6"/>
+      <stop offset="0.55" stop-color="#EFB077"/>
+      <stop offset="1" stop-color="#E4884A"/>
+    </linearGradient>
+    <linearGradient id="cta-sage" gradientUnits="userSpaceOnUse"
+                    x1="44" y1="62" x2="94" y2="12">
+      <stop offset="0" stop-color="#7BAD97"/>
+      <stop offset="0.55" stop-color="#96BBB4"/>
+      <stop offset="1" stop-color="#B7CAD1"/>
+    </linearGradient>
   </defs>
-  <g fill="none" stroke-width="4.6" stroke-linecap="round">
-    <circle cx="23" cy="20" r="13" stroke="#E8936A"/>
-    <circle cx="41" cy="20" r="13" stroke="#7EADA0"/>
-    <circle cx="23" cy="20" r="13" stroke="#E8936A" clip-path="url(#cta-interlock)"/>
+
+  <!--
+    Proportions are taken from the supplied artwork: stroke is 0.168 of the
+    outer diameter, and the centres sit 0.52 of an outer diameter apart.
+
+    The links interlock with one real break rather than an overdrawn patch:
+      1. the peach ring is drawn whole;
+      2. the sage ring is drawn over it, so sage passes in front at the LOWER
+         crossing;
+      3. the sage ring carries a dash gap at the UPPER crossing, so the peach
+         shows through and passes in front above.
+
+    Geometry: centreline radius 27.45 -> circumference 172.505. The upper
+    crossing lies at 231.34° round the sage circle (arc position 110.85). The
+    two centrelines meet at 77.31°, so the peach band covers 11.09/sin(θ) =
+    11.37 of sage arc; the gap is that plus a 1.2 hairline. Recompute all of
+    r / stroke-width / dasharray / dashoffset together if any one changes.
+  -->
+  <g fill="none" stroke-width="11.09">
+    <circle cx="33.5" cy="36" r="27.45" stroke="url(#cta-peach)"/>
+    <circle cx="67.8" cy="36" r="27.45" stroke="url(#cta-sage)"
+            stroke-dasharray="159.93 12.57" stroke-dashoffset="55.36"/>
   </g>
 </svg>

@@ -62,11 +62,14 @@ check(skip is not None and "skip-link" in (skip.classes() if skip else []),
       "skip link to #main is missing")
 check("main" in ids, "#main target for the skip link is missing")
 
-# Live region for the newsletter response.
+# Live region for the newsletter response. role="status" is an implicitly
+# polite live region, so an explicit aria-live alongside it is redundant (and
+# can double-announce) — accept either, require one.
 status = doc.first("p", id="newsletter-status")
 check(status is not None, "newsletter status node is missing")
 if status:
-    check(status.get("aria-live") == "polite", "newsletter status is not a polite live region")
+    check(status.get("role") == "status" or status.get("aria-live") == "polite",
+          "newsletter status is not a polite live region")
 
 # Decorative layers must be hidden from the accessibility tree.
 for el in doc.elements:

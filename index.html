@@ -625,10 +625,17 @@
       </div>
       <form class="newsletter__form" id="newsletter-form" novalidate>
         <label class="visually-hidden" for="newsletter-email">Your email address</label>
-        <input class="newsletter__input" id="newsletter-email" name="email" type="email"
-               autocomplete="email" placeholder="your@organisation.eu" required>
-        <button class="btn btn--primary" type="submit">Subscribe</button>
-        <p class="newsletter__status" id="newsletter-status" role="status" aria-live="polite"></p>
+        <!-- Input and button live in their own flex row. Keeping them out of the
+             form's main flow is what stops the status message below from ever
+             reflowing the button. -->
+        <div class="newsletter__field">
+          <input class="newsletter__input" id="newsletter-email" name="email" type="email"
+                 autocomplete="email" placeholder="your@organisation.eu" required>
+          <button class="btn btn--primary newsletter__submit" type="submit">Subscribe</button>
+        </div>
+        <!-- role="status" is an implicitly polite live region; the space it will
+             need is reserved in CSS so the panel does not grow on submit. -->
+        <p class="newsletter__status" id="newsletter-status" role="status"></p>
       </form>
     </div>
   </div>
