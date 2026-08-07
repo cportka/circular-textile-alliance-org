@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.2.1 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.3.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -21,6 +21,7 @@ assets/
   js/site.js               progressive enhancement only (header state, menu, form guard)
   fonts/*.woff2            self-hosted Inter + Playfair Display (SIL OFL, licences alongside)
   img/                     logo, favicon, app icons, Open Graph card
+  img/photos/*.webp        the alliance's own photography (see below)
 site.webmanifest           PWA/install metadata
 robots.txt  sitemap.xml    crawler metadata
 llms.txt                   plain-language site map for AI crawlers
@@ -72,9 +73,8 @@ npx http-server -p 8099 -s . &
 node tools/screenshot.js /tmp/shots http://127.0.0.1:8099/
 ```
 
-Because this sandbox's egress policy blocks `images.unsplash.com`, the script
-substitutes generated stand-ins for the remote photography so layout can still
-be verified. Set `NOSTUB=1` to see the real remote-image behaviour instead.
+Every asset is same-origin, so the capture needs no network beyond the local
+server — what it records is exactly what a visitor sees.
 
 ## Deployment
 
@@ -185,6 +185,11 @@ and all four must be recomputed together. `favicon.svg` reuses the same numbers
 under a transform so the two marks cannot drift, and the tests pin them
 together.
 
+**Photography.** The design specifies stock imagery hotlinked from Unsplash.
+The site ships the alliance's own photographs of the work instead — see
+[Imagery](#imagery). Composition and crop follow the design's slots; only the
+pictures differ.
+
 **Additions the design does not specify.** A skip link, visible focus styling,
 `prefers-reduced-motion` handling, a print stylesheet, `scroll-padding-top` so
 the fixed header does not cover anchor targets, and a Content-Security-Policy.
@@ -198,13 +203,41 @@ produces at this container width, and it has been left alone.
 
 ## Imagery
 
-The hero and the eight card images are hotlinked from `images.unsplash.com`,
-exactly as the design specifies. Each slot has a brand-coloured backing, so a
-failed load degrades to a palette block rather than a broken-image gap.
+The hero and the seven card images are the alliance's own photographs of the
+work — a spinning mill floor, a machinist at an industrial sewing machine, a
+yarn shade card, undyed cotton awaiting processing, and sorted offcut bales.
+They live in `assets/img/photos/` and are served from this origin.
 
-To vendor them instead: download each URL in `index.html` and
-`.hero__media` in `site.css` into `assets/img/`, repoint the references, and
-remove `images.unsplash.com` from the CSP and the `preconnect` hint.
+**The site therefore contacts no third party at all.** Fonts are self-hosted,
+photography is local, there is no analytics, no tag manager, no tracking pixel
+and no cookie. `img-src` in the Content-Security-Policy is `'self' data:`, and
+a test fails the build if any remote host reappears in the markup or the CSP.
+
+Five source photographs cover eight slots, so each is cropped for its slot
+rather than reused whole — the shade card appears once as a wide spread and
+once as a tight column, and the mill floor once as a room and once close on the
+winding frames. Regenerating them is a matter of re-cropping the originals to
+the sizes in the table below and re-exporting as WebP.
+
+| Slot | File | Size |
+| :-- | :-- | :-- |
+| Hero background (`.hero__media`) | `hero-mill.webp` | 1800×1200 |
+| Programme — EPR Readiness | `programme-epr.webp` | 800×500 |
+| Programme — Recycling Pathways | `programme-recycling.webp` | 800×500 |
+| Programme — Digital Product Passport | `programme-passport.webp` | 800×500 |
+| Programme — Collection Infrastructure | `programme-collection.webp` | 800×500 |
+| News — Policy | `news-policy.webp` | 600×400 |
+| News — Partnership | `news-partnership.webp` | 600×400 |
+| News — Event | `news-event.webp` | 600×400 |
+
+WebP at quality 82 keeps the whole set to ~516 KB, and every card image is
+`loading="lazy"`, so only the hero is fetched up front. Each card image also
+sits on a brand-coloured backing, so a slot reads as a palette block rather
+than a gap while it loads.
+
+Because these are documentary photographs rather than decorative stock, each
+one carries descriptive `alt` text saying what is pictured — deliberately not a
+restatement of the heading beside it.
 
 ## Licence
 

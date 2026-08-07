@@ -9,21 +9,22 @@ No personal data is collected, stored or processed by the site itself.
 
 ## Third-party requests
 
-Exactly one third-party origin is contacted by a visitor's browser:
-
-| Origin | What for | Why it is there |
-| :-- | :-- | :-- |
-| `images.unsplash.com` | The hero photograph and the eight card images | Carried over from the source design; see README for how to vendor these locally instead |
+**None.** Every byte a visitor loads comes from this origin.
 
 Fonts are self-hosted, so no request reaches Google Fonts or any other font CDN.
-There is no analytics, no tag manager, no tracking pixel and no cookie of any
-kind — the site sets none and needs no consent banner.
+Photography is the alliance's own, served from `assets/img/photos/`. There is no
+analytics, no tag manager, no tracking pixel and no cookie of any kind — the
+site sets none and needs no consent banner.
+
+`img-src` in the Content-Security-Policy is `'self' data:`, and the test suite
+fails the build if a remote host reappears in either the markup or the policy,
+so this cannot regress unnoticed.
 
 A Content-Security-Policy is declared in the page head. It permits no inline
-styles or scripts and no origins other than the site itself and the image host
-above. A CSP delivered as a response header is stronger than one in a `<meta>`
-tag; if this site later moves behind a CDN or a host that can set headers,
-promote it (and add `frame-ancestors`, which a meta-delivered CSP ignores).
+styles or scripts and no origin other than the site itself. A CSP delivered as a
+response header is stronger than one in a `<meta>` tag; if this site later moves
+behind a CDN or a host that can set headers, promote it (and add
+`frame-ancestors`, which a meta-delivered CSP ignores).
 
 ## Reporting a vulnerability
 
@@ -42,5 +43,5 @@ Machine-readable contact details are published at
 In scope: anything served from this repository — the markup, stylesheet, script,
 fonts and images, and the GitHub Actions workflow that validates them.
 
-Out of scope: the security posture of `images.unsplash.com`, and vulnerabilities
-that require a compromised GitHub account or a modified local clone.
+Out of scope: vulnerabilities that require a compromised GitHub account or a
+modified local clone.

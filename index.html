@@ -29,18 +29,17 @@
 <meta name="twitter:description" content="An independent, non-profit alliance of 140+ organizations accelerating the transition to a circular textile economy.">
 <meta name="twitter:image" content="https://cportka.github.io/circular-textile-alliance-org/assets/img/og-cover.png">
 
-<!-- Only images.unsplash.com is third-party; everything else is same-origin. The
-     page carries no inline <style>/style="" and no inline <script>, so no
+<!-- Fully same-origin: no third-party host is contacted at all. The page also
+     carries no inline <style>/style="" and no inline <script>, so no
      'unsafe-inline' is needed — keep it that way when editing.
      (frame-ancestors is deliberately absent: it is ignored in a meta CSP. Set it
      as a response header at the CDN/host if you need clickjacking protection.) -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://images.unsplash.com; style-src 'self'; script-src 'self'; font-src 'self'; form-action 'none'; base-uri 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; form-action 'none'; base-uri 'self'; object-src 'none'">
 
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
 
-<link rel="preconnect" href="https://images.unsplash.com" crossorigin>
 <link rel="preload" href="assets/fonts/inter-normal-300-600-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/playfair-display-normal-400-700-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/site.css">
@@ -275,8 +274,9 @@
 
     <div class="card-grid card-grid--bleed">
       <article class="card">
-        <img class="card__media" width="800" height="500" loading="lazy" decoding="async" alt=""
-             src="https://images.unsplash.com/photo-1586771107445-d3ca888129ff?w=800&amp;h=500&amp;fit=crop&amp;auto=format">
+        <img class="card__media" width="800" height="500" loading="lazy" decoding="async"
+             alt="A machinist stitching a garment panel on an industrial sewing machine."
+             src="assets/img/photos/programme-epr.webp">
         <div class="card__body">
           <p class="card__meta">
             <span class="card__region">Europe · North America</span>
@@ -295,8 +295,9 @@
       </article>
 
       <article class="card">
-        <img class="card__media" width="800" height="500" loading="lazy" decoding="async" alt=""
-             src="https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?w=800&amp;h=500&amp;fit=crop&amp;auto=format">
+        <img class="card__media" width="800" height="500" loading="lazy" decoding="async"
+             alt="Undyed cotton fabric stacked in a mill collection bin."
+             src="assets/img/photos/programme-recycling.webp">
         <div class="card__body">
           <p class="card__meta">
             <span class="card__region">Global</span>
@@ -316,8 +317,9 @@
       </article>
 
       <article class="card">
-        <img class="card__media" width="800" height="500" loading="lazy" decoding="async" alt=""
-             src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&amp;h=500&amp;fit=crop&amp;auto=format">
+        <img class="card__media" width="800" height="500" loading="lazy" decoding="async"
+             alt="A printed yarn shade card, each colour named and sampled against it."
+             src="assets/img/photos/programme-passport.webp">
         <div class="card__body">
           <p class="card__meta">
             <span class="card__region">Europe</span>
@@ -336,8 +338,9 @@
       </article>
 
       <article class="card">
-        <img class="card__media" width="800" height="500" loading="lazy" decoding="async" alt=""
-             src="https://images.unsplash.com/photo-1473893604213-3df9c15611c0?w=800&amp;h=500&amp;fit=crop&amp;auto=format">
+        <img class="card__media" width="800" height="500" loading="lazy" decoding="async"
+             alt="Sacks of sorted textile offcuts stacked against a workshop wall."
+             src="assets/img/photos/programme-collection.webp">
         <div class="card__body">
           <p class="card__meta">
             <span class="card__region">Sub-Saharan Africa · South-East Asia</span>
@@ -560,8 +563,9 @@
 
     <div class="card-grid">
       <article class="card">
-        <img class="card__media news-card__media" width="600" height="400" loading="lazy" decoding="async" alt=""
-             src="https://images.unsplash.com/photo-1464817739973-0128fe77aaa1?w=600&amp;h=400&amp;fit=crop&amp;auto=format">
+        <img class="card__media news-card__media" width="600" height="400" loading="lazy" decoding="async"
+             alt="A column of a yarn shade card, from peacock blue through to light apple green."
+             src="assets/img/photos/news-policy.webp">
         <div class="card__body">
           <p class="news-card__meta">
             <span class="news-card__category">Policy</span>
@@ -577,8 +581,9 @@
       </article>
 
       <article class="card">
-        <img class="card__media news-card__media" width="600" height="400" loading="lazy" decoding="async" alt=""
-             src="https://images.unsplash.com/photo-1473893604213-3df9c15611c0?w=600&amp;h=400&amp;fit=crop&amp;auto=format">
+        <img class="card__media news-card__media" width="600" height="400" loading="lazy" decoding="async"
+             alt="A pile of patterned cotton offcuts awaiting sorting."
+             src="assets/img/photos/news-partnership.webp">
         <div class="card__body">
           <p class="news-card__meta">
             <span class="news-card__category">Partnership</span>
@@ -594,8 +599,9 @@
       </article>
 
       <article class="card">
-        <img class="card__media news-card__media" width="600" height="400" loading="lazy" decoding="async" alt=""
-             src="https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=600&amp;h=400&amp;fit=crop&amp;auto=format">
+        <img class="card__media news-card__media" width="600" height="400" loading="lazy" decoding="async"
+             alt="Winding frames drawing yarn onto reels in a spinning mill."
+             src="assets/img/photos/news-event.webp">
         <div class="card__body">
           <p class="news-card__meta">
             <span class="news-card__category">Event</span>

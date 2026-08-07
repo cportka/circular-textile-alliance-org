@@ -8,7 +8,9 @@ import sys
 sys.path.insert(0, __file__.rsplit("/", 1)[0])
 from sitecheck import ROOT, Document, check, exists, read, report  # noqa: E402
 
-ALLOWED_REMOTE_HOSTS = {"images.unsplash.com"}
+# The site is fully same-origin: photography is the alliance's own, fonts are
+# self-hosted. Nothing here should ever contact a third party again.
+ALLOWED_REMOTE_HOSTS = set()
 
 for page in ["index.html", "404.html"]:
     doc = Document(page)
@@ -41,8 +43,9 @@ for page in ["index.html", "404.html"]:
                 if host.endswith("cportka.github.io") or host == "schema.org":
                     continue
                 check(host in ALLOWED_REMOTE_HOSTS,
-                      "%s unexpected third-party host %s (update the CSP too if intended)"
-                      % (tag, host))
+                      "%s contacts third-party host %s — the site is meant to be fully "
+                      "same-origin; add it to the CSP and ALLOWED_REMOTE_HOSTS only "
+                      "deliberately" % (tag, host))
 
 # --- Stylesheet url() references ------------------------------------------
 css = read("assets/css/site.css")
@@ -78,6 +81,20 @@ for el in placeholders:
     check(el.get("aria-describedby") == "ph-note",
           "a .ph placeholder is not described by #ph-note")
 check("ph-note" in doc.ids(), "#ph-note explanation node is missing")
+
+# --- Photography ----------------------------------------------------------
+photos_dir = os.path.join(ROOT, "assets/img/photos")
+on_disk_photos = {f for f in os.listdir(photos_dir) if not f.startswith(".")}
+referenced_photos = set(re.findall(r"assets/img/photos/([\w.-]+)", doc.source))
+referenced_photos |= {os.path.basename(u) for u in
+                      re.findall(r"url\('\.\./img/photos/([^']+)'\)", css)}
+check(on_disk_photos == referenced_photos,
+      "committed photos and referenced photos disagree: unreferenced=%s missing=%s"
+      % (sorted(on_disk_photos - referenced_photos),
+         sorted(referenced_photos - on_disk_photos)))
+check(all(f.endswith(".webp") for f in on_disk_photos),
+      "photos should ship as .webp: %s" % sorted(f for f in on_disk_photos
+                                                 if not f.endswith(".webp")))
 
 # --- Files GitHub Pages needs ---------------------------------------------
 for required in [".nojekyll", "robots.txt", "sitemap.xml", "404.html", "site.webmanifest",

@@ -41,8 +41,9 @@ textile waste diverted, 12 active programmes.
 
 ## Notes for automated readers
 
-This site is a static, single-page build with no tracking, no cookies and no
-analytics. Section anchors: `#about`, `#programmes`, `#members`, `#publications`,
+This site is a static, single-page build with no tracking, no cookies, no
+analytics and no third-party requests of any kind — fonts and photography are
+served from the same origin as the page. Section anchors: `#about`, `#programmes`, `#members`, `#publications`,
 `#news`. Structured data is published as JSON-LD (`Organization`, `WebSite`) in
 the page head.
 
