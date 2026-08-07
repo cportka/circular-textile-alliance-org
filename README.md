@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.2.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.2.1 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -47,9 +47,9 @@ so prefer the server.
 bash tests/run-tests.sh
 ```
 
-370+ assertions, stdlib Python only, no browser and no network — so the same
+400+ assertions, stdlib Python only, no browser and no network — so the same
 command runs locally, in CI (`.github/workflows/validate.yml`, on every push and
-pull request) and as the gate in front of every deploy. Six suites live in
+pull request) and as the gate in front of every deploy. Seven suites live in
 `tests/cases/`, backed by `tests/lib/`:
 
 | Suite | What it holds to account |
@@ -58,6 +58,7 @@ pull request) and as the gate in front of every deploy. Six suites live in
 | `links-assets` | every local `href`/`src` and every `url()` in the CSS resolves to a real file, every `#anchor` has a target, no `href="#"` survives, shipped fonts and referenced fonts agree, licences present |
 | `accessibility` | alt attributes, labelled form controls, named buttons, ARIA references that point at real ids, disclosure state, unique nav labels, skip link, live region, decorative layers hidden, reduced-motion and focus styling |
 | `contrast` | every text/background pair in the design measured against WCAG AA, translucent colours composited first, control boundaries against 1.4.11's 3:1, plus a regression guard on the three retuned tokens |
+| `components` | guards for UI bugs that shipped once: the header CTA's hover rules exist per header state (a specificity trap made the label invisible), the newsletter field is isolated from its status message, the status row reserves its height, and the logo keeps its dash-gap interlock and gradients — with `favicon.svg`'s geometry pinned to `logo.svg`'s |
 | `workflows` | both workflows still trigger where they should, keep their `workflow_dispatch` escape hatch, hold the Pages permissions and concurrency group, **validate before uploading the artifact**, and pin non-deprecated action versions |
 | `seo-metadata` | title/description lengths, canonical, full Open Graph and Twitter sets, manifest and its icons, JSON-LD parses and carries `Organization` + `WebSite`, robots/sitemap/llms.txt agree on one host, `404` is `noindex`, security.txt valid |
 
@@ -168,11 +169,21 @@ latin path, fetched per-subset via `unicode-range`) with their licences
 alongside. This also keeps visitor IPs away from a third-party font host.
 
 **Logo.** The design's logo is a PNG stored via Git LFS, and the Figma MCP
-surface returns only the LFS pointer, so the original bytes were not retrievable.
-`assets/img/logo.svg` reproduces the mark from the design's own full-page render
-— two interlocking rings, peach over sage at the lower crossing — as vector art
-on a transparent ground. Drop the real file in and update the two `<img>` tags
-if you have it.
+surface returns only the LFS pointer, so the original bytes were never
+retrievable. `assets/img/logo.svg` reproduces the mark as vector art on a
+transparent ground, redrawn from supplied artwork: two interlocking rings with
+matching diagonal gradients, stroke at 0.168 of the outer diameter and centres
+0.52 of an outer diameter apart. Peach passes in front at the upper crossing,
+sage at the lower.
+
+The interlock is one real break — the sage ring carries a `stroke-dasharray`
+gap at the upper crossing — rather than an overdrawn patch. An earlier version
+clipped a second copy of the peach arc to a rectangle, and the clip edge cut
+through the overlap and showed as a notch. `r`, `stroke-width`,
+`stroke-dasharray` and `stroke-dashoffset` are a single derived set: change one
+and all four must be recomputed together. `favicon.svg` reuses the same numbers
+under a transform so the two marks cannot drift, and the tests pin them
+together.
 
 **Additions the design does not specify.** A skip link, visible focus styling,
 `prefers-reduced-motion` handling, a print stylesheet, `scroll-padding-top` so

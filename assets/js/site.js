@@ -71,14 +71,15 @@
       var field = document.getElementById('newsletter-email');
       var value = field && field.value.trim();
 
+      // Both messages are kept to a single line at the form's 26rem width, so
+      // they fit the height reserved for .newsletter__status and the panel
+      // never grows on submit.
       if (!value || !field.checkValidity()) {
         status.textContent = 'Please enter a valid email address.';
         if (field) field.focus();
         return;
       }
-      status.textContent =
-        'Subscriptions are not connected yet — no address was recorded. ' +
-        'Please check back shortly.';
+      status.textContent = 'Subscriptions aren’t live yet — nothing was recorded.';
     });
   }
 })();

@@ -4,6 +4,51 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.2.1] - 2026-08-07
+
+Three fixes from review of the live site.
+
+### Fixed
+- **The header's "Become a Member" button had an invisible label on hover once
+  the page was scrolled.** `.site-header.is-scrolled .btn--outline-ink` sets the
+  resting colour at higher specificity than `.btn--outline-ink:hover`, so the
+  hover rule filled the button with `--ink` while the label stayed `--ink`. Each
+  header state now carries its own hover pair: cream-on-ink when scrolled,
+  ink-on-cream over the hero — 13.93:1 either way.
+- **The Subscribe button moved when clicked.** The input, the button and the
+  status message shared one wrapping flex container, so the message appearing
+  reflowed the button onto another line. Input and button now sit in their own
+  `.newsletter__field` row, isolated from the message, and the status row
+  reserves its height so the panel does not grow on submit. Verified stable at
+  320 / 390 / 480 / 900 / 1440px.
+- **The newsletter form overflowed the viewport on a phone.** Its `max-width:
+  100%` was resolving inside an `auto` grid track — a cyclic percentage, so the
+  track sized to the form's full 26rem. The panel now declares an explicit
+  `minmax(0, 1fr)` column.
+
+### Changed
+- **The logo is redrawn from supplied artwork.** Both rings carry matching
+  diagonal gradients; stroke is 0.168 of the outer diameter and the centres sit
+  0.52 of an outer diameter apart. Peach passes in front at the upper crossing
+  and sage at the lower — the reverse of the previous version, which had been
+  inferred from a 30px crop of the design render.
+  - The interlock is now one real `stroke-dasharray` gap in the sage ring
+    instead of a second peach arc clipped to a rectangle. The old clip edge cut
+    through the overlap and showed as a notch.
+  - `favicon.svg` reuses `logo.svg`'s geometry under a transform rather than a
+    second hand-computed set of numbers, and the tests pin the two together.
+  - The favicon, 192/512 app icons and the Open Graph card are regenerated.
+- The newsletter's "not connected" message is shortened to one line at the
+  form's width, so it fits the reserved row.
+- `role="status"` on the newsletter message is left to imply its own politeness;
+  the redundant `aria-live` that could double-announce is removed.
+
+### Added
+- **`components` test suite** (30 assertions) pinning all three fixes: the
+  per-state hover rules and their colour pairs, the field/status separation and
+  reserved height, the explicit grid column, and the logo's gradients, dash-gap
+  interlock and geometry-sharing with the favicon.
+
 ## [0.2.0] - 2026-08-06
 
 Publishing moves from GitHub Pages' "deploy from a branch" path to an Actions

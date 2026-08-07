@@ -1,14 +1,32 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Circular Textile Alliance">
   <title>Circular Textile Alliance</title>
   <defs>
-    <clipPath id="fav-interlock">
-      <rect x="29" y="35" width="10" height="14"/>
-    </clipPath>
+    <linearGradient id="fav-peach" gradientUnits="userSpaceOnUse"
+                    x1="8" y1="62" x2="56" y2="12">
+      <stop offset="0" stop-color="#F4D9A6"/>
+      <stop offset="0.55" stop-color="#EFB077"/>
+      <stop offset="1" stop-color="#E4884A"/>
+    </linearGradient>
+    <linearGradient id="fav-sage" gradientUnits="userSpaceOnUse"
+                    x1="44" y1="62" x2="94" y2="12">
+      <stop offset="0" stop-color="#7BAD97"/>
+      <stop offset="0.55" stop-color="#96BBB4"/>
+      <stop offset="1" stop-color="#B7CAD1"/>
+    </linearGradient>
   </defs>
+
   <rect width="64" height="64" fill="#1a2b28"/>
-  <g fill="none" stroke-width="6" transform="translate(0,0)">
-    <circle cx="24" cy="32" r="14" stroke="#e8936a"/>
-    <circle cx="40" cy="32" r="14" stroke="#7eada0"/>
-    <circle cx="24" cy="32" r="14" stroke="#e8936a" clip-path="url(#fav-interlock)"/>
+
+  <!-- The mark's geometry is identical to logo.svg — same radii, stroke and dash
+       numbers — just scaled into this square. Keeping it a transform rather than
+       a second set of hand-computed values means the two cannot drift apart.
+       Scale 58/101 fits the 101-wide artwork inside 64 with 3 units of padding;
+       the y offset centres its 72-unit height. -->
+  <g transform="translate(3 11.35) scale(0.574)">
+    <g fill="none" stroke-width="11.09">
+      <circle cx="33.5" cy="36" r="27.45" stroke="url(#fav-peach)"/>
+      <circle cx="67.8" cy="36" r="27.45" stroke="url(#fav-sage)"
+              stroke-dasharray="159.93 12.57" stroke-dashoffset="55.36"/>
+    </g>
   </g>
 </svg>
