@@ -8,11 +8,8 @@
  * Captures the page at desktop, tablet, wide and mobile widths (plus the
  * scrolled header and the open mobile menu) and reports any console error.
  *
- * The site hotlinks its photography from images.unsplash.com. Where egress to
- * that host is blocked — as it is in the sandbox this site was built in — the
- * remote images are fulfilled with generated stand-ins so layout and spacing
- * can still be checked. Set NOSTUB=1 to exercise the real remote-image path,
- * including the brand-coloured fallback behind each slot.
+ * Every asset is same-origin, so this needs no network beyond the local server
+ * — what you capture is exactly what a visitor sees.
  *
  * Requires playwright (`npm i -D playwright`); deliberately not part of
  * `tests/run-tests.sh`, which stays browser-free so CI needs no extra install.
@@ -25,24 +22,6 @@ const { chromium } = require('playwright');
 
 const OUT = process.argv[2] || '/tmp/shots';
 const URL = process.argv[3] || 'http://127.0.0.1:8099/';
-
-// Deterministic tonal stand-ins, generated rather than committed.
-const TONES = [
-  ['#20302c', '#607c74'], ['#463e34', '#96846e'], ['#2c3c48', '#7892a0'],
-  ['#3c302c', '#8c7464'], ['#263830', '#6e8a80'], ['#342c3c', '#807090'],
-  ['#42382c', '#9a866c'],
-];
-const stub = (i) => {
-  const [a, b] = TONES[i % TONES.length];
-  const rings = Array.from({ length: 9 }, (_, k) =>
-    `<circle cx="${64 + k * 80}" cy="250" r="${60 + 28 * Math.sin(k)}" ` +
-    `fill="none" stroke="${b}" stroke-opacity=".5" stroke-width="3"/>`).join('');
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
-    <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/>
-    </linearGradient></defs>
-    <rect width="800" height="500" fill="url(#g)"/>${rings}</svg>`;
-};
 
 const SHOTS = [
   ['desktop-full', 1440, 900, { full: true }],
@@ -63,12 +42,6 @@ const SHOTS = [
   for (const [name, width, height, opts] of SHOTS) {
     const ctx = await browser.newContext({ viewport: { width, height } });
     const page = await ctx.newPage();
-    let served = 0;
-
-    if (!process.env.NOSTUB) {
-      await page.route('https://images.unsplash.com/**', (route) =>
-        route.fulfill({ body: stub(served++), contentType: 'image/svg+xml' }));
-    }
 
     const errors = [];
     page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });

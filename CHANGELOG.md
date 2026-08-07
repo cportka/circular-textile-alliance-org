@@ -4,6 +4,40 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.3.0] - 2026-08-07
+
+The site's photography is now the alliance's own, and with it the last
+third-party request disappears.
+
+### Added
+- **`assets/img/photos/` — eight images cropped from five supplied
+  photographs**: a spinning mill floor, a machinist at an industrial sewing
+  machine, a yarn shade card, undyed cotton awaiting processing, and sorted
+  offcut bales. Each slot gets its own crop rather than a reused whole, so the
+  shade card reads as a wide spread in the programmes grid and a tight column
+  in the news grid, and the mill floor as a room in the hero and close on the
+  winding frames in news. WebP at quality 82, ~516 KB for the set.
+- Descriptive `alt` text on every photograph. These are documentary images
+  rather than decorative stock, so each says what is pictured without
+  restating the heading beside it — and a test now requires it.
+
+### Changed
+- **The site contacts no third party at all.** `images.unsplash.com` is gone
+  from the markup, the stylesheet, the `preconnect` hint and the
+  Content-Security-Policy, whose `img-src` is now `'self' data:`. Combined with
+  the self-hosted fonts, every byte a visitor loads comes from this origin.
+- `tools/screenshot.js` no longer needs to stub remote images: with everything
+  same-origin, a capture is exactly what a visitor sees.
+- `SECURITY.md` and `llms.txt` updated — the third-party table is now empty.
+
+### Added — tests
+- The allowed-remote-host set is empty, and a failure message explains that
+  adding to it is a deliberate act.
+- The CSP may not name any remote origin, on either page.
+- Committed photos and referenced photos must agree exactly in both directions,
+  so an orphaned file or a dangling reference fails the build.
+- Photographs must ship as WebP and carry non-trivial `alt` text.
+
 ## [0.2.1] - 2026-08-07
 
 Three fixes from review of the live site.

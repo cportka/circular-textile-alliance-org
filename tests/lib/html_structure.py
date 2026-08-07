@@ -45,6 +45,10 @@ for page in PAGES:
     if csp:
         check("'unsafe-inline'" not in csp, "%s CSP weakened with 'unsafe-inline'" % tag)
         check("'unsafe-eval'" not in csp, "%s CSP weakened with 'unsafe-eval'" % tag)
+        # Every directive should be same-origin now that the photography is local.
+        check("http://" not in csp and "https://" not in csp,
+              "%s CSP names a remote origin; the site is meant to be fully "
+              "same-origin" % tag)
         # frame-ancestors is inert in a meta CSP; keeping it invites false confidence.
         check("frame-ancestors" not in csp,
               "%s CSP declares frame-ancestors, which meta-delivered CSP ignores" % tag)

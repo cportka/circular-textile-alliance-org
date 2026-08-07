@@ -9,11 +9,18 @@ from sitecheck import Document, check, report  # noqa: E402
 doc = Document("index.html")
 ids = doc.ids()
 
-# Images: alt is mandatory. Decorative photography carries alt="" on purpose —
-# the card heading already names the thing — but the attribute must be present.
+# Images: alt is mandatory. The brand mark is decorative beside its wordmark and
+# carries alt="" on purpose; the documentary photographs each describe what is
+# pictured, without restating the heading beside them.
 for img in doc.find("img"):
-    check(img.get("alt") is not None,
-          "<img src=%r> has no alt attribute" % img.get("src"))
+    src = img.get("src") or ""
+    alt = img.get("alt")
+    check(alt is not None, "<img src=%r> has no alt attribute" % src)
+    if "/photos/" in src:
+        check(bool(alt and alt.strip()),
+              "documentary photograph %r needs descriptive alt text" % src)
+        check(len(alt) > 25,
+              "alt for %r is too terse to describe the photograph: %r" % (src, alt))
 
 # Every form control needs a programmatic label.
 labels_for = {el.get("for") for el in doc.find("label") if el.get("for")}

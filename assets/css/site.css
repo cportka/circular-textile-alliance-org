@@ -411,10 +411,10 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 .hero__media {
   position: absolute;
   inset: 0;
-  /* Backing colour shows through if the remote photograph fails to load, so the
-     hero degrades to flat ink rather than a blank band. */
+  /* Backing colour shows through until the photograph paints, so the hero
+     degrades to flat ink rather than a blank band. */
   background-color: var(--ink);
-  background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1800&h=1200&fit=crop&auto=format');
+  background-image: url('../img/photos/hero-mill.webp');
   background-size: cover;
   background-position: center 30%;
   opacity: 0.22;
