@@ -4,6 +4,25 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.3.2] - 2026-09-20
+
+### Fixed
+- **An over-strict test blocked the deploy when photographs were added.**
+  `links-assets` asserted that committed and referenced photos be *equal*, so
+  adding images to `assets/img/photos/` ahead of using them failed the suite —
+  and because that suite gates publishing, the Pages run for "Add new photos"
+  failed and the site stayed on the previous commit.
+
+  The two directions are not the same kind of problem, and are now treated
+  differently:
+  - **referenced but missing** renders a broken image, so it stays fatal;
+  - **committed but unreferenced** breaks nothing — it is a library shot
+    waiting to be used. The suite now reports how many there are and what
+    they weigh in the published artifact, and passes.
+
+  The current library: 18 of 26 photographs unreferenced, 4.4 MB published but
+  never fetched by the page.
+
 ## [0.3.1] - 2026-09-20
 
 Documentation fixes, from a first-run report on a clean Mac.

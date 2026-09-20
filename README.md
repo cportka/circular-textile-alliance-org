@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.3.1 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.3.2 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -60,7 +60,7 @@ pull request) and as the gate in front of every deploy. Seven suites live in
 | Suite | What it holds to account |
 | :-- | :-- |
 | `html-structure` | one `<h1>`, one `<main>`, heading levels never skip, every section anchor and its `aria-labelledby` exist, design copy still present, **no inline `style`/`<script>`** (which the CSP would silently drop) |
-| `links-assets` | every local `href`/`src` and every `url()` in the CSS resolves to a real file, every `#anchor` has a target, no `href="#"` survives, shipped fonts and referenced fonts agree, licences present |
+| `links-assets` | every local `href`/`src` and every `url()` in the CSS resolves to a real file, every `#anchor` has a target, no `href="#"` survives, shipped fonts and referenced fonts agree, licences present. A photo **referenced but missing** fails; a photo **committed but unreferenced** is a library shot, so it only reports its weight in the published artifact |
 | `accessibility` | alt attributes, labelled form controls, named buttons, ARIA references that point at real ids, disclosure state, unique nav labels, skip link, live region, decorative layers hidden, reduced-motion and focus styling |
 | `contrast` | every text/background pair in the design measured against WCAG AA, translucent colours composited first, control boundaries against 1.4.11's 3:1, plus a regression guard on the three retuned tokens |
 | `components` | guards for UI bugs that shipped once: the header CTA's hover rules exist per header state (a specificity trap made the label invisible), the newsletter field is isolated from its status message, the status row reserves its height, and the logo keeps its dash-gap interlock and gradients — with `favicon.svg`'s geometry pinned to `logo.svg`'s |
@@ -242,7 +242,11 @@ the sizes in the table below and re-exporting as WebP.
 | News — Partnership | `news-partnership.webp` | 600×400 |
 | News — Event | `news-event.webp` | 600×400 |
 
-WebP at quality 82 keeps the whole set to ~516 KB, and every card image is
+`assets/img/photos/` may hold more than the page uses — unreferenced shots are
+a library, not an error, and the suite reports how much they add to the
+published artifact so the cost stays visible.
+
+WebP at quality 82 keeps the referenced set to ~516 KB, and every card image is
 `loading="lazy"`, so only the hero is fetched up front. Each card image also
 sits on a brand-coloured backing, so a slot reads as a palette block rather
 than a gap while it loads.
