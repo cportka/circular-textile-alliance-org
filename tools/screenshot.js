@@ -2,8 +2,9 @@
 /**
  * Visual verification harness.
  *
- *   npx http-server -p 8099 -s . &
- *   node tools/screenshot.js [outDir] [url]
+ *   npm i -g playwright && npx playwright install chromium   # once
+ *   npx http-server -p 8099 &
+ *   NODE_PATH=$(npm root -g) node tools/screenshot.js [outDir] [url]
  *
  * Captures the page at desktop, tablet, wide and mobile widths (plus the
  * scrolled header and the open mobile menu) and reports any console error.
@@ -11,8 +12,10 @@
  * Every asset is same-origin, so this needs no network beyond the local server
  * — what you capture is exactly what a visitor sees.
  *
- * Requires playwright (`npm i -D playwright`); deliberately not part of
- * `tests/run-tests.sh`, which stays browser-free so CI needs no extra install.
+ * Playwright is two installs — the npm package and the browser binary it
+ * drives; installing only the first fails at launch, not at require. This is
+ * deliberately not part of `tests/run-tests.sh`, which stays browser-free so CI
+ * needs no extra install.
  */
 'use strict';
 

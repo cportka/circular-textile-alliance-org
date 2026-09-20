@@ -4,6 +4,31 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.3.1] - 2026-09-20
+
+Documentation fixes, from a first-run report on a clean Mac.
+
+### Fixed
+- **"Running it locally" produced no visible result.** The command used `-s`
+  (silent) and no `-o`, so `http-server` started, printed nothing, and opened
+  no window — indistinguishable from failing. It is now
+  `npx http-server -p 8099 -o`, with a note that a server never opens a browser
+  by itself and that `-s` hides the "Available on: …" line.
+- **The "Visual checks" snippet could not work as written.** It said
+  `npm i -D playwright` but omitted `npx playwright install chromium`, so the
+  browser binary was never fetched. It also sat close enough to the local-run
+  section to be copied as the way to view the site, which is how it was hit:
+  the reader got `Cannot find module 'playwright'` while only wanting to look
+  at the page. The section now leads by saying it is optional and not needed to
+  view the site, and gives both installs.
+- Playwright is now installed globally in the documented path, with
+  `NODE_PATH=$(npm root -g)`. `npm i -D` in this repo would create a
+  `package.json` and a lockfile — neither of which is git-ignored — purely to
+  run a dev-only tool, in a repo whose first claim is that it has no package
+  manager. The local alternative is still documented for anyone who prefers it.
+- `tools/screenshot.js`'s own header carried the same two-install gap and is
+  corrected to match.
+
 ## [0.3.0] - 2026-08-07
 
 The site's photography is now the alliance's own, and with it the last

@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.3.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.3.1 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -35,8 +35,12 @@ tests/                     the check suite CI runs (see below)
 Any static file server will do — the page uses relative paths throughout:
 
 ```sh
-npx http-server -p 8099 -s .      # then open http://127.0.0.1:8099/
+npx http-server -p 8099 -o        # -o opens your browser at the site
 ```
+
+`Ctrl-C` stops it. `-o` matters: a server on its own never opens a window, so
+without it nothing appears to happen. Avoid `-s` (silent) here too — it
+suppresses the "Available on: …" line, leaving no clue the server started.
 
 Opening `index.html` directly off the filesystem mostly works, but the
 Content-Security-Policy and the web manifest behave differently under `file://`,
@@ -65,13 +69,21 @@ pull request) and as the gate in front of every deploy. Seven suites live in
 
 ### Visual checks
 
-Screenshot verification needs a browser and is deliberately **not** part of the
-CI suite. To run it locally:
+Screenshot verification is a separate, optional tool — **not** needed to view
+the site, and deliberately not part of the CI suite. It needs Playwright, which
+is two installs: the npm package, and the browser binary it drives.
 
 ```sh
-npx http-server -p 8099 -s . &
-node tools/screenshot.js /tmp/shots http://127.0.0.1:8099/
+npm i -g playwright && npx playwright install chromium   # once
+npx http-server -p 8099 &
+NODE_PATH=$(npm root -g) node tools/screenshot.js /tmp/shots http://127.0.0.1:8099/
 ```
+
+Installed globally on purpose: this repo has no `package.json`, and `npm i -D`
+would create one plus a lockfile just to run a dev-only tool. If you would
+rather keep it local, `npm i -D playwright` works and needs no `NODE_PATH` —
+`node_modules/` is already ignored, but the two manifest files it writes are
+not.
 
 Every asset is same-origin, so the capture needs no network beyond the local
 server — what it records is exactly what a visitor sees.
