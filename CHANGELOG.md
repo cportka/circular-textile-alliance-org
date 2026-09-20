@@ -4,6 +4,24 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.3.3] - 2026-09-20
+
+### Removed
+- **`tools/screenshot.js` and the "Visual checks" section of the README.** The
+  Playwright harness existed to prove the port matched the Figma design while
+  that match was still in question. It isn't any more — the site is the
+  reference now, and changes to it get judged by looking at it. What remains is
+  a tool with a two-step install, a browser binary and a documentation section
+  that had already been mistaken for the way to view the site.
+
+  Nothing in CI used it: `tests/run-tests.sh` has always been browser-free, and
+  all 400+ assertions still run unchanged. The `components` suite keeps the
+  structural guards on the bugs the harness helped find — the hover rules, the
+  newsletter field/status separation, the logo geometry — so the regressions it
+  caught stay caught.
+- The `/shots/` entry in `.gitignore`, which only ever ignored that tool's
+  output.
+
 ## [0.3.2] - 2026-09-20
 
 ### Fixed

@@ -1,8 +1,9 @@
 """Guards for specific UI regressions that shipped once and must not return.
 
-Each block names the bug it prevents. These are cheap structural assertions —
-the real proof is tools/screenshot.js driving a browser — but they catch the
-edit that would silently reintroduce the fault.
+Each block names the bug it prevents. These are structural assertions rather
+than rendered proof: they pin the rule, the selector or the geometry whose
+absence caused the bug, so the edit that would silently reintroduce it fails
+here. Confirming how the result actually looks is a matter of opening the page.
 """
 
 import re
