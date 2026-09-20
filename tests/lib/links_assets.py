@@ -88,10 +88,24 @@ on_disk_photos = {f for f in os.listdir(photos_dir) if not f.startswith(".")}
 referenced_photos = set(re.findall(r"assets/img/photos/([\w.-]+)", doc.source))
 referenced_photos |= {os.path.basename(u) for u in
                       re.findall(r"url\('\.\./img/photos/([^']+)'\)", css)}
-check(on_disk_photos == referenced_photos,
-      "committed photos and referenced photos disagree: unreferenced=%s missing=%s"
-      % (sorted(on_disk_photos - referenced_photos),
-         sorted(referenced_photos - on_disk_photos)))
+# These two directions are not the same kind of problem, and an earlier version
+# of this check conflated them into one equality — which made adding photography
+# ahead of using it a build failure, and blocked a deploy.
+#
+# A reference with no file behind it renders a broken image: fatal.
+missing = sorted(referenced_photos - on_disk_photos)
+check(not missing,
+      "referenced but missing from assets/img/photos/: %s" % missing)
+
+# A file nothing references breaks nothing — it is a library shot waiting to be
+# used. It does still ship in the Pages artifact, so report the weight rather
+# than failing, and let whoever is curating the imagery decide.
+unused = sorted(on_disk_photos - referenced_photos)
+if unused:
+    weight = sum(os.path.getsize(os.path.join(photos_dir, f)) for f in unused)
+    print("  note: %d of %d photo(s) are unreferenced — %.1f MB published but "
+          "never fetched by the page: %s"
+          % (len(unused), len(on_disk_photos), weight / 1e6, ", ".join(unused)))
 check(all(f.endswith(".webp") for f in on_disk_photos),
       "photos should ship as .webp: %s" % sorted(f for f in on_disk_photos
                                                  if not f.endswith(".webp")))
