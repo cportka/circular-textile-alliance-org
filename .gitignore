@@ -146,5 +146,3 @@ vite.config.ts.timestamp-*
 __pycache__/
 *.py[cod]
 
-# Local screenshot output from tools/screenshot.js
-/shots/

@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.3.2 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.3.3 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -66,27 +66,6 @@ pull request) and as the gate in front of every deploy. Seven suites live in
 | `components` | guards for UI bugs that shipped once: the header CTA's hover rules exist per header state (a specificity trap made the label invisible), the newsletter field is isolated from its status message, the status row reserves its height, and the logo keeps its dash-gap interlock and gradients — with `favicon.svg`'s geometry pinned to `logo.svg`'s |
 | `workflows` | both workflows still trigger where they should, keep their `workflow_dispatch` escape hatch, hold the Pages permissions and concurrency group, **validate before uploading the artifact**, and pin non-deprecated action versions |
 | `seo-metadata` | title/description lengths, canonical, full Open Graph and Twitter sets, manifest and its icons, JSON-LD parses and carries `Organization` + `WebSite`, robots/sitemap/llms.txt agree on one host, `404` is `noindex`, security.txt valid |
-
-### Visual checks
-
-Screenshot verification is a separate, optional tool — **not** needed to view
-the site, and deliberately not part of the CI suite. It needs Playwright, which
-is two installs: the npm package, and the browser binary it drives.
-
-```sh
-npm i -g playwright && npx playwright install chromium   # once
-npx http-server -p 8099 &
-NODE_PATH=$(npm root -g) node tools/screenshot.js /tmp/shots http://127.0.0.1:8099/
-```
-
-Installed globally on purpose: this repo has no `package.json`, and `npm i -D`
-would create one plus a lockfile just to run a dev-only tool. If you would
-rather keep it local, `npm i -D playwright` works and needs no `NODE_PATH` —
-`node_modules/` is already ignored, but the two manifest files it writes are
-not.
-
-Every asset is same-origin, so the capture needs no network beyond the local
-server — what it records is exactly what a visitor sees.
 
 ## Deployment
 
