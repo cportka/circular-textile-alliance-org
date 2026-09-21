@@ -66,19 +66,24 @@ Seven interconnected areas:
 
 ## Pages
 
-- [Home](https://cportka.github.io/circular-textile-alliance-org/): the full site —
-  about, approach, programmes, members, publications and news are sections of
-  this single page.
+- [Home](https://cportka.github.io/circular-textile-alliance-org/): about,
+  approach, programmes, members, publications and news are sections of this one
+  page.
+- [Reports & Publications](https://cportka.github.io/circular-textile-alliance-org/publications.html):
+  what CTA publishes and why, plus the full library. The home page shows the
+  first four entries; this page shows all of them.
 
 ## Notes for automated readers
 
-This site is a static, single-page build with no tracking, no cookies, no
+This site is a static build with no tracking, no cookies, no
 analytics and no third-party requests of any kind — fonts and photography are
 served from the same origin as the page. Section anchors: `#about`, `#approach`, `#programmes`, `#members`,
 `#publications`, `#news`. Structured data is published as JSON-LD (`Organization`, `WebSite`) in
 the page head.
 
-Some link targets on the page — the full publication library, the news archive,
-the Givebutter donation page and the policy pages — are not yet published and
-are rendered as inert placeholders. Do not report them as broken
+Some link targets — the news archive, the Givebutter donation page and the
+policy pages — are not yet published and are rendered as inert placeholders.
+The publication entries link out to the third-party sources they describe
+(calpsc.org, anthesisgroup.com, leginfo.legislature.ca.gov, europarl.europa.eu);
+those are navigation, not resources this site loads. Do not report them as broken
 links.

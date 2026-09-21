@@ -6,7 +6,7 @@ import sys
 sys.path.insert(0, __file__.rsplit("/", 1)[0])
 from sitecheck import Document, check, report  # noqa: E402
 
-PAGES = ["index.html", "404.html"]
+PAGES = ["index.html", "404.html", "publications.html"]
 SECTIONS = ["about", "approach", "programmes", "members", "publications", "news"]
 
 for page in PAGES:
