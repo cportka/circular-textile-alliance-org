@@ -4,6 +4,57 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.8.0] - 2026-09-21
+
+Programmes stops being a card grid and becomes the alliance's own prose.
+
+### Changed
+- **The four programme cards are replaced by seven areas of long-form text**:
+  Consumer Education, Research & Innovation, Industry Collaboration, Policy
+  Implementation, Manufacturing & Workforce Development, Transparency &
+  Traceability, Textile Recovery Infrastructure — each a heading, its prose, and
+  where the copy has one, an "Our work may include" list.
+- The cards' photography, region badges, tags and hairline grid are gone with
+  them, as is the `All Programmes →` placeholder: every area is on the page now,
+  so there is nowhere further to send anyone. `.card` survives because News
+  still uses it; `.badge`, `.tags`, `.card__meta`, `.card__region`,
+  `.card-grid--bleed` and `.section-head__title` had no remaining markup and are
+  deleted.
+- **The footer's Programmes column and the JSON-LD `knowsAbout` list** named the
+  four that just left — EPR Readiness, Recycling Pathways, Digital Passports,
+  Collection Systems. Both now name the seven.
+- `llms.txt`'s Programmes section rewritten to match.
+
+### Added
+- **`assets/img/textile-recovery-infrastructure.webp`** — the supplied lifecycle
+  diagram, centred at the end of Textile Recovery Infrastructure on a cream
+  plate with a hairline rule. It is line art on white, which would otherwise
+  float unbounded on `--cream-dark`.
+- The two requested photographs side by side at the end of Transparency &
+  Traceability, stacking on narrow screens.
+- `.prog__*` styles, and a 2-up figure pair sharing the 704px breakpoint the
+  principles grid introduced in 0.7.0.
+
+### Added — tests
+- Seven programme articles; the Transparency pair present, in `.prog__figures`,
+  and in the requested left-to-right order; the diagram inside Textile Recovery
+  Infrastructure; `.prog__diagram` keeping the auto margins that centre it.
+  Verified by swapping the two photographs and watching the order assertion
+  fail.
+- A contrast pair for programme body text on `--cream-dark`, which the suite had
+  only measured on `--cream`.
+- Article count 11 → 14, placeholder count 15 → 14.
+
+### Notes
+- **The copy says "six interconnected areas" but lists seven.** The page reads
+  "seven", because a reader counting the headings finds seven. If the intent was
+  six — perhaps Textile Recovery Infrastructure sitting apart, as the one area
+  with no "Our work may include" list — it is a one-word change either way.
+- The two Transparency photographs ship at their full 1920x1280 (285 KB for the
+  pair) into slots about 400px wide. They were requested by filename and this
+  environment has no image tooling to resize them; purpose-made crops would cut
+  most of that weight.
+
 ## [0.7.0] - 2026-09-21
 
 ### Changed

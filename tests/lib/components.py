@@ -42,6 +42,31 @@ if check(hero_hover is not None, "over-hero header hover rule not found"):
           "over-hero header hover must pair a --cream fill with an --ink label; got: %s"
           % " ".join(body.split()))
 
+# --- Programmes -------------------------------------------------------------
+# The section is long-form prose now, not a card grid, and two of the seven
+# areas carry figures that were asked for by name and position.
+progs = [el for el in doc.elements if el.classes() == ["prog"]]
+check(len(progs) == 7, "expected 7 programme articles, found %d" % len(progs))
+
+src = doc.source
+trans = src.index("Transparency &amp; Traceability")
+recovery = src.index("Textile Recovery Infrastructure</h3>")
+check(trans < recovery, "Textile Recovery Infrastructure should follow Transparency")
+
+pair = src[trans:recovery]
+for photo in ("1711_MEX_VKN_GARMENT_076.webp", "1711_MEX_HONGHO_GARMENT_25.webp"):
+    check(photo in pair, "%s belongs at the end of Transparency & Traceability" % photo)
+check(pair.index("1711_MEX_VKN_GARMENT_076.webp") < pair.index("1711_MEX_HONGHO_GARMENT_25.webp"),
+      "the Transparency figures are in the wrong order — VKN_076 comes first")
+check(re.search(r'class="prog__figures"', pair),
+      "the two Transparency photographs must sit in a .prog__figures pair, which is "
+      "what puts them side by side")
+check("textile-recovery-infrastructure.webp" in src[recovery:],
+      "the recovery diagram belongs at the end of Textile Recovery Infrastructure")
+check(re.search(r"\.prog__diagram\s*\{[^}]*margin:\s*[^;]*auto", css),
+      ".prog__diagram must keep its auto inline margins — the diagram is meant to "
+      "be centred")
+
 # --- Principles grid --------------------------------------------------------
 # The hairline grid draws its rules as 1px gaps over a --border bed, so an empty
 # cell is not blank — it is a solid block of border colour. With an odd number of

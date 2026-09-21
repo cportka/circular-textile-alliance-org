@@ -84,6 +84,9 @@ for phrase in [
     "A Coalition Built on",
     "What We Do",
     "Contribute To Our Mission",
+    "Turning Knowledge Into Action",
+    "Consumer Education",
+    "Textile Recovery Infrastructure",
     "Our Mission",
     "Our Vision",
     "Where We Direct Our Collective Effort",
@@ -94,9 +97,9 @@ for phrase in [
 ]:
     check(phrase in text, "design copy missing from the page: %r" % phrase)
 
-# All four programmes, four publications and three news items made it across.
-check(len(doc.find("article")) == 11,
-      "expected 11 <article> cards (4 programmes + 4 publications + 3 news), found %d"
+# Seven programme areas, four publications and three news items.
+check(len(doc.find("article")) == 14,
+      "expected 14 <article> elements (7 programmes + 4 publications + 3 news), found %d"
       % len(doc.find("article")))
 
 report("html structure")
