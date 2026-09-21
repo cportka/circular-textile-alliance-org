@@ -7,7 +7,7 @@ sys.path.insert(0, __file__.rsplit("/", 1)[0])
 from sitecheck import Document, check, report  # noqa: E402
 
 PAGES = ["index.html", "404.html"]
-SECTIONS = ["about", "programmes", "members", "publications", "news"]
+SECTIONS = ["about", "approach", "programmes", "members", "publications", "news"]
 
 for page in PAGES:
     doc = Document(page)
@@ -81,6 +81,9 @@ for phrase in [
     "Closing the Loop on",
     "Building a stronger, more resilient textile economy",
     "How We Work",
+    "A Coalition Built on",
+    "What We Do",
+    "Contribute To Our Mission",
     "Our Mission",
     "Our Vision",
     "Where We Direct Our Collective Effort",
