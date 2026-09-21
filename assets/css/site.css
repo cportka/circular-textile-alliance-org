@@ -414,7 +414,7 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   /* Backing colour shows through until the photograph paints, so the hero
      degrades to flat ink rather than a blank band. */
   background-color: var(--ink);
-  background-image: url('../img/photos/hero-mill.webp');
+  background-image: url('../img/photos/1711_MEX_HONGHO_GARMENT_02.webp');
   background-size: cover;
   background-position: center 30%;
   opacity: 0.22;

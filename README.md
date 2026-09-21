@@ -212,7 +212,7 @@ the sizes in the table below and re-exporting as WebP.
 
 | Slot | File | Size |
 | :-- | :-- | :-- |
-| Hero background (`.hero__media`) | `hero-mill.webp` | 1800×1200 |
+| Hero background (`.hero__media`) | `1711_MEX_HONGHO_GARMENT_02.webp` | 1920×1280 |
 | Programme — EPR Readiness | `programme-epr.webp` | 800×500 |
 | Programme — Recycling Pathways | `programme-recycling.webp` | 800×500 |
 | Programme — Digital Product Passport | `programme-passport.webp` | 800×500 |
