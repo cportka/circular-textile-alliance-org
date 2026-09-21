@@ -79,7 +79,9 @@ check(levels and levels[0] == 1, "the first heading on the page is not the h1")
 text = doc.source
 for phrase in [
     "Closing the Loop on",
-    "A Coalition Built on",
+    "Building a stronger, more resilient textile economy",
+    "Our Mission",
+    "Our Vision",
     "Where We Direct Our Collective Effort",
     "140+ Organizations Moving Together",
     "Reports &amp; Publications",

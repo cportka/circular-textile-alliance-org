@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.3.3 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.4.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -142,12 +142,21 @@ inert `<span>`/`disabled` elements described by a shared visually-hidden note.
 The 20 footer list items are rendered as plain text. To wire one up, swap the
 `<span class="ph">` for an `<a href="…">` and drop the `aria-describedby`.
 
-**Responsive corrections.** Two places in the design set a fixed inline
-`gridTemplateColumns` that overrides the responsive class beside it, so they
-overflow on a phone: the hero stats bar (pinned to 4 columns; now 2-up then
-4-up, which its own class list asked for) and the newsletter row (`1fr auto`;
-now stacked below 640px). The publications rows (`200px 1fr auto`) stack below
-768px for the same reason.
+**Responsive corrections.** The design sets a fixed inline
+`gridTemplateColumns` that overrides the responsive class beside it on the
+newsletter row (`1fr auto`), so it overflowed on a phone; it now stacks below
+640px. The publications rows (`200px 1fr auto`) stack below 768px for the same
+reason. (The hero stats bar had the same fault and the same fix, until the bar
+itself was removed — see *Copy* below.)
+
+**Copy.** The hero and About copy are the alliance's own, no longer the
+design's. The hero is now photograph and headline only — its lede paragraph, its
+two buttons and the four-figure stats bar (140+ / 38 / 2.4M t / 12) were
+removed, because the figures were the design's placeholders rather than the
+alliance's numbers. About carries the real positioning instead, with *Our
+Mission* and *Our Vision* stated on the page rather than linked to. The meta
+description, Open Graph and Twitter descriptions, JSON-LD and `llms.txt` were
+rewritten to match, since each quoted copy that no longer exists.
 
 **Newsletter form.** No subscription endpoint exists. Rather than fake a success
 state, submitting reports plainly that nothing was recorded. Give the `<form>` a

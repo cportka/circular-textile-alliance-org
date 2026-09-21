@@ -73,8 +73,6 @@ for label, fg, bg, minimum in SOLID:
 
 # Translucent text: composite over the known backdrop first.
 ALPHA = [
-    ("hero lede on ink",             "cream", "ink",      0.65, AA_NORMAL),
-    ("hero stat labels on ink",      "cream", "ink",      0.60, AA_NORMAL),
     ("members lede on ink",          "cream", "ink",      0.70, AA_NORMAL),
     ("member chips on ink",          "cream", "ink",      0.80, AA_NORMAL),
     ("tier 'more' note on ink",      "cream", "ink",      0.55, AA_NORMAL),

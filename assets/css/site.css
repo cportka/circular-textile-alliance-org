@@ -451,38 +451,6 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   gap: 2rem;
   align-items: end;
 }
-.hero__lede {
-  font-size: 1rem;
-  line-height: 1.7;
-  color: rgb(250 248 243 / 0.65);
-  margin-bottom: 2rem;
-}
-.hero__actions { display: flex; gap: 1rem; flex-wrap: wrap; }
-
-.stats {
-  margin-top: 4rem;
-  padding-top: 2.5rem;
-  border-top: 1px solid rgb(216 208 196 / 0.2);
-  display: grid;
-  /* DEVIATION (responsive): the Figma pins this to 4 columns inline, which
-     overflows on a phone — its own class list asked for 2-up then 4-up. */
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
-}
-.stat__value {
-  font-family: var(--font-serif);
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  font-weight: 500;
-  line-height: 1;
-  margin-bottom: 0.4rem;
-  color: var(--cream);
-}
-.stat__label {
-  font-size: 0.75rem;
-  letter-spacing: 0.04em;
-  color: rgb(250 248 243 / 0.6);
-}
-
 /* --- About --------------------------------------------------------------- */
 .about__head { margin-bottom: 4rem; }
 .about__grid { display: grid; gap: 3rem; }
@@ -494,6 +462,31 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 .about__lede--first { margin-top: 2rem; }
 .about__lede + .about__lede { margin-top: 1.5rem; }
 .about__cta { margin-top: 2.5rem; }
+
+/* Mission / Vision. A sage rule marks them as statements of intent rather
+   than more body copy, without introducing another surface colour. */
+.about__pillars {
+  display: grid;
+  gap: 2.25rem;
+  align-content: start;
+}
+.pillar { border-left: 2px solid var(--sage); padding-left: 1.5rem; }
+.pillar__title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--sage-text);
+  margin-bottom: 0.75rem;
+}
+.pillar__body {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--ink-light);
+}
+/* Blockified as a grid item, an inline-flex link stretches — and its underline
+   rule with it. Keep it the width of its own text. */
+.about__pillars .about__cta { margin-top: 0; justify-self: start; }
 
 /* Hairline grid: the 1px gap over a border-coloured bed draws the rules. */
 .principles {
@@ -856,7 +849,6 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 
 /* --- Breakpoints --------------------------------------------------------- */
 @media (min-width: 40em) {   /* 640px */
-  .stats { grid-template-columns: repeat(4, 1fr); }
   .footer-cols { grid-template-columns: repeat(4, 1fr); }
 }
 
@@ -868,14 +860,16 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   .about__grid,
   .members__grid { grid-template-columns: repeat(12, 1fr); }
   .about__grid { column-gap: 5rem; }
-  .about__intro { grid-column: span 5; }
-  .about__principles { grid-column: span 7; }
+  .about__intro { grid-column: span 7; }
+  .about__pillars { grid-column: span 5; }
+  .about__principles { grid-column: span 12; }
+  /* Full width now, so the four read as one band rather than a 2x2 block. */
+  .principles { grid-template-columns: repeat(4, 1fr); }
   .members__intro { grid-column: span 5; }
   .members__tiers { grid-column: span 7; }
 
   .hero__grid { grid-template-columns: repeat(12, 1fr); }
   .hero__headline { grid-column: span 8; }
-  .hero__aside { grid-column: span 4; padding-bottom: 0.5rem; }
 
   .site-footer__grid { grid-template-columns: repeat(12, 1fr); }
   .site-footer__brand { grid-column: span 3; }
@@ -905,7 +899,6 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   .newsletter { padding: 2rem var(--gutter); }
   .section-head { margin-bottom: 2.5rem; }
   .hero__inner { padding-block: 7rem 4rem; }
-  .stats { margin-top: 3rem; padding-top: 2rem; gap: 1.5rem; }
 }
 
 /* --- 404 ----------------------------------------------------------------- */
