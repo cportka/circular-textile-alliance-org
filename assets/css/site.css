@@ -85,7 +85,7 @@
 
   --wrap: 80rem;             /* Tailwind max-w-7xl */
   --gutter: 1.5rem;          /* px-6 */
-  --section-y: 7rem;
+  --section-y: 2rem;         /* was 7rem — the sections sat far too far apart */
   --ease: 0.2s ease;
 }
 
@@ -376,6 +376,9 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   background: none;
   border: 0;
   cursor: pointer;
+  /* Lifted above .nav-mobile, which reaches up around it. */
+  position: relative;
+  z-index: 2;
 }
 .nav-toggle__bar {
   display: block;
@@ -389,25 +392,47 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 .nav-toggle[aria-expanded="true"] .nav-toggle__bar:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
 .nav-toggle[aria-expanded="true"] .nav-toggle__bar:nth-child(2) { opacity: 0; }
 .nav-toggle[aria-expanded="true"] .nav-toggle__bar:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+/* Open, the bars sit on the cream panel. Over the hero the header is still in
+   its light state, so without this the X would be cream on cream. */
+.nav-toggle[aria-expanded="true"] .nav-toggle__bar { background: var(--ink); }
 
 /* A panel hung off the right of the bar rather than a full-bleed sheet. 16rem
    is a quarter of 64em, the width at which the disclosure first appears; the
    70vw cap keeps it inside a narrow phone, where a literal quarter would be
    too narrow to read. */
+/* The panel starts at the top of the bar and reaches down, so the toggle sits
+   on top of it rather than above it — closing it is a click on the X inside its
+   own panel. The toggle is lifted out of the panel's stacking order to stay
+   visible and clickable. */
 .nav-mobile {
   position: absolute;
-  top: 100%;
-  right: var(--gutter);
+  top: 0.75rem;
+  right: calc(var(--gutter) - 0.5rem);
+  z-index: 1;
   width: min(16rem, 70vw);
-  max-height: calc(100svh - 5rem);
+  max-height: calc(100svh - 1.5rem);
   overflow-y: auto;
   text-align: right;
   background: var(--cream);
   border: 1px solid var(--border);
   box-shadow: 0 12px 28px rgb(26 43 40 / 0.14);
-  padding: 0.5rem 1.25rem 1.25rem;
+  /* Top padding clears the toggle, which overlaps the panel's first rows. */
+  padding: 4rem 1rem 1.25rem;
+  opacity: 1;
+  transform: translateY(0);
+  /* allow-discrete keeps the element painted while the exit runs; browsers
+     without it simply swap instantly, which is the old behaviour. */
+  transition: opacity 160ms ease, transform 160ms ease,
+              display 160ms allow-discrete;
 }
-.nav-mobile[hidden] { display: none; }
+.nav-mobile[hidden] {
+  display: none;
+  opacity: 0;
+  transform: translateY(-0.5rem);
+}
+@starting-style {
+  .nav-mobile { opacity: 0; transform: translateY(-0.5rem); }
+}
 .nav-mobile a {
   display: block;
   padding: 0.75rem 0;
@@ -436,7 +461,7 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 }
 /* Flat ink under the statement copy: no photograph behind it, so the contrast
    pairs the suite measures against --ink are the pairs that actually render. */
-.hero__statement { background: var(--ink); padding-block: 1rem 7rem; }
+.hero__statement { background: var(--ink); padding-block: 1rem 4rem; }
 .hero__statement-inner { display: grid; gap: 3.5rem 2rem; }
 .hero__media {
   position: absolute;
@@ -657,7 +682,7 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 /* --- Programmes ---------------------------------------------------------- */
 /* Long-form now rather than a card grid: seven areas, each a heading and its
    own prose, with the figures that belong to two of them. */
-.programmes__title { margin-top: 1.25rem; }
+.programs__title { margin-top: 1.25rem; }
 .prog__intro { max-width: 54rem; margin-top: 2.5rem; }
 .progs { margin-top: 4rem; }
 .prog + .prog {
@@ -993,7 +1018,7 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 }
 
 @media (max-width: 48em) {   /* 768px */
-  :root { --section-y: 4.5rem; }
+  :root { --section-y: 1.5rem; }
   .pub {
     grid-template-columns: 1fr;
     gap: 1.25rem;

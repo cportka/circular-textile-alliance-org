@@ -31,9 +31,9 @@ value.
   affordability, with market systems that do not shift environmental or social
   costs onto workers, communities or future generations.
 
-## Programmes
+## Programs
 
-CTA's programmes improve understanding, connect stakeholders, support practical
+CTA's programs improve understanding, connect stakeholders, support practical
 implementation and strengthen the systems a circular textile economy needs.
 Seven interconnected areas:
 
@@ -67,7 +67,7 @@ Seven interconnected areas:
 ## Pages
 
 - [Home](https://cportka.github.io/circular-textile-alliance-org/): about,
-  approach, programmes, members, publications and news are sections of this one
+  approach, programs, members, publications and news are sections of this one
   page.
 - [Reports & Publications](https://cportka.github.io/circular-textile-alliance-org/publications.html):
   what CTA publishes and why, plus the full library. The home page shows the
@@ -77,7 +77,7 @@ Seven interconnected areas:
 
 This site is a static build with no tracking, no cookies, no
 analytics and no third-party requests of any kind — fonts and photography are
-served from the same origin as the page. Section anchors: `#about`, `#approach`, `#programmes`, `#members`,
+served from the same origin as the page. Section anchors: `#about`, `#approach`, `#programs`, `#members`,
 `#publications`, `#news`. Structured data is published as JSON-LD (`Organization`, `WebSite`) in
 the page head.
 

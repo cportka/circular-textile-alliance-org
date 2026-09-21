@@ -84,7 +84,7 @@ doc = Document("index.html")
 placeholders = [el for el in doc.elements if "ph" in el.classes()]
 # 1 "All News →" link, 3 social links, 3 policy links and the pending Givebutter
 # button. The rest of the Figma's dead destinations have gone as their sections
-# got real content: "All Programmes →" and "Apply for Membership" with the
+# got real content: "All Programs →" and "Apply for Membership" with the
 # rewrites, and "Full Library →" plus the four publication downloads now that
 # the library has real entries and its own page.
 check(len(placeholders) == 8,

@@ -4,6 +4,52 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.11.0] - 2026-09-22
+
+### Changed
+- **"Programmes" is "Programs" everywhere** — nav, section heading, footer
+  column, body copy, the `#programmes` anchor (now `#programs`) and its
+  `aria-labelledby`, plus `llms.txt`, the README and the suites. Past
+  `CHANGELOG` entries keep the old spelling: they record what shipped at the
+  time. A `components` assertion now fails if "Programme" reappears in any page.
+- **Section rhythm tightened from `7rem` to `2rem`** top and bottom (`4.5rem` to
+  `1.5rem` below 768px) — close to the quarter that was asked for. The hero's
+  statement band carried `7rem` as a literal rather than the token and is now
+  `4rem`. `publications.html`'s top gap follows automatically: it is
+  `calc(var(--section-y) + 5rem)`, so it drops from 12rem to 7rem and clears the
+  fixed header by 32px.
+- **The disclosure panel reaches up around the toggle** instead of hanging below
+  it, so the X sits inside its own panel and closing is a click on the icon you
+  opened with. The toggle is lifted above the panel in the stacking order, and
+  its top padding clears the icon overlapping the first rows.
+- **The panel animates in and out** — opacity and an 8px rise over 160ms, using
+  `@starting-style` for the entry and `transition-behavior: allow-discrete` so
+  the exit runs before `display: none` applies. Browsers without them swap
+  instantly, which is the previous behaviour. `prefers-reduced-motion` already
+  collapses both.
+- **`publications.html` indents consistently.** "Our Approach to Knowledge" had
+  a `.prog__content` wrapper and the intro, the publication kinds and the
+  library did not, so those three sat hard against the gutter while the fourth
+  was inset. All four use the same wrapper now, so every heading is flush and
+  every body is indented by the same 1.5rem.
+
+### Fixed
+- **The open hamburger would have been invisible over the hero.** The panel is
+  cream, and over the hero the header is still in its light state, so the X was
+  cream on cream the moment the panel moved up behind it. The open toggle now
+  takes `--ink` bars regardless of header state. Introduced and fixed within
+  this change.
+- `.nav-toggle` was declared twice; the second rule is merged into the first.
+  Two rules for one selector also fooled the new guard, which reads the first
+  match — the test found the duplication before a person would have.
+
+### Added — tests
+- The panel must not hang below the bar, must have top padding clearing the
+  toggle, must keep its transition, and `@starting-style`, `allow-discrete`,
+  the toggle's `z-index` and the open-state bar colour must all exist.
+- No page may contain "Programme".
+- Both verified by reverting the change and watching them fail.
+
 ## [0.10.1] - 2026-09-22
 
 ### Fixed
