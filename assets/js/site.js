@@ -49,6 +49,14 @@
       }
     });
 
+    // The menu is a panel hanging off the right of the bar rather than a sheet
+    // covering the page, so a click beside it reads as dismissal.
+    document.addEventListener('click', function (event) {
+      if (toggle.getAttribute('aria-expanded') !== 'true') return;
+      if (event.target.closest('#nav-mobile, #nav-toggle')) return;
+      setOpen(false);
+    });
+
     // Widening past the `lg` breakpoint reveals the desktop nav; leaving the
     // disclosure open would then show both.
     var desktop = window.matchMedia('(min-width: 64em)');

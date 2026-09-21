@@ -18,29 +18,61 @@ doc = Document("index.html")
 # --- Header CTA hover -------------------------------------------------------
 # Bug: `.site-header.is-scrolled .btn--outline-ink { color: var(--ink) }` is more
 # specific than `.btn--outline-ink:hover`, so hovering filled the button with
-# --ink while the label stayed --ink — invisible text. Each header state needs
-# its own hover rule at matching specificity.
-for selector in (r"\.site-header \.btn--outline-ink:hover",
-                 r"\.site-header\.is-scrolled \.btn--outline-ink:hover"):
-    check(re.search(selector, css) is not None,
-          "missing state-specific hover rule %r — the generic .btn--outline-ink:hover "
-          "loses to the header's resting-colour rules and the label goes invisible"
-          % selector.replace("\\", ""))
+# --ink while the label stayed --ink — invisible text. Every header state that
+# sets a resting colour needs its own hover rule at matching specificity, and
+# there are three of them now: over a dark hero, scrolled, and solid (a page
+# with no dark hero to sit over).
+_code = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
 
-scrolled_hover = re.search(
-    r"\.site-header\.is-scrolled \.btn--outline-ink:hover\s*\{([^}]*)\}", css)
-if check(scrolled_hover is not None, "scrolled header hover rule not found"):
-    body = scrolled_hover.group(1)
-    check("background: var(--ink)" in body and "color: var(--cream)" in body,
-          "scrolled header hover must pair an --ink fill with a --cream label; got: %s"
-          % " ".join(body.split()))
+def rule_body(selector):
+    """The declarations of the rule whose selector list contains `selector`."""
+    for m in re.finditer(r"([^{}]+)\{([^}]*)\}", _code):
+        if selector in [x.strip() for x in m.group(1).split(",")]:
+            return m.group(2)
+    return None
 
-hero_hover = re.search(r"\.site-header \.btn--outline-ink:hover\s*\{([^}]*)\}", css)
-if check(hero_hover is not None, "over-hero header hover rule not found"):
-    body = hero_hover.group(1)
-    check("background: var(--cream)" in body and "color: var(--ink)" in body,
-          "over-hero header hover must pair a --cream fill with an --ink label; got: %s"
-          % " ".join(body.split()))
+for selector, fill, label in (
+    (".site-header .btn--outline-ink:hover", "var(--cream)", "var(--ink)"),
+    (".site-header.is-scrolled .btn--outline-ink:hover", "var(--ink)", "var(--cream)"),
+    (".site-header--solid .btn--outline-ink:hover", "var(--ink)", "var(--cream)"),
+):
+    body = rule_body(selector)
+    if check(body is not None,
+             "missing state-specific hover rule %r — the header's resting-colour "
+             "rules outrank the generic .btn--outline-ink:hover, so the label goes "
+             "invisible" % selector):
+        check("background: %s" % fill in body and "color: %s" % label in body,
+              "%s must pair a %s fill with a %s label; got: %s"
+              % (selector, fill, label, " ".join(body.split())))
+
+# The solid state exists so a page that does not open on a dark hero still shows
+# its wordmark: publications.html painted cream on cream until it did.
+for selector in (".site-header--solid",
+                 ".site-header--solid .brand__name",
+                 ".site-header--solid .nav__link",
+                 ".site-header--solid .nav-toggle__bar"):
+    check(rule_body(selector) is not None,
+          "%r has no rule — a page using .site-header--solid would fall back to "
+          "the over-hero treatment and lose that text against a light ground"
+          % selector)
+check('class="site-header site-header--solid"' in read("publications.html"),
+      "publications.html opens on a cream section, so its header must carry "
+      ".site-header--solid or the wordmark is cream on cream")
+
+# --- Mobile disclosure ------------------------------------------------------
+# It is a panel hung off the right of the bar, not a full-bleed sheet, so it
+# needs to be positioned, bounded, right-aligned — and dismissable by a click
+# beside it, which a full-width sheet never needed.
+nav_mobile = rule_body(".nav-mobile")
+if check(nav_mobile is not None, ".nav-mobile rule not found"):
+    for prop in ("position: absolute", "text-align: right", "width: min("):
+        check(prop in nav_mobile,
+              ".nav-mobile is missing %r — it would go back to a full-width sheet"
+              % prop)
+js = read("assets/js/site.js")
+check("#nav-mobile, #nav-toggle" in js,
+      "site.js no longer dismisses the menu on an outside click, which a small "
+      "dropdown needs and a full-width sheet did not")
 
 # --- Markup and stylesheet agree -------------------------------------------
 # 0.4.0 deleted .hero__lede along with the hero paragraph it styled, but
