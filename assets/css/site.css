@@ -590,7 +590,6 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   margin-bottom: 4rem;
 }
 .section-head .eyebrow { margin-bottom: 1.25rem; }
-.section-head__title { max-width: 32rem; }
 
 /* --- Programmes ---------------------------------------------------------- */
 .card-grid {
@@ -600,8 +599,6 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   background: var(--border);
   border: 1px solid var(--border);
 }
-/* The Figma gives the programmes grid the hairline bed but no outer rule. */
-.card-grid--bleed { border: 0; }
 .card {
   background: var(--cream-dark);
   transition: background var(--ease);
@@ -618,31 +615,6 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   background: var(--sage-light);
 }
 .card__body { padding: 1.75rem; }
-.card__meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-.card__region {
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--sage-text);
-}
-.badge {
-  flex: none;
-  padding: 0.15rem 0.6rem;
-  font-size: 0.625rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.badge--active { background: rgb(126 173 160 / 0.15); color: var(--sage-text); }
-.badge--pilot { background: rgb(232 147 106 / 0.15); color: var(--peach-text); }
 .card__title {
   font-family: var(--font-serif);
   font-size: 1.125rem;
@@ -655,18 +627,51 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   line-height: 1.7;
   color: var(--ink-muted);
 }
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1.25rem;
+
+/* --- Programmes ---------------------------------------------------------- */
+/* Long-form now rather than a card grid: seven areas, each a heading and its
+   own prose, with the figures that belong to two of them. */
+.programmes__title { margin-top: 1.25rem; }
+.prog__intro { max-width: 54rem; margin-top: 2.5rem; }
+.progs { margin-top: 4rem; }
+.prog + .prog {
+  margin-top: 3.5rem;
+  padding-top: 3.5rem;
+  border-top: 1px solid var(--border);
 }
-.tag {
-  padding: 0.2rem 0.65rem;
+.prog__title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 2.4vw, 1.875rem);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--ink);
+  margin-bottom: 1.25rem;
+}
+.prog__content { max-width: 54rem; }
+.prog__body {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--ink-light);
+}
+.prog__body + .prog__body { margin-top: 1.25rem; }
+.about__list + .prog__body { margin-top: 1.5rem; }
+.prog__cue { margin-top: 1.5rem; }
+
+.prog__figures {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+.prog__figure { border: 1px solid var(--border); }
+/* The diagram is line art on white, which would otherwise float unbounded on
+   --cream-dark; the rule and the cream plate make its edge deliberate. */
+.prog__diagram {
+  margin: 2.5rem auto 0;
+  max-width: 40rem;
+  padding: 1rem;
+  background: var(--cream);
   border: 1px solid var(--border);
-  font-size: 0.6875rem;
-  letter-spacing: 0.04em;
-  color: var(--ink-muted);
 }
 
 /* --- Members ------------------------------------------------------------- */
@@ -911,6 +916,8 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 }
 
 @media (min-width: 44em) {   /* 704px — two cards still read */
+  .prog__content { padding-left: 1.5rem; }
+  .prog__figures { grid-template-columns: 1fr 1fr; }
   .principles { grid-template-columns: repeat(2, 1fr); }
   .principles .principle:last-child { grid-column: span 2; }
 }

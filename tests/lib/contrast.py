@@ -52,6 +52,7 @@ SOLID = [
     ("card body text on cream",            "ink-muted",  "cream",      AA_NORMAL),
     ("card body text on cream-dark",       "ink-muted",  "cream-dark", AA_NORMAL),
     ("about body text on cream",           "ink-light",  "cream",      AA_NORMAL),
+    ("programme body on cream-dark",      "ink-light",  "cream-dark", AA_NORMAL),
     ("nav links (scrolled) on cream",      "ink-light",  "cream",      AA_NORMAL),
     ("headings on cream",                  "ink",        "cream",      AA_NORMAL),
     ("headings on cream-dark",             "ink",        "cream-dark", AA_NORMAL),

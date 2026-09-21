@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.7.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.8.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -181,6 +181,19 @@ the literal "Tbd copy + GIVE BUTTER LINK", the control renders as a disabled
 placeholder like the other 14, described by the shared visually-hidden note.
 Swap the `<button>` for `<a class="btn btn--primary" href="https://givebutter.com/…">`
 and drop the `aria-describedby` when the campaign page exists.
+
+**Programmes is long-form, not cards.** The Figma gave it four image cards with
+region badges and tags. The supplied copy is seven areas of prose, each with its
+own list, so the cards, their photography and the hairline grid are gone and the
+section reads as text. `.badge`, `.tags`, `.card__meta`, `.card__region` and
+`.card-grid--bleed` went with them; `.card` itself stays, because News still uses
+it. The "All Programmes →" placeholder went too: every area is on the page now,
+so there is nowhere further to send anyone.
+
+**Two figures are placed by name.** The Transparency & Traceability pair and the
+Textile Recovery Infrastructure diagram were requested at specific positions, so
+a `components` assertion holds them there — including the order of the pair,
+which reads left to right.
 
 **Newsletter form.** No subscription endpoint exists. Rather than fake a success
 state, submitting reports plainly that nothing was recorded. Give the `<form>` a
