@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.10.1 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.11.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -148,7 +148,7 @@ scrolls to the top of the page. The 13 that still read as controls (`Full
 Library →`, `All News →`, four `↓ Download` buttons, three social links, three
 policy links, and the pending Givebutter button) render identically but are
 inert `<span>`/`disabled` elements described by a shared visually-hidden note.
-`All Programmes →` and `Apply for Membership` are gone with the sections that
+`All Programs →` and `Apply for Membership` are gone with the sections that
 carried them. The footer list items are rendered as plain text. To wire one up, swap the
 `<span class="ph">` for an `<a href="…">` and drop the `aria-describedby`.
 
@@ -191,12 +191,12 @@ placeholder like the other 14, described by the shared visually-hidden note.
 Swap the `<button>` for `<a class="btn btn--primary" href="https://givebutter.com/…">`
 and drop the `aria-describedby` when the campaign page exists.
 
-**Programmes is long-form, not cards.** The Figma gave it four image cards with
+**Programs is long-form, not cards.** The Figma gave it four image cards with
 region badges and tags. The supplied copy is seven areas of prose, each with its
 own list, so the cards, their photography and the hairline grid are gone and the
 section reads as text. `.badge`, `.tags`, `.card__meta`, `.card__region` and
 `.card-grid--bleed` went with them; `.card` itself stays, because News still uses
-it. The "All Programmes →" placeholder went too: every area is on the page now,
+it. The "All Programs →" placeholder went too: every area is on the page now,
 so there is nowhere further to send anyone.
 
 **Two figures are placed by name.** The Transparency & Traceability pair and the
@@ -271,7 +271,7 @@ None of them change how the page looks at rest.
 
 ### Known non-deviation
 
-The programmes grid shows three cards in the first row and one in the second
+The programs grid shows three cards in the first row and one in the second
 with two empty cells. That is what the design's `auto-fill` track sizing
 produces at this container width, and it has been left alone.
 
@@ -296,10 +296,10 @@ the sizes in the table below and re-exporting as WebP.
 | Slot | File | Size |
 | :-- | :-- | :-- |
 | Hero background (`.hero__media`) | `1711_MEX_HONGHO_GARMENT_02.webp` | 1920×1280 |
-| Programme — EPR Readiness | `programme-epr.webp` | 800×500 |
-| Programme — Recycling Pathways | `programme-recycling.webp` | 800×500 |
-| Programme — Digital Product Passport | `programme-passport.webp` | 800×500 |
-| Programme — Collection Infrastructure | `programme-collection.webp` | 800×500 |
+| Program — EPR Readiness | `program-epr.webp` | 800×500 |
+| Program — Recycling Pathways | `program-recycling.webp` | 800×500 |
+| Program — Digital Product Passport | `program-passport.webp` | 800×500 |
+| Program — Collection Infrastructure | `program-collection.webp` | 800×500 |
 | News — Policy | `news-policy.webp` | 600×400 |
 | News — Partnership | `news-partnership.webp` | 600×400 |
 | News — Event | `news-event.webp` | 600×400 |

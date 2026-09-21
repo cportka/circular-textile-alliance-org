@@ -69,10 +69,35 @@ if check(nav_mobile is not None, ".nav-mobile rule not found"):
         check(prop in nav_mobile,
               ".nav-mobile is missing %r — it would go back to a full-width sheet"
               % prop)
+    # The panel reaches up around the toggle rather than hanging below it, so
+    # its top padding has to clear the icon or the first link lands under it.
+    check("top: 100%" not in nav_mobile,
+          ".nav-mobile hangs below the bar again — it should start at the top so "
+          "the toggle sits inside it")
+    check(re.search(r"padding:\s*[3-9]", nav_mobile),
+          ".nav-mobile needs enough top padding to clear the toggle overlapping it")
+    check("transition:" in nav_mobile,
+          ".nav-mobile lost its open/close transition")
+check("@starting-style" in css,
+      "no @starting-style, so the menu appears without animating in")
+check("allow-discrete" in css,
+      "without transition-behavior: allow-discrete the menu vanishes on close "
+      "instead of animating out")
+check(rule_body(".nav-toggle") and "z-index" in rule_body(".nav-toggle"),
+      ".nav-toggle must be lifted above .nav-mobile or the panel paints over it")
+check(rule_body('.nav-toggle[aria-expanded="true"] .nav-toggle__bar') is not None,
+      "the open toggle needs its own bar colour — the panel is cream, and over "
+      "the hero the header's bars are cream too, so the X would be invisible")
 js = read("assets/js/site.js")
 check("#nav-mobile, #nav-toggle" in js,
       "site.js no longer dismisses the menu on an outside click, which a small "
       "dropdown needs and a full-width sheet did not")
+
+# --- Spelling ---------------------------------------------------------------
+# The Figma used the British "Programmes"; the alliance uses "Programs".
+for page in ("index.html", "publications.html", "404.html"):
+    check("rogramme" not in read(page),
+          "%s still says 'Programme' somewhere" % page)
 
 # --- Markup and stylesheet agree -------------------------------------------
 # 0.4.0 deleted .hero__lede along with the hero paragraph it styled, but
@@ -113,11 +138,11 @@ check(len(re.findall(r"\.board__people\s*\{[^}]*columns:\s*\d", css)) >= 2,
 check(re.search(r"\.board__people li\s*\{[^}]*break-inside:\s*avoid", css),
       "board names must not break across a column boundary")
 
-# --- Programmes -------------------------------------------------------------
+# --- Programs -------------------------------------------------------------
 # The section is long-form prose now, not a card grid, and two of the seven
 # areas carry figures that were asked for by name and position.
 progs = [el for el in doc.elements if el.classes() == ["prog"]]
-check(len(progs) == 7, "expected 7 programme articles, found %d" % len(progs))
+check(len(progs) == 7, "expected 7 program articles, found %d" % len(progs))
 
 src = doc.source
 trans = src.index("Transparency &amp; Traceability")

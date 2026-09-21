@@ -7,7 +7,7 @@ sys.path.insert(0, __file__.rsplit("/", 1)[0])
 from sitecheck import Document, check, report  # noqa: E402
 
 PAGES = ["index.html", "404.html", "publications.html"]
-SECTIONS = ["about", "approach", "programmes", "members", "publications", "news"]
+SECTIONS = ["about", "approach", "programs", "members", "publications", "news"]
 
 for page in PAGES:
     doc = Document(page)
@@ -100,9 +100,9 @@ for phrase in [
 ]:
     check(phrase in text, "design copy missing from the page: %r" % phrase)
 
-# Seven programme areas, four publications and three news items.
+# Seven program areas, four publications and three news items.
 check(len(doc.find("article")) == 14,
-      "expected 14 <article> elements (7 programmes + 4 publications + 3 news), found %d"
+      "expected 14 <article> elements (7 programs + 4 publications + 3 news), found %d"
       % len(doc.find("article")))
 
 report("html structure")
