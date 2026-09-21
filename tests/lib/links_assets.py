@@ -69,13 +69,15 @@ check(exists("assets/fonts/PlayfairDisplay-LICENSE.txt"),
 # --- Placeholders are inert, not fake links -------------------------------
 doc = Document("index.html")
 placeholders = [el for el in doc.elements if "ph" in el.classes()]
-# 2 "All … →" links, 4 publication downloads, 1 membership button, 3 social
-# links, 3 policy links and the pending Givebutter button. The programmes
-# section lost its "All Programmes →" link when it became long-form: every area
-# is now on the page, so there is nowhere further to send anyone.
-check(len(placeholders) == 14,
-      "expected 14 .ph placeholders — the Figma's dead destinations plus the "
-      "pending Givebutter link, found %d" % len(placeholders))
+# 2 "All … →" links, 4 publication downloads, 3 social links, 3 policy links
+# and the pending Givebutter button. Two of the Figma's placeholders have gone
+# with the sections that carried them: "All Programmes →", because every area
+# is now on the page, and "Apply for Membership", because the Members section
+# now describes who can take part rather than offering a form that does not
+# exist.
+check(len(placeholders) == 13,
+      "expected 13 .ph placeholders — the Figma's dead destinations that survive "
+      "plus the pending Givebutter link, found %d" % len(placeholders))
 for el in placeholders:
     check(el.get("href") is None,
           "a .ph placeholder carries an href (%r) — it should be inert" % el.get("href"))

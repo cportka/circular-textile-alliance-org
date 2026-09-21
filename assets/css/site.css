@@ -541,6 +541,7 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   background: var(--peach);
 }
 .about__block .btn { margin-top: 0.5rem; }
+.on-dark .about__list { color: rgb(250 248 243 / 0.85); }
 
 /* Hairline grid: the 1px gap over a border-coloured bed draws the rules. */
 .principles {
@@ -675,46 +676,71 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 }
 
 /* --- Members ------------------------------------------------------------- */
-.members__grid { display: grid; gap: 3rem; }
-.members__title { margin-top: 1.25rem; }
-.members__lede {
-  font-size: 1rem;
-  line-height: 1.8;
-  color: rgb(250 248 243 / 0.7);
-  margin: 1.5rem 0 2.5rem;
+/* Peach carries the headings here, per the supplied reference: 6.21:1 on --ink,
+   so it clears AA for normal text, not only for the large sizes it is used at. */
+.mem__lead { margin-top: 1.25rem; color: var(--peach); }
+.mem__intro { max-width: 54rem; margin-top: 2rem; }
+.mem__block { max-width: 54rem; margin-top: 3.5rem; }
+.mem__head {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 2.4vw, 1.875rem);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--peach);
+  margin-bottom: 1.25rem;
 }
-.tier { border-top: 1px solid rgb(216 208 196 / 0.15); padding-block: 1.75rem; }
-.tier__head {
+.mem__head--cream { color: var(--cream); }
+.mem__body {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: rgb(250 248 243 / 0.85);
+}
+.mem__body + .mem__body { margin-top: 1.25rem; }
+.mem__body--after-list { margin-top: 1.5rem; }
+.mem__who { margin-top: 1.25rem; }
+
+/* --- Board --------------------------------------------------------------- */
+.board { display: grid; gap: 2.5rem; margin-top: 0.5rem; }
+.board__group { border-top: 1px solid rgb(216 208 196 / 0.15); padding-top: 1.5rem; }
+.board__label {
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
-.tier__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
-.tier--founding { color: var(--peach); }
-.tier--strategic { color: var(--sage); }
-/* DEVIATION (contrast): the Figma tints this tier --ink (#1A2B28) on an --ink
-   background — invisible. --sage-light keeps it a distinct third tone. */
-.tier--associate { color: var(--sage-light); }
+.board__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+/* Three distinct tones on ink, all clearing AA: 6.21 / 5.90 / 8.02 to 1. */
+.board__group--exec { color: var(--peach); }
+.board__group--member { color: var(--sage); }
+.board__group--advisory { color: var(--sage-light); }
 
-.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-.chip {
-  padding: 0.35rem 0.875rem;
-  border: 1px solid rgb(216 208 196 / 0.2);
-  font-size: 0.8125rem;
-  color: rgb(250 248 243 / 0.8);
-  transition: border-color var(--ease), color var(--ease);
+/* Columns rather than a grid: names flow down one column and into the next, so
+   a group of seven fills 3/2/2 instead of leaving a ragged final row. */
+.board__people {
+  color: var(--cream);
+  font-size: 1rem;
+  line-height: 1.6;
 }
-.tier .chip:hover { border-color: currentColor; color: var(--cream); }
-.tier__more {
-  border-top: 1px solid rgb(216 208 196 / 0.15);
-  padding-top: 1rem;
-  font-size: 0.8125rem;
-  color: rgb(250 248 243 / 0.55);
+.board__people li { break-inside: avoid; }
+.board__people li + li { margin-top: 0.625rem; }
+
+/* --- Why join ------------------------------------------------------------ */
+.why { display: grid; gap: 2rem; margin-top: 0.5rem; }
+.why__title {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--sage);
+  margin-bottom: 0.5rem;
+}
+.why__body {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: rgb(250 248 243 / 0.85);
 }
 
 /* --- Publications -------------------------------------------------------- */
@@ -918,6 +944,8 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 @media (min-width: 44em) {   /* 704px — two cards still read */
   .prog__content { padding-left: 1.5rem; }
   .prog__figures { grid-template-columns: 1fr 1fr; }
+  .board__people { columns: 2; column-gap: 2.5rem; }
+  .why { grid-template-columns: repeat(2, 1fr); }
   .principles { grid-template-columns: repeat(2, 1fr); }
   .principles .principle:last-child { grid-column: span 2; }
 }
@@ -927,12 +955,11 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 }
 
 @media (min-width: 64em) {   /* 1024px — Tailwind `lg` */
-  .members__grid { grid-template-columns: repeat(12, 1fr); }
+  .board__people { columns: 3; column-gap: 3rem; }
+  .why { grid-template-columns: repeat(3, 1fr); }
   /* Full width now, so the four read as one band rather than a 2x2 block. */
   .principles { grid-template-columns: repeat(3, 1fr); }
   .principles .principle:last-child { grid-column: span 2; }
-  .members__intro { grid-column: span 5; }
-  .members__tiers { grid-column: span 7; }
 
   .hero__inner .h-display { max-width: 68%; }
   .hero__statement-inner { grid-template-columns: repeat(12, 1fr); column-gap: 5rem; }

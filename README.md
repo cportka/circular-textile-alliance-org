@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.8.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.9.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -126,7 +126,7 @@ use for fills, rules and dots, where contrast rules do not apply.
 | Sage label text (`--sage-text`) | `#7EADA0` | `#4A7469` | 2.15:1 | 4.51:1 |
 | *Who We Are* subheads | `#7EADA0` / `#E8936A` | `--sage-text` / `--peach-text` | 2.15:1 / 2.04:1 | 4.51:1 |
 | Primary button label | cream on peach | **ink** on peach (fill unchanged) | 2.25:1 | 6.19:1 |
-| Associate-members tier | `--ink` on `--ink` | `--sage-light` | 1.00:1 | 8.48:1 |
+| Third board group | `--ink` on `--ink` | `--sage-light` | 1.00:1 | 8.02:1 |
 | Footer text alphas | 0.30 / 0.35 / 0.40 / 0.45 | 0.55 / 0.60 | 2.61:1 | ≥ 4.9:1 |
 | Ghost button + input borders | 0.30 / 0.20 alpha | 0.40 alpha | 2.61:1 | 3.42:1 |
 
@@ -136,11 +136,12 @@ invisible. The header now starts light-on-dark and swaps to the design's
 ink-on-cream once scrolled, which is the state the design already specifies.
 
 **Dead links.** The design carries 25 links pointing at `href="#"`, which
-scrolls to the top of the page. The 14 that read as controls (`All Programmes
-→`, `Full Library →`, `All News →`, `Apply for Membership`, four `↓ Download`
-buttons, three social links, three policy links) render identically but are
+scrolls to the top of the page. The 13 that still read as controls (`Full
+Library →`, `All News →`, four `↓ Download` buttons, three social links, three
+policy links, and the pending Givebutter button) render identically but are
 inert `<span>`/`disabled` elements described by a shared visually-hidden note.
-The 20 footer list items are rendered as plain text. To wire one up, swap the
+`All Programmes →` and `Apply for Membership` are gone with the sections that
+carried them. The footer list items are rendered as plain text. To wire one up, swap the
 `<span class="ph">` for an `<a href="…">` and drop the `aria-describedby`.
 
 **Responsive corrections.** The design sets a fixed inline
@@ -194,6 +195,21 @@ so there is nowhere further to send anyone.
 Textile Recovery Infrastructure diagram were requested at specific positions, so
 a `components` assertion holds them there — including the order of the pair,
 which reads left to right.
+
+**Members is the alliance's own copy.** The Figma's member roster — 140+
+organizations in three named tiers, chips, and an "Apply for Membership" button
+that went nowhere — is replaced by who can take part, the current board, why
+join, the partnership philosophy and how to get involved. The section keeps its
+ink ground. Headings are `--peach`, which the reference asks for and which
+measures 6.21:1 on `--ink`, clearing AA for normal text and not only for the
+large sizes it is used at. The board's three group markers keep the design's
+peach / sage / third-tone scheme at 6.21, 5.90 and 8.02 to 1; the reference's
+blue for the third is not in this palette, so `--sage-light` holds that slot as
+it already did.
+
+**Board names use CSS columns, not a grid.** Names flow down one column and into
+the next, so a group of seven fills 3/2/2 rather than leaving a ragged final
+row — which is what the supplied board screenshot shows.
 
 **Newsletter form.** No subscription endpoint exists. Rather than fake a success
 state, submitting reports plainly that nothing was recorded. Give the `<form>` a

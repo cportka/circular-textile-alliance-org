@@ -64,10 +64,15 @@ SOLID = [
     ("hero headline on ink",               "cream",      "ink",        AA_NORMAL),
     ("hero eyebrow on ink",                "sage",       "ink",        AA_NORMAL),
     ("hero accent headline on ink",        "peach",      "ink",        AA_LARGE),
+    ("members headings on ink",            "peach",      "ink",        AA_NORMAL),
+    ("board exec label on ink",            "peach",      "ink",        AA_NORMAL),
+    ("board member label on ink",          "sage",       "ink",        AA_NORMAL),
+    ("board advisory label on ink",        "sage-light", "ink",        AA_NORMAL),
+    ("board names on ink",                 "cream",      "ink",        AA_NORMAL),
+    ("why-join titles on ink",             "sage",       "ink",        AA_NORMAL),
     ("hero subhead on ink",                "sage",       "ink",        AA_NORMAL),
     ("mission/vision titles on ink",       "sage",       "ink",        AA_NORMAL),
     ("mission/vision body on ink",         "cream",      "ink",        AA_NORMAL),
-    ("members tier label on ink",          "sage-light", "ink",        AA_NORMAL),
     ("footer headings on ink-deep",        "cream",      "ink-deep",   AA_NORMAL),
 ]
 
@@ -78,9 +83,7 @@ for label, fg, bg, minimum in SOLID:
 # Translucent text: composite over the known backdrop first.
 ALPHA = [
     ("hero intro copy on ink",       "cream", "ink",      0.75, AA_NORMAL),
-    ("members lede on ink",          "cream", "ink",      0.70, AA_NORMAL),
-    ("member chips on ink",          "cream", "ink",      0.80, AA_NORMAL),
-    ("tier 'more' note on ink",      "cream", "ink",      0.55, AA_NORMAL),
+    ("members body on ink",          "cream", "ink",      0.85, AA_NORMAL),
     ("newsletter note on ink",       "cream", "ink",      0.65, AA_NORMAL),
     ("newsletter placeholder on ink", "cream", "ink",     0.55, AA_NORMAL),
     ("footer blurb on ink-deep",     "cream", "ink-deep", 0.60, AA_NORMAL),
