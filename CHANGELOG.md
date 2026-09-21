@@ -4,6 +4,59 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.9.0] - 2026-09-21
+
+Members becomes the alliance's own copy, keeping its ink ground.
+
+### Changed
+- **The Figma's member roster is replaced.** 140+ organizations in three named
+  tiers, the chips listing them and the "Apply for Membership" button that went
+  nowhere are gone. In their place: who can take part, the current board, why
+  join, the partnership philosophy, and how to get involved.
+- The eyebrow and the footer column are renamed **Membership → Members**.
+- **Headings are `--peach`**, per the supplied reference. That measures 6.21:1
+  on `--ink`, so it clears AA for normal text and not only for the large sizes
+  it is used at — worth stating, because the same peach is a 2.04:1 failure on
+  cream and ships there as `--peach-text` instead.
+- **The board's three group markers keep the design's peach / sage / third-tone
+  scheme** at 6.21, 5.90 and 8.02 to 1. The reference tints the third group
+  blue; there is no blue in this palette, so `--sage-light` holds that slot, as
+  it already did for the associate tier.
+- `.tier*`, `.chips`, `.chip`, `.members__grid`, `.members__lede`,
+  `.members__intro` and `.members__tiers` had no remaining markup and are
+  deleted.
+- `llms.txt` and the README's dead-links deviation updated: two of the Figma's
+  placeholders have now gone with the sections that carried them.
+
+### Added
+- **`.board__people` uses CSS columns rather than a grid.** Names flow down one
+  column and into the next, so the seven-name group fills 3/2/2 instead of
+  leaving a ragged final row — which is what the supplied board screenshot
+  shows. One column on a phone, two from 704px, three from 1024px.
+- `.why` — the five reasons to join, 1-up then 2-up then 3-up.
+- `.on-dark .about__list`, so the participant list reads light on ink while
+  keeping the peach marker introduced in 0.6.0.
+
+### Added — tests
+- Three board groups, each with a colour on its modifier; `columns` declared at
+  more than one breakpoint; `break-inside: avoid` on the names. Verified by
+  deleting the three-column rule and watching the breakpoint assertion fail.
+- Contrast pairs for every new on-ink colour: peach headings, the three group
+  labels, board names, why-join titles, and body copy at 0.85.
+- Placeholder count 14 → 13; the copy assertions follow the new headings.
+
+### Notes
+- **"Jake , CEO Goodwill Bakersfield" has no surname.** Rendered as "Jake, CEO,
+  Goodwill Bakersfield" — the stray space and missing comma fixed — but a board
+  listing with a first name only needs the rest before it is public.
+- "Catherine Compitello, CEO, CEO, Plentiful / …" carried **CEO twice**; it
+  appears once.
+- The supplied text labels the middle board group **"Members"**, while the
+  reference screenshot labels it **"Strategic Members"**. The text wins, so the
+  page reads "Members" — inside a block headed "Current Board Members".
+- The heading is **"A Network for Shared Progress"**: the supplied text says
+  "for", the screenshot says "of".
+
 ## [0.8.0] - 2026-09-21
 
 Programmes stops being a card grid and becomes the alliance's own prose.

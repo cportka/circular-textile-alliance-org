@@ -42,6 +42,25 @@ if check(hero_hover is not None, "over-hero header hover rule not found"):
           "over-hero header hover must pair a --cream fill with an --ink label; got: %s"
           % " ".join(body.split()))
 
+# --- Board ------------------------------------------------------------------
+# The supplied reference shows names flowing down one column and into the next,
+# so a group of seven reads 3/2/2. A grid would place them across and leave a
+# ragged final row, so the column rule is the requirement, not a preference.
+groups = [el for el in doc.elements if "board__group" in el.classes()]
+check(len(groups) == 3, "expected 3 board groups, found %d" % len(groups))
+for mod in ("exec", "member", "advisory"):
+    check(any("board__group--%s" % mod in g.classes() for g in groups),
+          "board group modifier --%s is missing" % mod)
+    check(re.search(r"\.board__group--%s\s*\{[^}]*color:" % mod, css),
+          ".board__group--%s has no colour, so its dot and label inherit" % mod)
+check(len(re.findall(r"\.board__people\s*\{[^}]*\}|\.board__people\s*\{", css)) >= 1,
+      ".board__people rule is missing")
+check(len(re.findall(r"\.board__people\s*\{[^}]*columns:\s*\d", css)) >= 2,
+      "the board list must declare `columns` at more than one breakpoint — that "
+      "flow is what spaces the names horizontally")
+check(re.search(r"\.board__people li\s*\{[^}]*break-inside:\s*avoid", css),
+      "board names must not break across a column boundary")
+
 # --- Programmes -------------------------------------------------------------
 # The section is long-form prose now, not a card grid, and two of the seven
 # areas carry figures that were asked for by name and position.
