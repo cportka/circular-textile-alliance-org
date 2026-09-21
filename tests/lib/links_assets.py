@@ -82,13 +82,14 @@ check(exists("assets/fonts/PlayfairDisplay-LICENSE.txt"),
 # --- Placeholders are inert, not fake links -------------------------------
 doc = Document("index.html")
 placeholders = [el for el in doc.elements if "ph" in el.classes()]
-# 1 "All News →" link, 3 social links, 3 policy links and the pending Givebutter
-# button. The rest of the Figma's dead destinations have gone as their sections
-# got real content: "All Programs →" and "Apply for Membership" with the
-# rewrites, and "Full Library →" plus the four publication downloads now that
-# the library has real entries and its own page.
-check(len(placeholders) == 8,
-      "expected 8 .ph placeholders — the Figma's dead destinations that survive "
+# 1 "All News →" link, 3 social links and the pending Givebutter button. The
+# rest of the Figma's dead destinations have gone as their sections got real
+# content: "All Programs →" and "Apply for Membership" with the rewrites,
+# "Full Library →" and the four publication downloads once the library had real
+# entries and its own page, and the three policy links now that each opens a
+# dialog with real text in it.
+check(len(placeholders) == 5,
+      "expected 5 .ph placeholders — the Figma's dead destinations that survive "
       "plus the pending Givebutter link, found %d" % len(placeholders))
 for el in placeholders:
     check(el.get("href") is None,

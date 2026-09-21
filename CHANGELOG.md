@@ -4,6 +4,50 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.12.0] - 2026-09-22
+
+### Fixed
+- **"Become a Member" lost its bottom border, and sometimes the whole button.**
+  The disclosure panel scrolls, and a scroll container's bottom padding is not
+  part of its scrollable overflow in every engine — so the space below the last
+  item simply was not there and the border was clipped at the panel edge. The
+  closing space is a margin on the last child now, and the panel's top padding
+  drops from `4rem` to `3rem`, which is all the toggle actually needs. The
+  policy dialog scrolls too and is built the same way; an assertion holds both.
+
+### Added
+- **The three footer policies open real dialogs.** Privacy Policy, Terms of Use
+  and Cookie Settings each open a native `<dialog>` through `showModal()` —
+  centred, with a backdrop, focus containment and Escape for free — animated in
+  and out with `@starting-style` and `allow-discrete`, and closable by the
+  button, Escape, or a click on the backdrop. They were inert placeholders.
+  - The text says what is true of this site: no cookies, no storage, no
+    analytics, no third-party requests, a newsletter field wired to nothing.
+    **It has not been reviewed by a lawyer** — it is an accurate technical
+    description, not a vetted legal notice.
+- **A rule under the Givebutter button**, closing *Who We Are* off from *Our
+  Approach*. With the section rhythm tightened in 0.11.0 the gap alone no longer
+  read as a break.
+
+### Changed
+- **The footer drops to two columns.** *About* (Our Mission, Programs,
+  Membership) and *Resources* (Reports & Publications, News, Donate), replacing
+  four columns of twenty-two plain-text items that pointed nowhere. Every entry
+  is a working link now: in-page anchors on the home page, `index.html#…` from
+  the publications page. Two new ids carry them — `#mission` on the hero's
+  mission pillar and `#contribute` on the Givebutter block.
+- The publications page's section bodies hang at `2.5rem` rather than `1.5rem`,
+  so the indent reads as deliberate rather than as a rounding error.
+
+### Added — tests
+- Three dialogs and three buttons per page, each button's `data-policy`
+  resolving to a dialog on that page and carrying `type="button"`; each dialog's
+  `aria-labelledby` resolving; `showModal`, backdrop-click close,
+  `@starting-style` and `allow-discrete` all present.
+- Both scroll containers must keep their closing space off the container's
+  padding. Verified by putting the padding back and watching it fail.
+- Exactly two footer columns per page.
+
 ## [0.11.0] - 2026-09-22
 
 ### Changed

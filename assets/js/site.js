@@ -65,6 +65,26 @@
     else desktop.addListener(onBreakpoint);   // Safari < 14
   }
 
+  /* --- Policy dialogs ----------------------------------------------------
+     <dialog>.showModal() handles centring, the backdrop, focus containment and
+     Escape; the animation is CSS. With JS off the buttons simply do nothing,
+     which is the same as the inert placeholders they replaced. */
+  var openers = document.querySelectorAll('.policy-open');
+  Array.prototype.forEach.call(openers, function (button) {
+    button.addEventListener('click', function () {
+      var dialog = document.getElementById(button.getAttribute('data-policy'));
+      if (dialog && typeof dialog.showModal === 'function') dialog.showModal();
+    });
+  });
+
+  // Clicking the backdrop closes. The backdrop is not a child, so a click on
+  // the dialog element itself but outside .policy__inner is the signal.
+  Array.prototype.forEach.call(document.querySelectorAll('.policy'), function (dialog) {
+    dialog.addEventListener('click', function (event) {
+      if (event.target === dialog) dialog.close();
+    });
+  });
+
   /* --- Newsletter --------------------------------------------------------
      There is no subscription endpoint yet. Claiming success would be a lie and
      letting the form navigate would drop the address on the floor, so the

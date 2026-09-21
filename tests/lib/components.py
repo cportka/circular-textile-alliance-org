@@ -93,6 +93,56 @@ check("#nav-mobile, #nav-toggle" in js,
       "site.js no longer dismisses the menu on an outside click, which a small "
       "dropdown needs and a full-width sheet did not")
 
+# --- Policy dialogs ---------------------------------------------------------
+# Each footer policy opens a real <dialog>; showModal() supplies the centring,
+# backdrop, focus containment and Escape, so only the wiring is ours to check.
+for page in ("index.html", "publications.html"):
+    d = Document(page)
+    ids = d.ids()
+    dialogs = d.find("dialog")
+    openers = [el for el in d.elements if "policy-open" in el.classes()]
+    check(len(dialogs) == 3, "[%s] expected 3 policy dialogs, found %d" % (page, len(dialogs)))
+    check(len(openers) == 3, "[%s] expected 3 policy buttons, found %d" % (page, len(openers)))
+    for el in openers:
+        target = el.get("data-policy")
+        check(target and target in ids,
+              "[%s] a policy button points at %r, which is not on the page" % (page, target))
+        check(el.get("type") == "button",
+              "[%s] a policy button has no type=button and would submit a form" % page)
+    for dlg in dialogs:
+        check((dlg.get("aria-labelledby") or "") in ids,
+              "[%s] a dialog's aria-labelledby does not resolve" % page)
+
+js = read("assets/js/site.js")
+check("showModal" in js, "site.js no longer opens the policy dialogs")
+check("event.target === dialog" in js,
+      "clicking the backdrop no longer closes a policy dialog")
+for token in ("@starting-style", "allow-discrete"):
+    check(token in css, "policy dialogs need %s to animate in and out" % token)
+
+# --- Scroll containers keep their closing space ------------------------------
+# A scroll container's bottom padding is not part of its scrollable overflow in
+# every engine. The disclosure panel lost the bottom border of "Become a Member"
+# to exactly that, so both scrollers put the space on their last child instead.
+nav_rule = rule_body(".nav-mobile") or ""
+check(re.search(r"padding:[^;]*\s0;", nav_rule),
+      ".nav-mobile has bottom padding again — it scrolls, so that space can be "
+      "dropped and clip the last item's border")
+check(rule_body(".nav-mobile > :last-child") is not None,
+      ".nav-mobile needs the closing space as a margin on its last child")
+policy_rule = rule_body(".policy") or ""
+check("overflow-y: auto" in policy_rule,
+      ".policy must scroll — a long policy would otherwise overflow the viewport")
+check(rule_body(".policy__inner") and "2rem 2rem 0" in rule_body(".policy__inner"),
+      ".policy__inner must leave its bottom space to .policy__close's margin, "
+      "for the same reason .nav-mobile does")
+
+# --- Footer -----------------------------------------------------------------
+for page in ("index.html", "publications.html"):
+    d = Document(page)
+    cols = [el for el in d.elements if "footer-col" in el.classes()]
+    check(len(cols) == 2, "[%s] expected 2 footer columns, found %d" % (page, len(cols)))
+
 # --- Spelling ---------------------------------------------------------------
 # The Figma used the British "Programmes"; the alliance uses "Programs".
 for page in ("index.html", "publications.html", "404.html"):

@@ -326,43 +326,17 @@
           <div class="footer-col">
             <h2 class="footer-col__title">About</h2>
             <ul>
-              <li>Our Mission</li>
-              <li>Governance</li>
-              <li>Team</li>
-              <li>Advisory Council</li>
-              <li>Annual Reports</li>
-            </ul>
-          </div>
-          <div class="footer-col">
-            <h2 class="footer-col__title">Programs</h2>
-            <ul>
-              <li>Consumer Education</li>
-              <li>Research &amp; Innovation</li>
-              <li>Industry Collaboration</li>
-              <li>Policy Implementation</li>
-              <li>Manufacturing &amp; Workforce</li>
-              <li>Transparency &amp; Traceability</li>
-              <li>Textile Recovery Infrastructure</li>
+              <li><a href="index.html#mission">Our Mission</a></li>
+              <li><a href="index.html#programs">Programs</a></li>
+              <li><a href="index.html#members">Membership</a></li>
             </ul>
           </div>
           <div class="footer-col">
             <h2 class="footer-col__title">Resources</h2>
             <ul>
-              <li>Publications</li>
-              <li>Policy Briefs</li>
-              <li>Data &amp; Tools</li>
-              <li>Webinars</li>
-              <li>Press Centre</li>
-            </ul>
-          </div>
-          <div class="footer-col">
-            <h2 class="footer-col__title">Members</h2>
-            <ul>
-              <li>Member Benefits</li>
-              <li>Apply Now</li>
-              <li>Member Portal</li>
-              <li>Working Groups</li>
-              <li>Events</li>
+              <li><a href="publications.html">Reports &amp; Publications</a></li>
+              <li><a href="index.html#news">News</a></li>
+              <li><a href="index.html#contribute">Donate</a></li>
             </ul>
           </div>
         </div>
@@ -376,13 +350,102 @@
         © 2025 Circular Textile Alliance. Registered in The Netherlands. RSIN 862·458·201.
       </p>
       <p class="site-footer__policies">
-        <span class="ph" aria-describedby="ph-note" title="Coming soon">Privacy Policy</span>
-        <span class="ph" aria-describedby="ph-note" title="Coming soon">Terms of Use</span>
-        <span class="ph" aria-describedby="ph-note" title="Coming soon">Cookie Settings</span>
+        <button class="policy-open" type="button" data-policy="policy-privacy">Privacy Policy</button>
+        <button class="policy-open" type="button" data-policy="policy-terms">Terms of Use</button>
+        <button class="policy-open" type="button" data-policy="policy-cookies">Cookie Settings</button>
       </p>
     </div>
   </div>
 </footer>
+
+<!-- Policy dialogs -->
+<dialog class="policy" id="policy-privacy" aria-labelledby="policy-privacy-title">
+  <div class="policy__inner">
+    <h2 class="policy__title" id="policy-privacy-title">Privacy Policy</h2>
+    <div class="policy__body">
+      <p>
+        This site collects nothing about you. There is no analytics, no tracking,
+        no advertising, no session recording and no fingerprinting. Nothing you
+        do here is logged, stored or profiled by us.
+      </p>
+      <p>
+        Every file the page loads — the stylesheet, the script, the typefaces and
+        the photography — is served from this site's own domain. No request is
+        made to any third party, so no third party learns that you visited.
+      </p>
+      <p>
+        The site is published with GitHub Pages, which like any web host receives
+        the requests your browser makes and may keep its own server logs. That is
+        outside our control and we have no access to them.
+      </p>
+      <p>
+        The newsletter field is not connected to anything: submitting it reports
+        that nothing was recorded, because nothing was. Links to other
+        organisations' sites are ordinary links — once you follow one, that site's
+        own policies apply.
+      </p>
+    </div>
+    <form method="dialog">
+      <button class="btn btn--primary policy__close" type="submit">Close</button>
+    </form>
+  </div>
+</dialog>
+
+<dialog class="policy" id="policy-terms" aria-labelledby="policy-terms-title">
+  <div class="policy__inner">
+    <h2 class="policy__title" id="policy-terms-title">Terms of Use</h2>
+    <div class="policy__body">
+      <p>
+        This site is published for information. It describes the alliance, its
+        programs and its work, and points to publications held elsewhere.
+      </p>
+      <p>
+        The content is provided as it is, without warranty. We try to keep it
+        accurate and current, but it may be incomplete or out of date, and it is
+        not professional, legal or regulatory advice. Decisions you take on the
+        basis of it are your own.
+      </p>
+      <p>
+        Links to other organisations' publications are provided because they are
+        useful. We do not control those sites and linking to one is not an
+        endorsement of everything on it.
+      </p>
+      <p>
+        The alliance's own text and images remain its property. Quote and link to
+        them freely with attribution; ask before republishing them wholesale.
+      </p>
+    </div>
+    <form method="dialog">
+      <button class="btn btn--primary policy__close" type="submit">Close</button>
+    </form>
+  </div>
+</dialog>
+
+<dialog class="policy" id="policy-cookies" aria-labelledby="policy-cookies-title">
+  <div class="policy__inner">
+    <h2 class="policy__title" id="policy-cookies-title">Cookie Settings</h2>
+    <div class="policy__body">
+      <p>
+        There is nothing to set. This site uses no cookies at all — not for
+        analytics, not for advertising, not for preferences, not even the
+        &ldquo;strictly necessary&rdquo; kind.
+      </p>
+      <p>
+        It also writes nothing to local storage or session storage, and registers
+        no service worker. Close the tab and no trace of your visit remains on
+        your device beyond your browser's ordinary cache.
+      </p>
+      <p>
+        That is why you have never seen a cookie banner here. There is no consent
+        to give, because nothing is being asked of you.
+      </p>
+    </div>
+    <form method="dialog">
+      <button class="btn btn--primary policy__close" type="submit">Close</button>
+    </form>
+  </div>
+</dialog>
+
 
 <script src="assets/js/site.js" defer></script>
 </body>
