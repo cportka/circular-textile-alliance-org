@@ -8,11 +8,16 @@ import sys
 sys.path.insert(0, __file__.rsplit("/", 1)[0])
 from sitecheck import ROOT, Document, check, exists, read, report  # noqa: E402
 
-# The site is fully same-origin: photography is the alliance's own, fonts are
-# self-hosted. Nothing here should ever contact a third party again.
+# The site fetches nothing from a third party: photography is the alliance's own,
+# fonts are self-hosted. That is about *subresources* — src attributes and <link>
+# hrefs, which the browser requests on load and which the CSP governs. An <a
+# href> to another site is navigation: it contacts nobody until someone clicks
+# it, and the publications are external resources by nature. The two were
+# conflated in one check until the library got real links.
 ALLOWED_REMOTE_HOSTS = set()
+outbound = set()
 
-for page in ["index.html", "404.html"]:
+for page in ["index.html", "404.html", "publications.html"]:
     doc = Document(page)
     tag = "[%s]" % page
     ids = doc.ids()
@@ -35,17 +40,25 @@ for page in ["index.html", "404.html"]:
             check(href[1:] in ids, "%s in-page link %s has no matching id" % (tag, href))
 
     for el in doc.elements:
-        for attr in ("href", "src"):
-            val = el.get(attr) or ""
+        # Subresources: fetched on load, governed by the CSP.
+        fetched = [el.get("src") or ""]
+        if el.tag in ("link", "script"):
+            fetched.append(el.get("href") or "")
+        for val in fetched:
             m = re.match(r"^https?://([^/]+)", val)
-            if m:
-                host = m.group(1)
-                if host.endswith("cportka.github.io") or host == "schema.org":
-                    continue
-                check(host in ALLOWED_REMOTE_HOSTS,
-                      "%s contacts third-party host %s — the site is meant to be fully "
-                      "same-origin; add it to the CSP and ALLOWED_REMOTE_HOSTS only "
-                      "deliberately" % (tag, host))
+            if m and not m.group(1).endswith("cportka.github.io"):
+                check(m.group(1) in ALLOWED_REMOTE_HOSTS,
+                      "%s fetches a subresource from third-party host %s — the site is "
+                      "meant to be fully same-origin; add it to the CSP and "
+                      "ALLOWED_REMOTE_HOSTS only deliberately" % (tag, m.group(1)))
+        # Navigation: allowed to leave, but never over plain http.
+        if el.tag == "a":
+            href = el.get("href") or ""
+            m = re.match(r"^(https?)://([^/]+)", href)
+            if m and not m.group(2).endswith("cportka.github.io"):
+                check(m.group(1) == "https",
+                      "%s links out to %s over plain http" % (tag, m.group(2)))
+                outbound.add(m.group(2))
 
 # --- Stylesheet url() references ------------------------------------------
 css = read("assets/css/site.css")
@@ -69,14 +82,13 @@ check(exists("assets/fonts/PlayfairDisplay-LICENSE.txt"),
 # --- Placeholders are inert, not fake links -------------------------------
 doc = Document("index.html")
 placeholders = [el for el in doc.elements if "ph" in el.classes()]
-# 2 "All … →" links, 4 publication downloads, 3 social links, 3 policy links
-# and the pending Givebutter button. Two of the Figma's placeholders have gone
-# with the sections that carried them: "All Programmes →", because every area
-# is now on the page, and "Apply for Membership", because the Members section
-# now describes who can take part rather than offering a form that does not
-# exist.
-check(len(placeholders) == 13,
-      "expected 13 .ph placeholders — the Figma's dead destinations that survive "
+# 1 "All News →" link, 3 social links, 3 policy links and the pending Givebutter
+# button. The rest of the Figma's dead destinations have gone as their sections
+# got real content: "All Programmes →" and "Apply for Membership" with the
+# rewrites, and "Full Library →" plus the four publication downloads now that
+# the library has real entries and its own page.
+check(len(placeholders) == 8,
+      "expected 8 .ph placeholders — the Figma's dead destinations that survive "
       "plus the pending Givebutter link, found %d" % len(placeholders))
 for el in placeholders:
     check(el.get("href") is None,
@@ -117,5 +129,9 @@ check(all(f.endswith(".webp") for f in on_disk_photos),
 for required in [".nojekyll", "robots.txt", "sitemap.xml", "404.html", "site.webmanifest",
                  "llms.txt", "index.html"]:
     check(exists(required), "%s is missing from the repository root" % required)
+
+if outbound:
+    print("  note: links out to %d host(s): %s"
+          % (len(outbound), ", ".join(sorted(outbound))))
 
 report("links and assets")

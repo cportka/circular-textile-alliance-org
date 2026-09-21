@@ -104,4 +104,34 @@ check((notfound.meta(name="robots") or "").find("noindex") >= 0,
 hosts = set(re.findall(r"https://([a-z0-9.-]+)/circular-textile-alliance-org", doc.source))
 check(len(hosts) <= 1, "metadata references more than one host: %s" % sorted(hosts))
 
+# --- publications.html ------------------------------------------------------
+pubs = Document("publications.html")
+ptitle = pubs.first("title").text.strip()
+check(10 <= len(ptitle) <= 65,
+      "[publications.html] <title> is %d chars; aim for 10-65" % len(ptitle))
+check(ptitle != title, "[publications.html] reuses the home page's <title>")
+
+pdesc = pubs.meta(name="description")
+check(pdesc is not None, "[publications.html] meta description missing")
+if pdesc:
+    check(70 <= len(pdesc) <= 320,
+          "[publications.html] meta description is %d chars; aim for 70-320" % len(pdesc))
+    check(pdesc != description,
+          "[publications.html] reuses the home page's meta description")
+
+canonical = pubs.first("link", rel="canonical")
+check(canonical is not None and canonical.get("href") == SITE + "publications.html",
+      "[publications.html] canonical does not point at itself: %r"
+      % (canonical and canonical.get("href")))
+for prop, want in (("og:url", SITE + "publications.html"),):
+    check(pubs.meta(prop=prop) == want,
+          "[publications.html] %s is %r, expected %r" % (prop, pubs.meta(prop=prop), want))
+for prop in ("og:type", "og:title", "og:description", "og:image"):
+    check(pubs.meta(prop=prop), "[publications.html] %s missing" % prop)
+
+check(SITE + "publications.html" in read("sitemap.xml"),
+      "publications.html is not listed in sitemap.xml")
+check("publications.html" in read("llms.txt"),
+      "publications.html is not mentioned in llms.txt")
+
 report("seo metadata")

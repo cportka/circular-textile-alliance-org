@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.9.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.10.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -14,7 +14,8 @@ it and you are looking at production.
 ## Layout of the repository
 
 ```
-index.html                 the entire site — one page, eight sections
+index.html                 the home page — eight sections
+publications.html          Reports & Publications — the full library
 404.html                   styled not-found page
 assets/
   css/site.css             every style, including the @font-face block
@@ -63,7 +64,7 @@ pull request) and as the gate in front of every deploy. Seven suites live in
 | `links-assets` | every local `href`/`src` and every `url()` in the CSS resolves to a real file, every `#anchor` has a target, no `href="#"` survives, shipped fonts and referenced fonts agree, licences present. A photo **referenced but missing** fails; a photo **committed but unreferenced** is a library shot, so it only reports its weight in the published artifact |
 | `accessibility` | alt attributes, labelled form controls, named buttons, ARIA references that point at real ids, disclosure state, unique nav labels, skip link, live region, decorative layers hidden, reduced-motion and focus styling |
 | `contrast` | every text/background pair in the design measured against WCAG AA, translucent colours composited first, control boundaries against 1.4.11's 3:1, plus a regression guard on the three retuned tokens |
-| `components` | guards for UI bugs that shipped once: the header CTA's hover rules exist per header state (a specificity trap made the label invisible), the newsletter field is isolated from its status message, the status row reserves its height, and the logo keeps its dash-gap interlock and gradients — with `favicon.svg`'s geometry pinned to `logo.svg`'s. Also that the hero's statement band stays off the photograph, which is what makes its measured contrast the rendered contrast |
+| `components` | **every class in the markup has a rule in `site.css`** — a deletion that orphans a class is how the 404 lede lost its type in 0.4.0. Plus guards for UI bugs that shipped once: the header CTA's hover rules exist per header state (a specificity trap made the label invisible), the newsletter field is isolated from its status message, the status row reserves its height, and the logo keeps its dash-gap interlock and gradients — with `favicon.svg`'s geometry pinned to `logo.svg`'s. Also that the hero's statement band stays off the photograph, which is what makes its measured contrast the rendered contrast |
 | `workflows` | both workflows still trigger where they should, keep their `workflow_dispatch` escape hatch, hold the Pages permissions and concurrency group, **validate before uploading the artifact**, and pin non-deprecated action versions |
 | `seo-metadata` | title/description lengths, canonical, full Open Graph and Twitter sets, manifest and its icons, JSON-LD parses and carries `Organization` + `WebSite`, robots/sitemap/llms.txt agree on one host, `404` is `noindex`, security.txt valid |
 
@@ -210,6 +211,19 @@ it already did.
 **Board names use CSS columns, not a grid.** Names flow down one column and into
 the next, so a group of seven fills 3/2/2 rather than leaving a ragged final
 row — which is what the supplied board screenshot shows.
+
+**Publications are external, and links out are not subresources.** The four
+entries in the library point at calpsc.org, anthesisgroup.com,
+leginfo.legislature.ca.gov and europarl.europa.eu. That does not weaken the
+same-origin claim: the site still *fetches* nothing from a third party. The
+`links-assets` suite used to treat every `href` and `src` alike, so it read an
+outbound link as a third-party request; it now separates the two — subresources
+(`src`, and `href` on `<link>`/`<script>`) must be same-origin, while `<a href>`
+may leave, must be https, and is reported.
+
+With no descriptions, years or page counts supplied, each row's left rail names
+the **host** instead. That is derived from the link rather than invented, and it
+tells a reader the link leaves the site.
 
 **Newsletter form.** No subscription endpoint exists. Rather than fake a success
 state, submitting reports plainly that nothing was recorded. Give the `<form>` a

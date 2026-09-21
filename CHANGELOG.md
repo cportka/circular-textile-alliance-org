@@ -4,6 +4,54 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.10.0] - 2026-09-21
+
+### Added
+- **`publications.html` — a dedicated Reports & Publications page.** Same header
+  and footer as the home page, its own title, description, canonical and Open
+  Graph metadata, and its own entry in `sitemap.xml` and `llms.txt`. It carries
+  "Knowledge for a Changing Textile Economy", the five kinds of publication CTA
+  may produce, the approach to knowledge, and the full library.
+- **`Full Library →` is a real link now**, not a placeholder.
+- The four supplied publications, on both pages: LA Recovered Textile Hub, SB
+  707 Explained, SB-707 Responsible Textile Recovery Act of 2024, and the EU
+  Digital Product Passport study. The home page shows the same four the library
+  does, since four is the whole list for now.
+
+### Fixed
+- **Jake Slayton's surname**, missing from the board listing.
+- **404.html's lede lost its type in 0.4.0.** Deleting the hero's lede paragraph
+  took `.hero__lede` with it, but `404.html` still carried the class, and
+  `.notfound__lede` only set a width and a margin. The size, line height and
+  0.65 alpha are restored on `.notfound__lede` itself and the dead class is off
+  the markup.
+- **`links-assets` read an outbound link as a third-party request.** It checked
+  every `href` and `src` against one allowlist, so a link to a publication's
+  source looked identical to loading a script from it. Subresources — `src`, and
+  `href` on `<link>`/`<script>` — must still be same-origin; `<a href>` may
+  leave, must be https, and the hosts are reported.
+
+### Changed
+- Publication rows drop the type badge, year, description and page count: none
+  were supplied, and none should be invented. The left rail names the **host**
+  instead, which is derived from the link and tells a reader it leaves the site.
+  `.pub__type`, `.pub__year`, `.pub__desc` and `.pub__pages` are deleted; they
+  can come back when there are CTA publications with that metadata.
+- Publication titles are links; each row's action link carries an `aria-label`
+  naming the publication and its host, so it is not announced as a bare "Read".
+- Placeholder count 13 → 8.
+
+### Added — tests
+- **Every class in the markup must have a rule in `site.css`.** This is the
+  check that would have caught the 404 regression above: every existing check
+  looked for CSS that nothing uses, and none looked for markup that nothing
+  styles. Verified by re-breaking 404.html exactly as 0.4.0 did and watching it
+  fail.
+- `publications.html` joins the structure, links, accessibility and SEO suites —
+  the last asserting it does not reuse the home page's title or description, and
+  that it is registered in `sitemap.xml` and `llms.txt`.
+- The outbound `↗` glyph joins the decorative glyphs that must be `aria-hidden`.
+
 ## [0.9.0] - 2026-09-21
 
 Members becomes the alliance's own copy, keeping its ink ground.

@@ -42,6 +42,26 @@ if check(hero_hover is not None, "over-hero header hover rule not found"):
           "over-hero header hover must pair a --cream fill with an --ink label; got: %s"
           % " ".join(body.split()))
 
+# --- Markup and stylesheet agree -------------------------------------------
+# 0.4.0 deleted .hero__lede along with the hero paragraph it styled, but
+# 404.html still carried the class on its lede — which silently lost its type
+# size, line height and colour. Nothing caught it, because every check looked
+# the other way: CSS that nothing uses. This looks for markup that nothing
+# styles.
+STRUCTURAL = {
+    # Applied by assets/js/site.js, so it never appears in the markup.
+    "is-scrolled",
+}
+code = re.sub(r"/\*.*?\*/", "", css, flags=re.S)   # a name in a comment is not a rule
+used = set()
+for page in ("index.html", "404.html", "publications.html"):
+    for attr in re.findall(r'class="([^"]+)"', read(page)):
+        used.update(attr.split())
+for name in sorted(used - STRUCTURAL):
+    check(re.search(r"\.%s\b" % re.escape(name), code) is not None,
+          "class %r is used in the markup but has no rule in site.css — either it "
+          "lost its styling to a deletion, or it should come out of the markup" % name)
+
 # --- Board ------------------------------------------------------------------
 # The supplied reference shows names flowing down one column and into the next,
 # so a group of seven reads 3/2/2. A grid would place them across and leave a

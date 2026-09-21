@@ -9,6 +9,23 @@ from sitecheck import Document, check, report  # noqa: E402
 doc = Document("index.html")
 ids = doc.ids()
 
+# The publications page shares the header and footer, so the landmark and
+# link-text checks below run against it too where they are page-general.
+pubs = Document("publications.html")
+for img in pubs.find("img"):
+    check(img.get("alt") is not None,
+          "[publications.html] <img src=%r> has no alt attribute" % (img.get("src") or ""))
+for el in pubs.elements:
+    for attr in ("aria-labelledby", "aria-describedby", "aria-controls"):
+        val = el.get(attr)
+        if val:
+            for token in val.split():
+                check(token in pubs.ids(),
+                      "[publications.html] %s=%r targets a missing id" % (attr, token))
+for a in pubs.find("a"):
+    label = (a.get("aria-label") or a.text or "").strip()
+    check(bool(label), "[publications.html] a link has no accessible name: %r" % a.attrs)
+
 # Images: alt is mandatory. The brand mark is decorative beside its wordmark and
 # carries alt="" on purpose; the documentary photographs each describe what is
 # pictured, without restating the heading beside them.
@@ -86,7 +103,7 @@ for el in doc.elements:
 
 # Arrow glyphs are decoration next to real words; they should not be announced.
 for el in doc.elements:
-    if el.text.strip() in ("→", "↓") and el.tag == "span":
+    if el.text.strip() in ("→", "↓", "↗") and el.tag == "span":
         check(el.get("aria-hidden") == "true",
               "decorative %r glyph is not aria-hidden" % el.text.strip())
 
