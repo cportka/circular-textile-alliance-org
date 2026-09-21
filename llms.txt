@@ -1,12 +1,19 @@
 # Circular Textile Alliance
 
-> An independent, non-profit industry alliance founded in 2019, convening brands,
-> manufacturers, recyclers, sorters, technology providers, NGOs and
-> intergovernmental bodies to accelerate the transition to a fully circular
-> textile economy by 2035. Registered in The Netherlands.
+> Circular Textile Alliance (CTA) is an independent nonprofit organization
+> working to strengthen the textile economy through education, research,
+> collaboration, and practical implementation. Founded in 2019, registered in
+> The Netherlands.
 
-At a glance: 140+ member organizations, 38 countries represented, 2.4M tonnes of
-textile waste diverted, 12 active programmes.
+**Mission.** To bridge the gap between people and the textile industry by
+advancing solutions through education, collaboration, research, and practical
+implementation that strengthen a transparent, resilient, and circular textile
+economy.
+
+**Vision.** A future where every textile is valued as a resource, every
+participant understands their role in the system, and innovation, transparency,
+and responsible production create lasting economic, environmental, and social
+value.
 
 ## What the Alliance does
 

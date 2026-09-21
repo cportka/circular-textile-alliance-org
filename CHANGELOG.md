@@ -4,6 +4,50 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.4.0] - 2026-09-21
+
+The alliance's own copy replaces the design's placeholder text, and the hero
+reduces to photograph and headline.
+
+### Removed
+- **The hero's lede paragraph, its two buttons and the stats bar.** The four
+  figures (140+ member organizations, 38 countries, 2.4M t diverted, 12 active
+  programmes) were the Figma's placeholders, not the alliance's numbers. The
+  hero is now the photograph, the eyebrow and the headline — it already had
+  `min-height: 100svh` with its content bottom-aligned, so it keeps its full
+  presence with the new image showing rather than collapsing.
+- The CSS for every removed element, including the two breakpoint rules that
+  existed only to keep the stats bar from overflowing a phone.
+
+### Changed
+- **About now carries the alliance's real positioning.** "A Coalition Built on
+  Shared Purpose" and the 2019 founding blurb are replaced by "Building a
+  stronger, more resilient textile economy" and four paragraphs on what CTA is
+  and why the textile system needs bridging.
+- **Our Mission and Our Vision are stated on the page**, in a new
+  `.about__pillars` column, rather than being a button pointing elsewhere. A
+  sage rule marks them as statements of intent without adding a surface colour;
+  both use existing tokens, so the contrast suite already covers them.
+- About's grid re-proportions to suit the longer copy: intro 7 columns,
+  mission/vision 5, and the four principles become a full-width four-up band
+  beneath rather than a 2x2 block in a 7-column well.
+- **Metadata rewritten to match.** The meta description, `og:description`,
+  `twitter:description`, the JSON-LD `description` and `llms.txt` all quoted
+  copy that no longer exists — the hero lede verbatim, and the stats figures.
+  `llms.txt` now carries the mission and vision in place of its "At a glance"
+  line, whose four figures were about to exist nowhere else on the site.
+
+### Fixed
+- The "Explore our programmes" link is now `justify-self: start`. As a direct
+  grid item an `inline-flex` link is blockified and stretches to the column, and
+  its underline rule stretches with it.
+
+### Changed — tests
+- The copy assertions follow the new headings, and now also pin "Our Mission"
+  and "Our Vision".
+- The two contrast pairs for the hero lede and the stat labels are dropped with
+  the elements they measured.
+
 ## [0.3.3] - 2026-09-20
 
 ### Removed
