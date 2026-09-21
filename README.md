@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.5.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.6.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -14,7 +14,7 @@ it and you are looking at production.
 ## Layout of the repository
 
 ```
-index.html                 the entire site — one page, seven sections
+index.html                 the entire site — one page, eight sections
 404.html                   styled not-found page
 assets/
   css/site.css             every style, including the @font-face block
@@ -124,6 +124,7 @@ use for fills, rules and dots, where contrast rules do not apply.
 | Muted body text (`--ink-muted`) | `#6B7E7A` | `#5F6F6C` | 3.68:1 | 4.53:1 |
 | Peach label text (`--peach-text`) | `#E8936A` | `#B34D1C` | 2.04:1 | 4.51:1 |
 | Sage label text (`--sage-text`) | `#7EADA0` | `#4A7469` | 2.15:1 | 4.51:1 |
+| *Who We Are* subheads | `#7EADA0` / `#E8936A` | `--sage-text` / `--peach-text` | 2.15:1 / 2.04:1 | 4.51:1 |
 | Primary button label | cream on peach | **ink** on peach (fill unchanged) | 2.25:1 | 6.19:1 |
 | Associate-members tier | `--ink` on `--ink` | `--sage-light` | 1.00:1 | 8.48:1 |
 | Footer text alphas | 0.30 / 0.35 / 0.40 / 0.45 | 0.55 / 0.60 | 2.61:1 | ≥ 4.9:1 |
@@ -168,6 +169,18 @@ brightest areas the same text falls to **2.96:1** — a WCAG failure that no
 static colour check would catch, because the colours themselves are fine. Keeping
 the copy off the image is what makes the measured pairs the rendered pairs, and
 the `components` suite fails if the two bands are merged again.
+
+**Founding year.** The Figma placed the alliance's founding in 2019. The
+supplied *Who We Are* copy says **2025**, so 2025 is what the page, the JSON-LD
+`foundingDate`, the hero eyebrow and `llms.txt` all now say — a date stated in
+four places cannot disagree with itself.
+
+**The Givebutter button is inert.** *Contribute To Our Mission & Work* has a
+heading and a control but no copy and no destination yet. Rather than publish
+the literal "Tbd copy + GIVE BUTTER LINK", the control renders as a disabled
+placeholder like the other 14, described by the shared visually-hidden note.
+Swap the `<button>` for `<a class="btn btn--primary" href="https://givebutter.com/…">`
+and drop the `aria-describedby` when the campaign page exists.
 
 **Newsletter form.** No subscription endpoint exists. Rather than fake a success
 state, submitting reports plainly that nothing was recorded. Give the `<form>` a

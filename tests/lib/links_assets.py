@@ -71,10 +71,11 @@ doc = Document("index.html")
 placeholders = [el for el in doc.elements if "ph" in el.classes()]
 # 3 "All … →" links, 4 publication downloads, 1 membership button, 3 social
 # links and 3 policy links — every href="#" the Figma export carried, minus the
-# 20 footer list items, which are rendered as plain text rather than controls.
-check(len(placeholders) == 14,
-      "expected 14 .ph placeholders matching the Figma's dead destinations, found %d"
-      % len(placeholders))
+# 20 footer list items, which are rendered as plain text rather than controls —
+# plus the Givebutter donate button, whose campaign page does not exist yet.
+check(len(placeholders) == 15,
+      "expected 15 .ph placeholders matching the Figma's dead destinations plus "
+      "the pending Givebutter link, found %d" % len(placeholders))
 for el in placeholders:
     check(el.get("href") is None,
           "a .ph placeholder carries an href (%r) — it should be inert" % el.get("href"))

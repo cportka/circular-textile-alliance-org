@@ -4,6 +4,48 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.6.0] - 2026-09-21
+
+### Added
+- **A *Who We Are* section**, between the hero's statement band and the
+  approach section: "A Coalition Built on *Shared Purpose*", the founding
+  paragraph, *What We Do* with the six roles CTA serves, and *Contribute To Our
+  Mission & Work*.
+- `.about__list` — the six roles as a real `<ul>`. The reset sets
+  `list-style: none`, so the marker is drawn as a peach dot that matches the
+  eyebrow rule rather than reverting the reset for a browser bullet.
+
+### Changed
+- **The approach section is now `#approach`, and `#about` belongs to *Who We
+  Are*.** The nav's "About" link therefore lands on the alliance's description
+  rather than on its four principles, which is what it had been doing since the
+  copy moved into the hero.
+- Its eyebrow changes from "What We Do" to "Our Approach" — *Who We Are* now
+  has a *What We Do* heading of its own, and two of them on one page reads as a
+  mistake.
+- **The founding year is 2025, everywhere.** The Figma said 2019 and so did the
+  JSON-LD `foundingDate`, the hero eyebrow and `llms.txt`. The supplied copy
+  says 2025, and the hero cannot read "Est. 2019" directly above a paragraph
+  reading "Founded in 2025".
+
+### Notes
+- **The subheads deviate from the reference's colours, deliberately.** It
+  renders *What We Do* and *Contribute To Our Mission & Work* in the undarkened
+  brand values — 2.15:1 and 2.04:1 on cream, failures at any size. They ship as
+  `--sage-text` and `--peach-text`, same hue, 4.51:1, consistent with the three
+  tokens already retuned in 0.1.0.
+- ***Contribute* has no copy and no link yet.** "Tbd copy + GIVE BUTTER LINK"
+  is not something to publish, so the section renders its heading and an inert
+  Givebutter button described by the shared placeholder note. The markup
+  carries a comment saying exactly what to swap when the campaign page exists.
+- "An educational resource" is the first list item rather than trailing the
+  "CTA serves as:" sentence, where the supplied copy had left it. The six read
+  as one parallel list.
+
+### Changed — tests
+- `SECTIONS` gains `approach`; the copy assertions gain the new headings.
+- The placeholder count moves 14 → 15 for the pending Givebutter control.
+
 ## [0.5.0] - 2026-09-21
 
 0.4.0 put the new copy in the About section. It belongs in the dark band under
