@@ -135,44 +135,38 @@
 <!-- Hero                                                                   -->
 <!-- ====================================================================== -->
 <section class="hero on-dark" id="top">
-  <div class="hero__media" role="presentation"></div>
-  <div class="hero__scrim" role="presentation"></div>
-  <div class="hero__ring hero__ring--lg" role="presentation"></div>
-  <div class="hero__ring hero__ring--sm" role="presentation"></div>
+  <!-- The photograph is confined to this first screen. The statement below it
+       sits on flat ink, so its copy never lands on a bright patch of the
+       image — the contrast suite measures those pairs against --ink. -->
+  <div class="hero__stage">
+    <div class="hero__media" role="presentation"></div>
+    <div class="hero__scrim" role="presentation"></div>
+    <div class="hero__ring hero__ring--lg" role="presentation"></div>
+    <div class="hero__ring hero__ring--sm" role="presentation"></div>
 
-  <div class="wrap hero__inner">
-    <p class="eyebrow eyebrow--sage">Global Industry Alliance · Est.&nbsp;2019</p>
-
-    <div class="hero__grid">
-      <div class="hero__headline">
-        <h1 class="h-display">
-          Closing the Loop on<br>
-          <span class="accent">Textile&nbsp;Waste</span>
-        </h1>
-      </div>
+    <div class="wrap hero__inner">
+      <p class="eyebrow eyebrow--sage">Global Industry Alliance · Est.&nbsp;2019</p>
+      <h1 class="h-display">
+        Closing the Loop on<br>
+        <span class="accent">Textile&nbsp;Waste</span>
+      </h1>
     </div>
   </div>
-</section>
 
-<!-- ====================================================================== -->
-<!-- About                                                                  -->
-<!-- ====================================================================== -->
-<section class="section section--cream" id="about" aria-labelledby="about-title">
-  <div class="wrap">
-    <p class="eyebrow eyebrow--peach about__head">Who We Are</p>
+  <div class="hero__statement">
+    <div class="wrap hero__statement-inner">
 
-    <div class="about__grid">
-      <div class="about__intro">
-        <h2 class="h-section" id="about-title">
+      <div class="hero__intro">
+        <h2 class="hero__subhead">
           Building a stronger, more resilient textile economy
         </h2>
 
-        <p class="about__lede about__lede--first">
+        <p class="hero__body">
           Circular Textile Alliance (CTA) is an independent nonprofit
           organization working to strengthen the textile economy through
           education, research, collaboration, and practical implementation.
         </p>
-        <p class="about__lede">
+        <p class="hero__body">
           Textiles touch every person, every community, and every economy. Yet
           the textile system is complex. Every product reflects decisions about
           materials, manufacturing, labor, transportation, retail, consumer use,
@@ -180,11 +174,11 @@
           only a small part of that system, while the people and organizations
           within the industry experience its complexity every day.
         </p>
-        <p class="about__lede">
+        <p class="hero__body">
           CTA exists to help bridge the gap between people and the textile
           industry.
         </p>
-        <p class="about__lede">
+        <p class="hero__body">
           We bring together consumers, manufacturers, brands, retailers,
           researchers, educators, policymakers, nonprofit organizations,
           innovators, and other stakeholders to improve understanding,
@@ -192,7 +186,7 @@
         </p>
       </div>
 
-      <div class="about__pillars">
+      <div class="hero__pillars">
         <div class="pillar">
           <h3 class="pillar__title">Our Mission</h3>
           <p class="pillar__body">
@@ -211,49 +205,57 @@
             environmental, and social value.
           </p>
         </div>
-
-        <a class="link-rule about__cta" href="#programmes">
-          Explore our programmes <span aria-hidden="true">&rarr;</span>
-        </a>
-      </div>
-
-      <div class="about__principles">
-        <div class="principles">
-          <div class="principle">
-            <p class="principle__number">01</p>
-            <h3 class="principle__title">Industry Convening</h3>
-            <p class="principle__body">
-              We bring together the full spectrum of stakeholders to build shared
-              understanding and align on common goals.
-            </p>
-          </div>
-          <div class="principle">
-            <p class="principle__number">02</p>
-            <h3 class="principle__title">Evidence-Based Policy</h3>
-            <p class="principle__body">
-              Our research informs regulatory frameworks in the EU, UK, and key
-              markets, grounding policy in operational reality.
-            </p>
-          </div>
-          <div class="principle">
-            <p class="principle__number">03</p>
-            <h3 class="principle__title">Standards &amp; Traceability</h3>
-            <p class="principle__body">
-              We develop and steward open standards for fibre content labelling,
-              sorting, and material passports.
-            </p>
-          </div>
-          <div class="principle">
-            <p class="principle__number">04</p>
-            <h3 class="principle__title">Pilot &amp; Scale</h3>
-            <p class="principle__body">
-              From collection trials to recycling infrastructure, we design and
-              de-risk the pilots that prove new circular systems work.
-            </p>
-          </div>
-        </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ====================================================================== -->
+<!-- About                                                                  -->
+<!-- ====================================================================== -->
+<section class="section section--cream" id="about" aria-labelledby="about-title">
+  <div class="wrap">
+    <p class="eyebrow eyebrow--peach">What We Do</p>
+    <h2 class="h-section about__title" id="about-title">How We Work</h2>
+
+    <div class="principles">
+      <div class="principle">
+        <p class="principle__number">01</p>
+        <h3 class="principle__title">Industry Convening</h3>
+        <p class="principle__body">
+          We bring together the full spectrum of stakeholders to build shared
+          understanding and align on common goals.
+        </p>
+      </div>
+      <div class="principle">
+        <p class="principle__number">02</p>
+        <h3 class="principle__title">Evidence-Based Policy</h3>
+        <p class="principle__body">
+          Our research informs regulatory frameworks in the EU, UK, and key
+          markets, grounding policy in operational reality.
+        </p>
+      </div>
+      <div class="principle">
+        <p class="principle__number">03</p>
+        <h3 class="principle__title">Standards &amp; Traceability</h3>
+        <p class="principle__body">
+          We develop and steward open standards for fibre content labelling,
+          sorting, and material passports.
+        </p>
+      </div>
+      <div class="principle">
+        <p class="principle__number">04</p>
+        <h3 class="principle__title">Pilot &amp; Scale</h3>
+        <p class="principle__body">
+          From collection trials to recycling infrastructure, we design and
+          de-risk the pilots that prove new circular systems work.
+        </p>
+      </div>
+    </div>
+
+    <a class="link-rule about__cta" href="#programmes">
+      Explore our programmes <span aria-hidden="true">&rarr;</span>
+    </a>
   </div>
 </section>
 

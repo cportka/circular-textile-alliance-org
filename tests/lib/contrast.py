@@ -63,6 +63,9 @@ SOLID = [
     ("hero headline on ink",               "cream",      "ink",        AA_NORMAL),
     ("hero eyebrow on ink",                "sage",       "ink",        AA_NORMAL),
     ("hero accent headline on ink",        "peach",      "ink",        AA_LARGE),
+    ("hero subhead on ink",                "sage",       "ink",        AA_NORMAL),
+    ("mission/vision titles on ink",       "sage",       "ink",        AA_NORMAL),
+    ("mission/vision body on ink",         "cream",      "ink",        AA_NORMAL),
     ("members tier label on ink",          "sage-light", "ink",        AA_NORMAL),
     ("footer headings on ink-deep",        "cream",      "ink-deep",   AA_NORMAL),
 ]
@@ -73,6 +76,7 @@ for label, fg, bg, minimum in SOLID:
 
 # Translucent text: composite over the known backdrop first.
 ALPHA = [
+    ("hero intro copy on ink",       "cream", "ink",      0.75, AA_NORMAL),
     ("members lede on ink",          "cream", "ink",      0.70, AA_NORMAL),
     ("member chips on ink",          "cream", "ink",      0.80, AA_NORMAL),
     ("tier 'more' note on ink",      "cream", "ink",      0.55, AA_NORMAL),

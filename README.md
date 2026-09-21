@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.4.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.5.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -63,7 +63,7 @@ pull request) and as the gate in front of every deploy. Seven suites live in
 | `links-assets` | every local `href`/`src` and every `url()` in the CSS resolves to a real file, every `#anchor` has a target, no `href="#"` survives, shipped fonts and referenced fonts agree, licences present. A photo **referenced but missing** fails; a photo **committed but unreferenced** is a library shot, so it only reports its weight in the published artifact |
 | `accessibility` | alt attributes, labelled form controls, named buttons, ARIA references that point at real ids, disclosure state, unique nav labels, skip link, live region, decorative layers hidden, reduced-motion and focus styling |
 | `contrast` | every text/background pair in the design measured against WCAG AA, translucent colours composited first, control boundaries against 1.4.11's 3:1, plus a regression guard on the three retuned tokens |
-| `components` | guards for UI bugs that shipped once: the header CTA's hover rules exist per header state (a specificity trap made the label invisible), the newsletter field is isolated from its status message, the status row reserves its height, and the logo keeps its dash-gap interlock and gradients — with `favicon.svg`'s geometry pinned to `logo.svg`'s |
+| `components` | guards for UI bugs that shipped once: the header CTA's hover rules exist per header state (a specificity trap made the label invisible), the newsletter field is isolated from its status message, the status row reserves its height, and the logo keeps its dash-gap interlock and gradients — with `favicon.svg`'s geometry pinned to `logo.svg`'s. Also that the hero's statement band stays off the photograph, which is what makes its measured contrast the rendered contrast |
 | `workflows` | both workflows still trigger where they should, keep their `workflow_dispatch` escape hatch, hold the Pages permissions and concurrency group, **validate before uploading the artifact**, and pin non-deprecated action versions |
 | `seo-metadata` | title/description lengths, canonical, full Open Graph and Twitter sets, manifest and its icons, JSON-LD parses and carries `Organization` + `WebSite`, robots/sitemap/llms.txt agree on one host, `404` is `noindex`, security.txt valid |
 
@@ -150,13 +150,24 @@ reason. (The hero stats bar had the same fault and the same fix, until the bar
 itself was removed — see *Copy* below.)
 
 **Copy.** The hero and About copy are the alliance's own, no longer the
-design's. The hero is now photograph and headline only — its lede paragraph, its
-two buttons and the four-figure stats bar (140+ / 38 / 2.4M t / 12) were
-removed, because the figures were the design's placeholders rather than the
-alliance's numbers. About carries the real positioning instead, with *Our
-Mission* and *Our Vision* stated on the page rather than linked to. The meta
-description, Open Graph and Twitter descriptions, JSON-LD and `llms.txt` were
-rewritten to match, since each quoted copy that no longer exists.
+design's. The design's hero lede, its two buttons and the four-figure stats bar
+(140+ / 38 / 2.4M t / 12) are gone — those figures were placeholders, not the
+alliance's numbers. In their place the hero carries the real positioning: the
+headline over the photograph, then *Building a stronger, more resilient textile
+economy*, the introduction, and *Our Mission* and *Our Vision* stated on the page
+rather than linked to. About is now the approach section (*How We Work*) holding
+the four principles. The meta description, Open Graph and Twitter descriptions,
+JSON-LD and `llms.txt` were rewritten to match, since each quoted copy that no
+longer exists.
+
+**Hero is two bands, for contrast.** `.hero__stage` is the first screen and the
+only place the photograph appears; `.hero__statement` below it is flat `--ink`.
+That split is not cosmetic. The statement's sage subhead measures 5.90:1 on
+`--ink`, but the photograph is cream at 0.22 opacity over ink, and over its
+brightest areas the same text falls to **2.96:1** — a WCAG failure that no
+static colour check would catch, because the colours themselves are fine. Keeping
+the copy off the image is what makes the measured pairs the rendered pairs, and
+the `components` suite fails if the two bands are merged again.
 
 **Newsletter form.** No subscription endpoint exists. Rather than fake a success
 state, submitting reports plainly that nothing was recorded. Give the `<form>` a
