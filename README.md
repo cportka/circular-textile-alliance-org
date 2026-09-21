@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.6.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.7.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -157,7 +157,7 @@ alliance's numbers. In their place the hero carries the real positioning: the
 headline over the photograph, then *Building a stronger, more resilient textile
 economy*, the introduction, and *Our Mission* and *Our Vision* stated on the page
 rather than linked to. About is now the approach section (*How We Work*) holding
-the four principles. The meta description, Open Graph and Twitter descriptions,
+the five principles. The meta description, Open Graph and Twitter descriptions,
 JSON-LD and `llms.txt` were rewritten to match, since each quoted copy that no
 longer exists.
 

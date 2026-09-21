@@ -42,6 +42,21 @@ if check(hero_hover is not None, "over-hero header hover rule not found"):
           "over-hero header hover must pair a --cream fill with an --ink label; got: %s"
           % " ".join(body.split()))
 
+# --- Principles grid --------------------------------------------------------
+# The hairline grid draws its rules as 1px gaps over a --border bed, so an empty
+# cell is not blank — it is a solid block of border colour. With an odd number of
+# cards every even column count leaves one, hence the last-child span.
+cards = [el for el in doc.elements if el.classes() == ["principle"]]
+check(len(cards) == 5, "expected 5 principle cards, found %d" % len(cards))
+if len(cards) % 2:
+    check(re.search(r"\.principles \.principle:last-child\s*\{[^}]*grid-column:\s*span 2", css),
+          "an odd number of principle cards needs .principles .principle:last-child to "
+          "span the rest of its row, or the hairline grid shows a block of --border "
+          "where the missing card would be")
+check(len(re.findall(r"\.principles \.principle:last-child", css)) >= 2,
+      "the last-child span must be declared at every multi-column breakpoint, "
+      "not just one")
+
 # --- Hero statement ground --------------------------------------------------
 # The statement copy is sage and cream at 0.75 on ink. Those ratios hold against
 # flat --ink; over the brightest part of the hero photograph (cream at 0.22) the

@@ -4,6 +4,39 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.7.0] - 2026-09-21
+
+### Changed
+- **The approach section's principles are replaced and expanded, four to
+  five**: Education Before Advocacy, Collaboration Over Competition,
+  Transparency Builds Trust, Innovation With Purpose, Responsible Markets. The
+  previous four (Industry Convening, Evidence-Based Policy, Standards &
+  Traceability, Pilot & Scale) came from the Figma and described activities;
+  these are the alliance's stated principles.
+- **The grid is rebuilt for an odd count.** It was 1-up below 1024px and 4-up
+  above, which suited four cards exactly. Five into any even column count
+  leaves a hole — and in a hairline grid a hole is not blank space, it is a
+  solid block of the `--border` bed showing through where a card should be. The
+  layout is now 1-up, 2-up from 704px and 3-up from 1024px, with the last card
+  spanning the rest of its row at both multi-column widths. That also suits it:
+  Responsible Markets carries by far the longest body.
+- A 2-up state is new. With four short cards a single column up to 1024px was
+  tolerable; with five longer ones it was a long scroll on a tablet.
+- `llms.txt` — "What the Alliance does" becomes "How the Alliance works" and
+  lists the five principles. It had been describing the four activities, which
+  no longer appear anywhere on the site.
+
+### Added — tests
+- A `components` guard on the grid: five cards, and if the count is odd, the
+  `:last-child` span must exist at every multi-column breakpoint. Verified by
+  deleting the rule and watching both assertions fail.
+
+### Notes
+- Card bodies are wrapped with `break_on_hyphens=False`. A line break inside
+  "decision-making" is invisible in the source but renders as "decision-
+  making", because HTML collapses the newline to a space. The first pass had
+  exactly that bug in two cards.
+
 ## [0.6.0] - 2026-09-21
 
 ### Added
