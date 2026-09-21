@@ -4,6 +4,41 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.10.1] - 2026-09-22
+
+### Fixed
+- **`publications.html` lost its wordmark at the top of the page.** The header's
+  resting state is cream-on-transparent, which exists to sit over the hero
+  photograph; that page opens straight onto a cream section, so "Circular
+  Textile" was cream on cream and only the sage "Alliance" survived. The header
+  now takes `.site-header--solid` there — the scrolled treatment, applied
+  permanently — and every state rule that `.is-scrolled` carried now names both.
+  A page that does not open on a dark hero needs that class, and a `components`
+  assertion holds this one to it.
+
+### Changed
+- **"Our Publications May Include" uses the same hairline grid as "How We
+  Work"**, with its hover, rather than the plain `.why` stack. `.why--light`,
+  which existed only to make that stack legible on cream, goes with it.
+- **The mobile menu is a dropdown, not a full-bleed sheet.** It hangs off the
+  right of the bar at `min(16rem, 70vw)` with right-aligned text: 16rem is a
+  quarter of 64em, the width at which the disclosure first appears, and the
+  70vw cap keeps it inside a narrow phone where a literal quarter would be too
+  narrow to read. It is bounded to the viewport height and scrolls if it has
+  to.
+- **A click beside the menu now dismisses it.** Escape and following a link
+  were enough for a sheet covering the page; a small panel needs it.
+
+### Changed — tests
+- The header-hover guard parses selector *lists* rather than matching a single
+  selector, because those rules are grouped now — and it requires the hover
+  pair for all three states, not two. It had gone quietly unmatched the moment
+  the selector gained a comma, which is its own small lesson.
+- New assertions on `.site-header--solid` (its four rules exist, and
+  `publications.html` uses it) and on `.nav-mobile` (positioned, width-capped,
+  right-aligned, with outside-click dismissal in `site.js`). Both verified by
+  reverting the change and watching them fail.
+
 ## [0.10.0] - 2026-09-21
 
 ### Added

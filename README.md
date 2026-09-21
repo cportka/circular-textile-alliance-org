@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.10.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.10.1 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -135,6 +135,13 @@ use for fills, rules and dots, where contrast rules do not apply.
 `--ink` (`#1A2B28`) on a near-black hero photograph — roughly 1.1:1, effectively
 invisible. The header now starts light-on-dark and swaps to the design's
 ink-on-cream once scrolled, which is the state the design already specifies.
+
+That resting state assumes a dark hero underneath it. A page without one —
+`publications.html` opens straight onto a cream section — gets
+`.site-header--solid`, which is the scrolled treatment applied permanently.
+Without it the cream wordmark and cream nav links paint onto cream. **Any new
+page that does not open on a dark hero needs that class**, and a `components`
+assertion holds `publications.html` to it.
 
 **Dead links.** The design carries 25 links pointing at `href="#"`, which
 scrolls to the top of the page. The 13 that still read as controls (`Full

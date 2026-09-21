@@ -276,7 +276,12 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   z-index: 50;
   transition: background 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
 }
-.site-header.is-scrolled {
+/* Two ways into the light treatment: scrolled down any page, or resting on a
+   page that has no dark hero to sit over. Without the second, publications.html
+   painted cream wordmark and cream nav links onto a cream section — "Circular
+   Textile" vanished and only the sage "Alliance" survived. */
+.site-header.is-scrolled,
+.site-header--solid {
   background: rgb(250 248 243 / 0.96);
   box-shadow: 0 1px 0 var(--border);
   -webkit-backdrop-filter: blur(12px);
@@ -318,10 +323,14 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 .site-header .nav__link,
 .site-header .btn--outline-ink { color: var(--cream); }
 
-.site-header.is-scrolled .brand__name { color: var(--ink); }
-.site-header.is-scrolled .brand__name .is-alliance { color: var(--sage-text); }
-.site-header.is-scrolled .nav__link { color: var(--ink-light); }
-.site-header.is-scrolled .btn--outline-ink { color: var(--ink); }
+.site-header.is-scrolled .brand__name,
+.site-header--solid .brand__name { color: var(--ink); }
+.site-header.is-scrolled .brand__name .is-alliance,
+.site-header--solid .brand__name .is-alliance { color: var(--sage-text); }
+.site-header.is-scrolled .nav__link,
+.site-header--solid .nav__link { color: var(--ink-light); }
+.site-header.is-scrolled .btn--outline-ink,
+.site-header--solid .btn--outline-ink { color: var(--ink); }
 
 /* The two rules above set the button's resting colour at a higher specificity
    than `.btn--outline-ink:hover`, so the generic hover rule could not repaint
@@ -333,7 +342,8 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   color: var(--ink);
   border-color: var(--cream);
 }
-.site-header.is-scrolled .btn--outline-ink:hover {
+.site-header.is-scrolled .btn--outline-ink:hover,
+.site-header--solid .btn--outline-ink:hover {
   background: var(--ink);
   color: var(--cream);
   border-color: var(--ink);
@@ -354,7 +364,8 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   transition: color var(--ease);
 }
 .nav__link:hover { color: var(--peach); }
-.site-header.is-scrolled .nav__link:hover { color: var(--peach-text); }
+.site-header.is-scrolled .nav__link:hover,
+.site-header--solid .nav__link:hover { color: var(--peach-text); }
 
 .nav-toggle {
   display: none;
@@ -373,15 +384,28 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   background: var(--cream);
   transition: transform var(--ease), opacity var(--ease), background var(--ease);
 }
-.site-header.is-scrolled .nav-toggle__bar { background: var(--ink); }
+.site-header.is-scrolled .nav-toggle__bar,
+.site-header--solid .nav-toggle__bar { background: var(--ink); }
 .nav-toggle[aria-expanded="true"] .nav-toggle__bar:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
 .nav-toggle[aria-expanded="true"] .nav-toggle__bar:nth-child(2) { opacity: 0; }
 .nav-toggle[aria-expanded="true"] .nav-toggle__bar:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
 
+/* A panel hung off the right of the bar rather than a full-bleed sheet. 16rem
+   is a quarter of 64em, the width at which the disclosure first appears; the
+   70vw cap keeps it inside a narrow phone, where a literal quarter would be
+   too narrow to read. */
 .nav-mobile {
+  position: absolute;
+  top: 100%;
+  right: var(--gutter);
+  width: min(16rem, 70vw);
+  max-height: calc(100svh - 5rem);
+  overflow-y: auto;
+  text-align: right;
   background: var(--cream);
-  border-top: 1px solid var(--border);
-  padding: 1.5rem var(--gutter) 2rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 28px rgb(26 43 40 / 0.14);
+  padding: 0.5rem 1.25rem 1.25rem;
 }
 .nav-mobile[hidden] { display: none; }
 .nav-mobile a {
@@ -395,7 +419,8 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   color: var(--ink);
   text-decoration: none;
 }
-.nav-mobile .btn { margin-top: 1.5rem; width: 100%; }
+.nav-mobile a:hover { color: var(--peach-text); }
+.nav-mobile .btn { margin-top: 1.25rem; width: 100%; }
 
 /* --- Hero ---------------------------------------------------------------- */
 .hero { position: relative; background: var(--ink); }
@@ -747,12 +772,6 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 /* --- Publications page --------------------------------------------------- */
 .pubpage { padding-top: calc(var(--section-y) + 5rem); }
 .pubpage__title { margin-top: 1.25rem; margin-bottom: 0; }
-/* .why was written for the ink Members section; on cream both its title and its
-   body would be near-invisible (2.15:1 and cream-on-cream), so the light
-   variant restates both against this ground. */
-.why--light .why__title { color: var(--sage-text); }
-.why--light .why__body { color: var(--ink-light); }
-
 /* --- Publications -------------------------------------------------------- */
 .pubs {
   display: grid;
