@@ -545,11 +545,15 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 /* Hairline grid: the 1px gap over a border-coloured bed draws the rules. */
 .principles {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
 }
+/* Five cards into an even grid leaves a hole, and in a hairline grid a hole is
+   not empty space — it is a block of the --border bed showing through. The last
+   card spans the remainder of its row instead, which also suits it: it carries
+   the longest body of the five. */
 .principle {
   background: var(--cream);
   padding: 2rem;
@@ -906,6 +910,11 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   .footer-cols { grid-template-columns: repeat(4, 1fr); }
 }
 
+@media (min-width: 44em) {   /* 704px — two cards still read */
+  .principles { grid-template-columns: repeat(2, 1fr); }
+  .principles .principle:last-child { grid-column: span 2; }
+}
+
 @media (min-width: 56em) {   /* 896px — below this the 26rem form crowds the copy */
   .newsletter { grid-template-columns: minmax(0, 1fr) 26rem; }
 }
@@ -913,7 +922,8 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 @media (min-width: 64em) {   /* 1024px — Tailwind `lg` */
   .members__grid { grid-template-columns: repeat(12, 1fr); }
   /* Full width now, so the four read as one band rather than a 2x2 block. */
-  .principles { grid-template-columns: repeat(4, 1fr); }
+  .principles { grid-template-columns: repeat(3, 1fr); }
+  .principles .principle:last-child { grid-column: span 2; }
   .members__intro { grid-column: span 5; }
   .members__tiers { grid-column: span 7; }
 
@@ -933,7 +943,6 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   .nav-toggle { display: flex; }
   .hero__ring--lg { width: 340px; height: 340px; }
   .hero__ring--sm { width: 210px; height: 210px; }
-  .principles { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 48em) {   /* 768px */
