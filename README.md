@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.11.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.12.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -144,12 +144,12 @@ page that does not open on a dark hero needs that class**, and a `components`
 assertion holds `publications.html` to it.
 
 **Dead links.** The design carries 25 links pointing at `href="#"`, which
-scrolls to the top of the page. The 13 that still read as controls (`Full
-Library →`, `All News →`, four `↓ Download` buttons, three social links, three
-policy links, and the pending Givebutter button) render identically but are
-inert `<span>`/`disabled` elements described by a shared visually-hidden note.
-`All Programs →` and `Apply for Membership` are gone with the sections that
-carried them. The footer list items are rendered as plain text. To wire one up, swap the
+scrolls to the top of the page. Five still read as controls (`All News →`,
+three social links, and the pending Givebutter button); they render identically
+but are inert `<span>`/`disabled` elements described by a shared
+visually-hidden note. The rest gained real destinations as their sections gained
+real content, and the footer's link lists are now genuine in-page anchors rather
+than plain text. To wire one up, swap the
 `<span class="ph">` for an `<a href="…">` and drop the `aria-describedby`.
 
 **Responsive corrections.** The design sets a fixed inline
@@ -231,6 +231,22 @@ may leave, must be https, and is reported.
 With no descriptions, years or page counts supplied, each row's left rail names
 the **host** instead. That is derived from the link rather than invented, and it
 tells a reader the link leaves the site.
+
+**Policies are dialogs, not pages.** Privacy Policy, Terms of Use and Cookie
+Settings open a native `<dialog>` via `showModal()`, which supplies the
+centring, backdrop, focus containment and Escape handling; only the appearance
+and the animation are ours. Their text describes what this site actually does —
+no cookies, no storage, no analytics, no third-party requests — which is the
+same claim the `links-assets` suite enforces. **It has not been through a
+lawyer**; treat it as an accurate technical description rather than a reviewed
+legal notice.
+
+**Bottom padding on a scroll container.** Two elements scroll — the mobile
+disclosure panel and the policy dialog — and in both the closing space is a
+margin on the last child, not padding on the container. A scroll container's
+bottom padding is not part of its scrollable overflow in every engine, which is
+what clipped the bottom border off "Become a Member". A `components` assertion
+holds both to it.
 
 **Newsletter form.** No subscription endpoint exists. Rather than fake a success
 state, submitting reports plainly that nothing was recorded. Give the `<form>` a

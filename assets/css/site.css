@@ -416,8 +416,11 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   background: var(--cream);
   border: 1px solid var(--border);
   box-shadow: 0 12px 28px rgb(26 43 40 / 0.14);
-  /* Top padding clears the toggle, which overlaps the panel's first rows. */
-  padding: 4rem 1rem 1.25rem;
+  /* Top padding clears the toggle, which overlaps the panel's first rows.
+     Bottom padding is 0 on purpose: a scroll container's bottom padding is not
+     part of its scrollable overflow in every engine, which clipped the last
+     item's border clean off. The space is a margin on the last child instead. */
+  padding: 3rem 1rem 0;
   opacity: 1;
   transform: translateY(0);
   /* allow-discrete keeps the element painted while the exit runs; browsers
@@ -446,6 +449,7 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 }
 .nav-mobile a:hover { color: var(--peach-text); }
 .nav-mobile .btn { margin-top: 1.25rem; width: 100%; }
+.nav-mobile > :last-child { margin-bottom: 1.25rem; }
 
 /* --- Hero ---------------------------------------------------------------- */
 .hero { position: relative; background: var(--ink); }
@@ -629,6 +633,14 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   font-size: 0.875rem;
   line-height: 1.7;
   color: var(--ink-muted);
+}
+
+/* A hairline closing one section off from the next, where the tightened
+   section rhythm alone no longer reads as a break. */
+.rule {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin-top: 2.5rem;
 }
 
 /* --- Shared section head (title left, "all …" link right) ---------------- */
@@ -960,6 +972,8 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 }
 .footer-col ul { display: flex; flex-direction: column; gap: 0.625rem; }
 .footer-col li { font-size: 0.875rem; color: rgb(250 248 243 / 0.6); }
+.footer-col a { text-decoration: none; transition: color var(--ease); }
+.footer-col a:hover { color: var(--cream); }
 
 .site-footer__bottom { border-top: 1px solid rgb(250 248 243 / 0.08); }
 .site-footer__bottom .wrap {
@@ -973,14 +987,74 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 /* DEVIATION (contrast): Figma alpha .30 → 2.61:1. */
 .site-footer__legal, .site-footer__policies { font-size: 0.75rem; color: rgb(250 248 243 / 0.55); }
 .site-footer__policies { display: flex; gap: 2rem; flex-wrap: wrap; }
+/* Buttons, not links: each opens a dialog rather than going anywhere. They are
+   styled to read as the quiet footer text they replaced. */
+.policy-open {
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: color var(--ease);
+}
+.policy-open:hover { color: var(--cream); }
+
+/* --- Policy dialogs ------------------------------------------------------ */
+/* <dialog> + showModal() gives centring, a backdrop, focus containment and
+   Escape for free; only the appearance and the animation are ours. */
+.policy {
+  width: min(38rem, calc(100vw - 2 * var(--gutter)));
+  max-height: 85svh;
+  /* Scrolls itself, so the closing space is a margin on the last child — a
+     scroll container's bottom padding is not reliably part of its overflow. */
+  overflow-y: auto;
+  padding: 0;
+  border: 1px solid var(--border);
+  background: var(--cream);
+  color: var(--ink);
+  opacity: 0;
+  transform: translateY(0.75rem) scale(0.98);
+  transition: opacity 180ms ease, transform 180ms ease,
+              display 180ms allow-discrete, overlay 180ms allow-discrete;
+}
+.policy[open] { opacity: 1; transform: none; }
+@starting-style {
+  .policy[open] { opacity: 0; transform: translateY(0.75rem) scale(0.98); }
+}
+.policy::backdrop {
+  background: rgb(17 30 27 / 0.55);
+  opacity: 0;
+  transition: opacity 180ms ease, display 180ms allow-discrete,
+              overlay 180ms allow-discrete;
+}
+.policy[open]::backdrop { opacity: 1; }
+@starting-style {
+  .policy[open]::backdrop { opacity: 0; }
+}
+.policy__inner { padding: 2rem 2rem 0; }
+.policy__title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 1.25rem;
+}
+.policy__body p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--ink-light);
+}
+.policy__body p + p { margin-top: 1rem; }
+.policy__close { margin-block: 1.75rem 2rem; }
 
 /* --- Breakpoints --------------------------------------------------------- */
 @media (min-width: 40em) {   /* 640px */
-  .footer-cols { grid-template-columns: repeat(4, 1fr); }
+  .footer-cols { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (min-width: 44em) {   /* 704px — two cards still read */
-  .prog__content { padding-left: 1.5rem; }
+  .prog__content { padding-left: 2.5rem; }
   .prog__figures { grid-template-columns: 1fr 1fr; }
   .board__people { columns: 2; column-gap: 2.5rem; }
   .why { grid-template-columns: repeat(2, 1fr); }
