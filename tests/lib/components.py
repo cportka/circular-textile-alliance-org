@@ -42,6 +42,24 @@ if check(hero_hover is not None, "over-hero header hover rule not found"):
           "over-hero header hover must pair a --cream fill with an --ink label; got: %s"
           % " ".join(body.split()))
 
+# --- Hero statement ground --------------------------------------------------
+# The statement copy is sage and cream at 0.75 on ink. Those ratios hold against
+# flat --ink; over the brightest part of the hero photograph (cream at 0.22) the
+# subhead falls to 2.96:1. So the copy must stay out of the photograph's band.
+src = doc.source
+stage = src.index('<div class="hero__stage">')
+statement = src.index('<div class="hero__statement">')
+check(stage < statement,
+      "the hero statement must come after the photograph's stage, not inside it")
+check("hero__media" in src[stage:statement],
+      ".hero__media is no longer inside .hero__stage")
+check("hero__media" not in src[statement:],
+      "the hero statement now has the photograph behind it — its copy is measured "
+      "against flat --ink and would fail AA over a bright patch of the image")
+check(re.search(r"\.hero__statement\s*\{[^}]*background:\s*var\(--ink\)", css),
+      ".hero__statement lost its solid --ink background, which is what makes the "
+      "measured contrast pairs the ones that actually render")
+
 # --- Newsletter -------------------------------------------------------------
 # Bug: input and button were siblings in one wrapping flex container alongside
 # the status message, so submitting reflowed the button to another line.

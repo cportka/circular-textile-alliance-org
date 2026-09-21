@@ -398,7 +398,9 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 .nav-mobile .btn { margin-top: 1.5rem; width: 100%; }
 
 /* --- Hero ---------------------------------------------------------------- */
-.hero {
+.hero { position: relative; background: var(--ink); }
+/* The photograph lives here and nowhere else. */
+.hero__stage {
   position: relative;
   overflow: hidden;
   min-height: 100vh;
@@ -406,8 +408,11 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  background: var(--ink);
 }
+/* Flat ink under the statement copy: no photograph behind it, so the contrast
+   pairs the suite measures against --ink are the pairs that actually render. */
+.hero__statement { background: var(--ink); padding-block: 1rem 7rem; }
+.hero__statement-inner { display: grid; gap: 3.5rem 2rem; }
 .hero__media {
   position: absolute;
   inset: 0;
@@ -446,26 +451,24 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 }
 .hero .eyebrow { margin-bottom: 2rem; }
 
-.hero__grid {
-  display: grid;
-  gap: 2rem;
-  align-items: end;
+/* On-ink copy. Sage for the headings, cream for the body — the intro sits at
+   0.75 so the mission and vision, at full cream, read as the firmer statements. */
+.hero__subhead {
+  font-family: var(--font-serif);
+  font-size: clamp(1.375rem, 2.2vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--sage);
+  margin-bottom: 1.5rem;
 }
-/* --- About --------------------------------------------------------------- */
-.about__head { margin-bottom: 4rem; }
-.about__grid { display: grid; gap: 3rem; }
-.about__lede {
-  font-size: 1.0625rem;
+.hero__body {
+  font-size: 1rem;
   line-height: 1.8;
-  color: var(--ink-light);
+  color: rgb(250 248 243 / 0.75);
 }
-.about__lede--first { margin-top: 2rem; }
-.about__lede + .about__lede { margin-top: 1.5rem; }
-.about__cta { margin-top: 2.5rem; }
+.hero__body + .hero__body { margin-top: 1.25rem; }
 
-/* Mission / Vision. A sage rule marks them as statements of intent rather
-   than more body copy, without introducing another surface colour. */
-.about__pillars {
+.hero__pillars {
   display: grid;
   gap: 2.25rem;
   align-content: start;
@@ -476,17 +479,17 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   font-size: 1.25rem;
   font-weight: 500;
   line-height: 1.3;
-  color: var(--sage-text);
+  color: var(--sage);
   margin-bottom: 0.75rem;
 }
 .pillar__body {
   font-size: 1rem;
   line-height: 1.8;
-  color: var(--ink-light);
+  color: var(--cream);
 }
-/* Blockified as a grid item, an inline-flex link stretches — and its underline
-   rule with it. Keep it the width of its own text. */
-.about__pillars .about__cta { margin-top: 0; justify-self: start; }
+/* --- About ------------------------------------------------------------- */
+.about__title { margin-top: 1.25rem; margin-bottom: 3rem; }
+.about__cta { display: inline-flex; margin-top: 2.5rem; }
 
 /* Hairline grid: the 1px gap over a border-coloured bed draws the rules. */
 .principles {
@@ -857,19 +860,16 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 }
 
 @media (min-width: 64em) {   /* 1024px — Tailwind `lg` */
-  .about__grid,
   .members__grid { grid-template-columns: repeat(12, 1fr); }
-  .about__grid { column-gap: 5rem; }
-  .about__intro { grid-column: span 7; }
-  .about__pillars { grid-column: span 5; }
-  .about__principles { grid-column: span 12; }
   /* Full width now, so the four read as one band rather than a 2x2 block. */
   .principles { grid-template-columns: repeat(4, 1fr); }
   .members__intro { grid-column: span 5; }
   .members__tiers { grid-column: span 7; }
 
-  .hero__grid { grid-template-columns: repeat(12, 1fr); }
-  .hero__headline { grid-column: span 8; }
+  .hero__inner .h-display { max-width: 68%; }
+  .hero__statement-inner { grid-template-columns: repeat(12, 1fr); column-gap: 5rem; }
+  .hero__intro { grid-column: span 7; }
+  .hero__pillars { grid-column: span 5; }
 
   .site-footer__grid { grid-template-columns: repeat(12, 1fr); }
   .site-footer__brand { grid-column: span 3; }

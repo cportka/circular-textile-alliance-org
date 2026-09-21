@@ -80,6 +80,7 @@ text = doc.source
 for phrase in [
     "Closing the Loop on",
     "Building a stronger, more resilient textile economy",
+    "How We Work",
     "Our Mission",
     "Our Vision",
     "Where We Direct Our Collective Effort",

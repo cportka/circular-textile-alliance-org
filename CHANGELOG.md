@@ -4,6 +4,43 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.5.0] - 2026-09-21
+
+0.4.0 put the new copy in the About section. It belongs in the dark band under
+the headline, which is where it now is.
+
+### Changed
+- **The introduction, Our Mission and Our Vision moved into the hero**, below
+  "Closing the Loop on Textile Waste", on the dark ground — the place the
+  removed elements occupied.
+- **The hero is now two bands.** `.hero__stage` is the first screen and the only
+  place the photograph appears. `.hero__statement` sits beneath it on flat
+  `--ink` and carries the copy.
+
+  This is a contrast requirement, not a layout preference. `.hero__media` is
+  cream at 0.22 over ink, so the brightest parts of the photograph lift the
+  ground to roughly `#4B5855`. Against that, the sage subhead measures
+  **2.96:1** and the introduction **4.26:1** — both failing AA — while against
+  flat `--ink` they are 5.90:1 and 8.48:1. No static colour check would have
+  caught it, because the colours themselves are correct; only the ground was
+  wrong. Splitting the bands makes the pairs the suite measures the pairs that
+  actually render.
+- **Colours follow the supplied reference**: sage for the subhead and for the
+  Our Mission / Our Vision titles, cream at 0.75 for the introduction, and full
+  cream for the mission and vision text, so those read as the firmer statements.
+- **About is now the approach section** — eyebrow "What We Do", heading "How We
+  Work" — holding the four principles that were always there. Its id and
+  `aria-labelledby` are unchanged, so the nav anchor still resolves.
+
+### Added — tests
+- A `components` guard on the band split: `.hero__statement` must come after
+  `.hero__stage`, `.hero__media` must be inside the stage and absent from the
+  statement, and `.hero__statement` must keep its solid `--ink` background.
+  Verified by reintroducing the fault and watching it fail.
+- Contrast pairs for the new on-ink copy: the sage subhead, the sage
+  mission/vision titles, the cream mission/vision body, and the introduction at
+  0.75.
+
 ## [0.4.0] - 2026-09-21
 
 The alliance's own copy replaces the design's placeholder text, and the hero
