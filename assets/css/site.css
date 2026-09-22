@@ -436,7 +436,11 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 @starting-style {
   .nav-mobile { opacity: 0; transform: translateY(-0.5rem); }
 }
-.nav-mobile a {
+/* Scoped to the list. As `.nav-mobile a` this also matched "Become a Member",
+   and at (0,1,1) it outranked `.btn--outline-ink` at (0,1,0): the button took
+   the divider's `border-bottom: 1px solid var(--border-soft)` in place of its
+   own bottom edge, which is the missing border. */
+.nav-mobile nav a {
   display: block;
   padding: 0.75rem 0;
   border-bottom: 1px solid var(--border-soft);
@@ -447,9 +451,20 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   color: var(--ink);
   text-decoration: none;
 }
-.nav-mobile a:hover { color: var(--peach-text); }
+.nav-mobile nav a:hover { color: var(--peach-text); }
 .nav-mobile .btn { margin-top: 1.25rem; width: 100%; }
 .nav-mobile > :last-child { margin-bottom: 1.25rem; }
+
+/* The panel is cream in every header state, so the button inside it is ink in
+   every header state. `.site-header .btn--outline-ink` (0,2,0) paints it cream
+   for the over-hero header — cream on cream, which is the button vanishing
+   entirely at the top of the page. These win at (0,3,0) and (0,3,1). */
+.site-header .nav-mobile .btn--outline-ink { color: var(--ink); }
+.site-header .nav-mobile .btn--outline-ink:hover {
+  background: var(--ink);
+  color: var(--cream);
+  border-color: var(--ink);
+}
 
 /* --- Hero ---------------------------------------------------------------- */
 .hero { position: relative; background: var(--ink); }
@@ -959,6 +974,8 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   color: rgb(250 248 243 / 0.6);
 }
 
+/* Sized to their content and pushed together rather than split across the
+   full nine columns, which left a canyon between the two lists. */
 .footer-cols { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
 .footer-col__title {
   font-family: var(--font-sans);
@@ -1050,7 +1067,7 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 
 /* --- Breakpoints --------------------------------------------------------- */
 @media (min-width: 40em) {   /* 640px */
-  .footer-cols { grid-template-columns: repeat(2, 1fr); }
+  .footer-cols { grid-template-columns: repeat(2, minmax(0, max-content)); gap: 5rem; }
 }
 
 @media (min-width: 44em) {   /* 704px — two cards still read */
@@ -1080,7 +1097,7 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 
   .site-footer__grid { grid-template-columns: repeat(12, 1fr); }
   .site-footer__brand { grid-column: span 3; }
-  .site-footer__links { grid-column: span 9; }
+  .site-footer__links { grid-column: span 9; padding-left: 4rem; }
 }
 
 /* Below `lg` the desktop nav collapses into the disclosure menu. */

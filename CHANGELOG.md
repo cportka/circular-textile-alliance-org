@@ -4,6 +4,49 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.12.1] - 2026-09-22
+
+Three rounds of "this is still broken" had one cause each, and none of them was
+what the previous releases said it was.
+
+### Fixed
+- **`publications.html` had a stray `</div>`**, which closed `.wrap` at the end
+  of "Our Publications May Include". *Our Approach to Knowledge* and *The
+  Library* were therefore outside the wrap entirely, rendering at x=0 with no
+  gutter. This was never an indentation problem, and the indent changes in
+  0.11.0 and 0.12.0 could not have fixed it. It came from a slice in 0.10.1
+  where `s.index("      </div>\n")` matched the six-space prefix of an
+  eight-space line and left the outer close behind.
+- **"Become a Member" lost its bottom border**, because `.nav-mobile a` matched
+  it as well as the links and, at (0,1,1), outranked `.btn--outline-ink` at
+  (0,1,0) — so the button took the divider's `1px solid var(--border-soft)` in
+  place of its own edge. The rule is scoped to `.nav-mobile nav a` now.
+- **And sometimes vanished entirely**, because `.site-header
+  .btn--outline-ink` at (0,2,0) paints it `--cream` whenever the header is in
+  its over-hero state: cream label and `currentColor` border on a cream panel.
+  Only the faint divider remained, which is exactly what the report showed. It
+  now takes `--ink` from a (0,3,0) rule, with its own hover pair.
+
+  0.12.0 attributed both to a scroll container dropping its bottom padding.
+  That was wrong — the content never overflowed. The margin-on-last-child
+  arrangement stays because it is still the safer one, but it was not the bug.
+
+### Changed
+- The footer's two columns sit closer together and further right:
+  `max-content` columns with a 5rem gap instead of two halves of a nine-column
+  span, plus 4rem of left padding on the link area.
+
+### Added — tests
+- **Strict well-formedness on every page.** This suite's parser repairs a
+  mismatched close by searching the stack, as browsers do — but they repair
+  *differently*, and that difference is why every suite stayed green while two
+  sections rendered outside their container. The new check parses strictly and
+  names the line and the element that will actually be closed. Verified by
+  putting the stray `</div>` back and watching it fail.
+- `.nav-mobile a` may not exist as a bare selector; `.nav-mobile nav a` must;
+  and the menu's CTA button must carry an `--ink` label and a hover pair above
+  `.site-header .btn--outline-ink`.
+
 ## [0.12.0] - 2026-09-22
 
 ### Fixed

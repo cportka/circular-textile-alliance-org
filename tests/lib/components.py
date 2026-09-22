@@ -93,6 +93,26 @@ check("#nav-mobile, #nav-toggle" in js,
       "site.js no longer dismisses the menu on an outside click, which a small "
       "dropdown needs and a full-width sheet did not")
 
+# --- The menu's CTA button --------------------------------------------------
+# `.nav-mobile a` matched "Become a Member" as well as the links, and at (0,1,1)
+# it outranked `.btn--outline-ink` at (0,1,0): the button took the divider's
+# 1px --border-soft bottom edge in place of its own. Separately,
+# `.site-header .btn--outline-ink` at (0,2,0) painted it --cream for the
+# over-hero header — cream on a cream panel, so the whole button vanished.
+check(rule_body(".nav-mobile a") is None,
+      "`.nav-mobile a` is back — it also matches the CTA button and outranks "
+      ".btn--outline-ink, replacing its bottom border with the link divider. "
+      "Scope it to `.nav-mobile nav a`")
+check(rule_body(".nav-mobile nav a") is not None,
+      "the menu's link styling must be scoped to `.nav-mobile nav a`")
+cta = rule_body(".site-header .nav-mobile .btn--outline-ink")
+check(cta is not None and "color: var(--ink)" in cta,
+      "the menu's CTA button needs an --ink label at a specificity above "
+      "`.site-header .btn--outline-ink`, or it is cream on a cream panel "
+      "whenever the header is in its over-hero state")
+check(rule_body(".site-header .nav-mobile .btn--outline-ink:hover") is not None,
+      "and its own hover pair, for the same reason")
+
 # --- Policy dialogs ---------------------------------------------------------
 # Each footer policy opens a real <dialog>; showModal() supplies the centring,
 # backdrop, focus containment and Escape, so only the wiring is ours to check.
