@@ -4,7 +4,7 @@ import re
 import sys
 
 sys.path.insert(0, __file__.rsplit("/", 1)[0])
-from sitecheck import Document, check, report  # noqa: E402
+from sitecheck import Document, check, read, report  # noqa: E402
 
 PAGES = ["index.html", "404.html", "publications.html"]
 SECTIONS = ["about", "approach", "programs", "members", "publications", "news"]
@@ -52,6 +52,44 @@ for page in PAGES:
         # frame-ancestors is inert in a meta CSP; keeping it invites false confidence.
         check("frame-ancestors" not in csp,
               "%s CSP declares frame-ancestors, which meta-delivered CSP ignores" % tag)
+
+# --- Well-formedness --------------------------------------------------------
+# This suite's parser repairs a mismatched close by searching the stack, the way
+# a browser does — but browsers and parsers repair *differently*, and a stray
+# </div> that the tests forgave closed .wrap early on publications.html, putting
+# two whole sections outside it at x=0. Every suite stayed green across three
+# rounds of the bug being reported. So this check does not use that parser.
+VOID = {"img", "br", "hr", "meta", "link", "input", "source", "area", "base",
+        "col", "embed", "param", "track", "wbr"}
+
+def strip_uninteresting(text):
+    """Blank comments and script bodies, keeping line numbers intact."""
+    blank = lambda m: re.sub(r"[^\n]", " ", m.group(0))
+    text = re.sub(r"<!--.*?-->", blank, text, flags=re.S)
+    return re.sub(r"(?<=>)([^<]*)(?=</script>)", blank, text)
+
+for page in PAGES:
+    raw = strip_uninteresting(read(page))
+    stack = []
+    for m in re.finditer(r"<(/?)([a-zA-Z][\w-]*)([^>]*?)(/?)>", raw):
+        closing, tag, selfclose = m.group(1), m.group(2).lower(), m.group(4)
+        if tag in VOID or selfclose:
+            continue
+        line = raw.count("\n", 0, m.start()) + 1
+        if not closing:
+            stack.append((tag, line))
+            continue
+        if not stack:
+            check(False, "[%s] line %d: </%s> closes nothing" % (page, line, tag))
+        elif stack[-1][0] != tag:
+            check(False, "[%s] line %d: </%s> does not match <%s> opened at line %d — "
+                         "the browser will close elements you did not mean to close"
+                  % (page, line, tag, stack[-1][0], stack[-1][1]))
+            stack.pop()
+        else:
+            stack.pop()
+    check(not stack, "[%s] never closed: %s"
+          % (page, ", ".join("<%s> at line %d" % (t, l) for t, l in stack)))
 
 # --- index.html specifics -------------------------------------------------
 doc = Document("index.html")

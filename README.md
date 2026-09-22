@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.12.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.12.1 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -60,7 +60,7 @@ pull request) and as the gate in front of every deploy. Seven suites live in
 
 | Suite | What it holds to account |
 | :-- | :-- |
-| `html-structure` | one `<h1>`, one `<main>`, heading levels never skip, every section anchor and its `aria-labelledby` exist, design copy still present, **no inline `style`/`<script>`** (which the CSP would silently drop) |
+| `html-structure` | **every tag closes the element it opened** — the suite's own parser repairs mismatches the way a browser does, so a stray `</div>` went unnoticed for three releases while it closed `.wrap` early and pushed two sections outside it; this check parses strictly instead. Also one `<h1>`, one `<main>`, heading levels never skip, every section anchor and its `aria-labelledby` exist, design copy still present, **no inline `style`/`<script>`** (which the CSP would silently drop) |
 | `links-assets` | every local `href`/`src` and every `url()` in the CSS resolves to a real file, every `#anchor` has a target, no `href="#"` survives, shipped fonts and referenced fonts agree, licences present. A photo **referenced but missing** fails; a photo **committed but unreferenced** is a library shot, so it only reports its weight in the published artifact |
 | `accessibility` | alt attributes, labelled form controls, named buttons, ARIA references that point at real ids, disclosure state, unique nav labels, skip link, live region, decorative layers hidden, reduced-motion and focus styling |
 | `contrast` | every text/background pair in the design measured against WCAG AA, translucent colours composited first, control boundaries against 1.4.11's 3:1, plus a regression guard on the three retuned tokens |
@@ -243,10 +243,18 @@ legal notice.
 
 **Bottom padding on a scroll container.** Two elements scroll — the mobile
 disclosure panel and the policy dialog — and in both the closing space is a
-margin on the last child, not padding on the container. A scroll container's
-bottom padding is not part of its scrollable overflow in every engine, which is
-what clipped the bottom border off "Become a Member". A `components` assertion
-holds both to it.
+margin on the last child, not padding on the container, since a scroll
+container's bottom padding is not part of its scrollable overflow in every
+engine. (This was *not* the cause of the missing border on "Become a Member",
+as 0.12.0 claimed; see below. The arrangement is still the safer one.)
+
+**The menu's CTA button is styled twice over.** `.nav-mobile nav a` is scoped to
+the `<nav>` on purpose: as `.nav-mobile a` it also matched "Become a Member",
+and at (0,1,1) it outranked `.btn--outline-ink` at (0,1,0), replacing the
+button's bottom border with the link divider. And `.site-header
+.btn--outline-ink` at (0,2,0) paints that button `--cream` for the over-hero
+header, which is invisible on a cream panel — so it takes `--ink` from a
+(0,3,0) rule instead. Both are held by `components` assertions.
 
 **Newsletter form.** No subscription endpoint exists. Rather than fake a success
 state, submitting reports plainly that nothing was recorded. Give the `<form>` a
