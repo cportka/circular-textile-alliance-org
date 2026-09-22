@@ -6,7 +6,7 @@ import sys
 sys.path.insert(0, __file__.rsplit("/", 1)[0])
 from sitecheck import Document, check, read, report  # noqa: E402
 
-PAGES = ["index.html", "404.html", "publications.html"]
+PAGES = ["index.html", "404.html", "publications.html", "news.html"]
 SECTIONS = ["about", "approach", "programs", "members", "publications", "news"]
 
 for page in PAGES:
@@ -132,15 +132,16 @@ for phrase in [
     "Who Can Participate",
     "Current Board Members",
     "Why Join CTA?",
+    "What&rsquo;s Happening at CTA",
     "Reports &amp; Publications",
-    "From the Alliance",
     "Stay Informed",
 ]:
     check(phrase in text, "design copy missing from the page: %r" % phrase)
 
-# Seven program areas, four publications and three news items.
-check(len(doc.find("article")) == 14,
-      "expected 14 <article> elements (7 programs + 4 publications + 3 news), found %d"
+# Seven program areas, plus four publications and four news items — the home
+# page shows the first four of each list, and both lists are four long for now.
+check(len(doc.find("article")) == 15,
+      "expected 15 <article> elements (7 programs + 4 publications + 4 news), found %d"
       % len(doc.find("article")))
 
 report("html structure")

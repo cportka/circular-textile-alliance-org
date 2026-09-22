@@ -11,6 +11,19 @@ ids = doc.ids()
 
 # The publications page shares the header and footer, so the landmark and
 # link-text checks below run against it too where they are page-general.
+for extra in ("publications.html", "news.html"):
+    page = Document(extra)
+    for a in page.find("a"):
+        label = (a.get("aria-label") or a.text or "").strip()
+        check(bool(label), "[%s] a link has no accessible name: %r" % (extra, a.attrs))
+    for el in page.elements:
+        for attr in ("aria-labelledby", "aria-describedby", "aria-controls"):
+            val = el.get(attr)
+            if val:
+                for token in val.split():
+                    check(token in page.ids(),
+                          "[%s] %s=%r targets a missing id" % (extra, attr, token))
+
 pubs = Document("publications.html")
 for img in pubs.find("img"):
     check(img.get("alt") is not None,

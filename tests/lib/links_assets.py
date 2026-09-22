@@ -17,7 +17,7 @@ from sitecheck import ROOT, Document, check, exists, read, report  # noqa: E402
 ALLOWED_REMOTE_HOSTS = set()
 outbound = set()
 
-for page in ["index.html", "404.html", "publications.html"]:
+for page in ["index.html", "404.html", "publications.html", "news.html"]:
     doc = Document(page)
     tag = "[%s]" % page
     ids = doc.ids()
@@ -82,15 +82,15 @@ check(exists("assets/fonts/PlayfairDisplay-LICENSE.txt"),
 # --- Placeholders are inert, not fake links -------------------------------
 doc = Document("index.html")
 placeholders = [el for el in doc.elements if "ph" in el.classes()]
-# 1 "All News →" link, 3 social links and the pending Givebutter button. The
-# rest of the Figma's dead destinations have gone as their sections got real
-# content: "All Programs →" and "Apply for Membership" with the rewrites,
-# "Full Library →" and the four publication downloads once the library had real
-# entries and its own page, and the three policy links now that each opens a
-# dialog with real text in it.
-check(len(placeholders) == 5,
-      "expected 5 .ph placeholders — the Figma's dead destinations that survive "
-      "plus the pending Givebutter link, found %d" % len(placeholders))
+# 3 social links and the pending Givebutter button. Every other dead
+# destination the Figma carried has gone as its section gained real content:
+# "All Programs →" and "Apply for Membership" with the rewrites, "Full Library →"
+# and "All News →" once each list had real entries and a page of its own, the
+# four publication downloads with them, and the three policy links now that each
+# opens a dialog with real text in it.
+check(len(placeholders) == 4,
+      "expected 4 .ph placeholders — three social links and the pending Givebutter "
+      "button, found %d" % len(placeholders))
 for el in placeholders:
     check(el.get("href") is None,
           "a .ph placeholder carries an href (%r) — it should be inert" % el.get("href"))

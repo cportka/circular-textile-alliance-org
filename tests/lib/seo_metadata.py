@@ -134,4 +134,32 @@ check(SITE + "publications.html" in read("sitemap.xml"),
 check("publications.html" in read("llms.txt"),
       "publications.html is not mentioned in llms.txt")
 
+# --- news.html --------------------------------------------------------------
+news = Document("news.html")
+ntitle = news.first("title").text.strip()
+check(10 <= len(ntitle) <= 65,
+      "[news.html] <title> is %d chars; aim for 10-65" % len(ntitle))
+for other, name in ((title, "the home page"), (ptitle, "publications.html")):
+    check(ntitle != other, "[news.html] reuses %s's <title>" % name)
+
+ndesc = news.meta(name="description")
+check(ndesc is not None, "[news.html] meta description missing")
+if ndesc:
+    check(70 <= len(ndesc) <= 320,
+          "[news.html] meta description is %d chars; aim for 70-320" % len(ndesc))
+    for other, name in ((description, "the home page"), (pdesc, "publications.html")):
+        check(ndesc != other, "[news.html] reuses %s's meta description" % name)
+
+ncanonical = news.first("link", rel="canonical")
+check(ncanonical is not None and ncanonical.get("href") == SITE + "news.html",
+      "[news.html] canonical does not point at itself: %r"
+      % (ncanonical and ncanonical.get("href")))
+check(news.meta(prop="og:url") == SITE + "news.html",
+      "[news.html] og:url is %r" % news.meta(prop="og:url"))
+for prop in ("og:type", "og:title", "og:description", "og:image"):
+    check(news.meta(prop=prop), "[news.html] %s missing" % prop)
+
+check(SITE + "news.html" in read("sitemap.xml"), "news.html is not in sitemap.xml")
+check("news.html" in read("llms.txt"), "news.html is not mentioned in llms.txt")
+
 report("seo metadata")
