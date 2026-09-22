@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.12.1 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.13.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -16,6 +16,7 @@ it and you are looking at production.
 ```
 index.html                 the home page — eight sections
 publications.html          Reports & Publications — the full library
+news.html                  News — the full list
 404.html                   styled not-found page
 assets/
   css/site.css             every style, including the @font-face block
@@ -255,6 +256,14 @@ button's bottom border with the link divider. And `.site-header
 .btn--outline-ink` at (0,2,0) paints that button `--cream` for the over-hero
 header, which is invisible on a cream panel — so it takes `--ink` from a
 (0,3,0) rule instead. Both are held by `components` assertions.
+
+**News and publications share one row component.** Both lists are external
+links with no supplied dates, categories, descriptions or page counts, so both
+use `.pubs`/`.pub`: host in the left rail, title as the link, a `Read` action
+carrying an `aria-label` that names the item and its host. The News section's
+photographs and the whole `.card` family went with the change — `.card`,
+`.card-grid`, `.card__media`, `.card__title` and the four `.news-card__*` rules
+had no markup left once Programs and News both stopped using them.
 
 **Newsletter form.** No subscription endpoint exists. Rather than fake a success
 state, submitting reports plainly that nothing was recorded. Give the `<form>` a

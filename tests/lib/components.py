@@ -55,9 +55,10 @@ for selector in (".site-header--solid",
           "%r has no rule — a page using .site-header--solid would fall back to "
           "the over-hero treatment and lose that text against a light ground"
           % selector)
-check('class="site-header site-header--solid"' in read("publications.html"),
-      "publications.html opens on a cream section, so its header must carry "
-      ".site-header--solid or the wordmark is cream on cream")
+for page in ("publications.html", "news.html"):
+    check('class="site-header site-header--solid"' in read(page),
+          "%s opens on a cream section, so its header must carry "
+          ".site-header--solid or the wordmark is cream on cream" % page)
 
 # --- Mobile disclosure ------------------------------------------------------
 # It is a panel hung off the right of the bar, not a full-bleed sheet, so it
@@ -116,7 +117,7 @@ check(rule_body(".site-header .nav-mobile .btn--outline-ink:hover") is not None,
 # --- Policy dialogs ---------------------------------------------------------
 # Each footer policy opens a real <dialog>; showModal() supplies the centring,
 # backdrop, focus containment and Escape, so only the wiring is ours to check.
-for page in ("index.html", "publications.html"):
+for page in ("index.html", "publications.html", "news.html"):
     d = Document(page)
     ids = d.ids()
     dialogs = d.find("dialog")
@@ -158,14 +159,14 @@ check(rule_body(".policy__inner") and "2rem 2rem 0" in rule_body(".policy__inner
       "for the same reason .nav-mobile does")
 
 # --- Footer -----------------------------------------------------------------
-for page in ("index.html", "publications.html"):
+for page in ("index.html", "publications.html", "news.html"):
     d = Document(page)
     cols = [el for el in d.elements if "footer-col" in el.classes()]
     check(len(cols) == 2, "[%s] expected 2 footer columns, found %d" % (page, len(cols)))
 
 # --- Spelling ---------------------------------------------------------------
 # The Figma used the British "Programmes"; the alliance uses "Programs".
-for page in ("index.html", "publications.html", "404.html"):
+for page in ("index.html", "publications.html", "news.html", "404.html"):
     check("rogramme" not in read(page),
           "%s still says 'Programme' somewhere" % page)
 

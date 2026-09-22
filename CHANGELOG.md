@@ -4,6 +4,52 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.13.0] - 2026-09-22
+
+### Added
+- **`news.html` — a dedicated News page.** Same shell as the publications page,
+  its own title, description, canonical and Open Graph metadata, its own entry
+  in `sitemap.xml` and `llms.txt`. It carries "What's Happening at CTA", the
+  five kinds of update the section covers, "Stay Connected", and the full list.
+- **`All News →` is a real link now**, not a placeholder.
+- The four supplied news items, on both pages: the Vogue piece on California's
+  bill, CFDA on SB 707 moving from policy to practice, the Conscious Chatter
+  interview with Joanne Brasch, and Fibershed on improving the Responsible
+  Textile Recovery Act.
+
+### Changed
+- **The News section drops its photographs and uses the same row component as
+  the library.** Both lists are external links with no supplied dates,
+  categories or descriptions, so both show host, title and a `Read` action
+  rather than cards with invented metadata.
+- The home page's News heading becomes **"What's Happening at CTA"**, since
+  "From the Alliance" is now one of the categories on the News page and having
+  both would read as a mistake.
+- `.card`, `.card-grid`, `.card__media`, `.card__body`, `.card__title` and the
+  four `.news-card__*` rules are deleted: Programs stopped using them in 0.8.0
+  and News was the last holder.
+- Placeholder count 5 → 4; only the three social links and the pending
+  Givebutter button remain.
+
+### Added — tests
+- `news.html` joins the structure, links, accessibility and SEO suites, the
+  last asserting it reuses neither the home page's nor the publications page's
+  title or description and that it is registered in `sitemap.xml` and
+  `llms.txt`. The shared-shell guards — policy dialogs, two footer columns, the
+  solid header — now run against all three content pages rather than two.
+- Article count 14 → 15.
+
+### Notes
+- **The strict well-formedness check added in 0.12.1 earned itself.** Building
+  this page hit the same substring-prefix mistake that produced the stray
+  `</div>` in 0.10.1 — `index("    </div>")` matching inside a deeper
+  `"        </div>"` — and truncated the last news item mid-element. The check
+  caught it before the page was ever committed. Block extraction is
+  indentation-aware now rather than substring-based.
+- The four headlines are reproduced as supplied, which leaves their
+  capitalisation inconsistent with each other. They are other outlets'
+  headlines, so they are quoted rather than restyled.
+
 ## [0.12.1] - 2026-09-22
 
 Three rounds of "this is still broken" had one cause each, and none of them was
