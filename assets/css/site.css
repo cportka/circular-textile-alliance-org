@@ -705,14 +705,14 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   margin-top: 2.5rem;
 }
 .prog__figure { border: 1px solid var(--border); }
-/* The diagram is line art on white, which would otherwise float unbounded on
-   --cream-dark; the rule and the cream plate make its edge deliberate. */
+/* The diagram has a real alpha channel: the drawn sheet of paper is opaque and
+   everything around it is transparent, so it sits straight on the section's
+   ground. (Until 0.14.2 it was an opaque white rectangle and needed a cream
+   plate and a rule to stop it floating; with transparency those would only box
+   the sheet back in.) */
 .prog__diagram {
   margin: 2.5rem auto 0;
   max-width: 40rem;
-  padding: 1rem;
-  background: var(--cream);
-  border: 1px solid var(--border);
 }
 
 /* --- Members ------------------------------------------------------------- */

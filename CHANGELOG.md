@@ -4,6 +4,25 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.14.2] - 2026-10-09
+
+### Changed
+- **The recovery diagram is the alpha-channel version** (`ec58074`): 1600x1280,
+  121 KB rather than 207 KB, with the drawn sheet of paper opaque and
+  everything around it transparent. The markup declares 1600x1280.
+- **The cream plate and rule around it are gone.** They were added in 0.8.0
+  because the old file was a solid white rectangle that floated on
+  `--cream-dark`; with real transparency they would only box the sheet back in,
+  so the paper now sits directly on the section's ground. Still centred, still
+  capped at 40rem.
+
+### Changed — tests
+- Raster images must declare their file's **exact** size, not just its
+  proportions. The new file has the same 5:4 shape as the old one, so a stale
+  3000x2400 passed the ratio check while describing a file that no longer
+  exists. SVGs scale, so only their ratio is held. Verified by restoring
+  3000x2400 and watching it fail.
+
 ## [0.14.1] - 2026-10-09
 
 ### Changed

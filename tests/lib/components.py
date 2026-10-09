@@ -204,6 +204,13 @@ for page in ("index.html", "publications.html", "news.html"):
             check(abs(declared - actual) / actual < 0.02,
                   "[%s] %s declares %sx%s but the file is %gx%g — the reserved box is "
                   "the wrong shape until it loads" % (page, src, w, h, real[0], real[1]))
+            # A raster has one true size, so hold it to that exactly — a stale
+            # 3000x2400 on a 1600x1280 file passes the ratio test above but is
+            # still a lie about the file. SVGs scale, so only their ratio counts.
+            if not src.endswith(".svg"):
+                check((int(w), int(h)) == (int(real[0]), int(real[1])),
+                      "[%s] %s declares %sx%s but the file is %dx%d — update the "
+                      "attributes to match" % (page, src, w, h, real[0], real[1]))
 
 # --- Two newsletters on the home page ----------------------------------------
 # One after Who We Are, one closing News. Each finds its own field and status
