@@ -94,7 +94,7 @@
   <div class="wrap">
     <div class="site-header__bar">
       <a class="brand" href="#top" aria-label="Circular Textile Alliance — back to top">
-        <img class="brand__mark" src="assets/img/logo.svg" alt="" width="64" height="40">
+        <img class="brand__mark" src="assets/img/logo.svg" alt="" width="56" height="40">
         <span class="brand__name">
           <span>Circular Textile</span>
           <span class="is-alliance">Alliance</span>
@@ -248,16 +248,23 @@
       </ul>
     </div>
 
-    <div class="about__block" id="contribute">
-      <h3 class="about__subhead about__subhead--peach">Contribute To Our Mission &amp; Work</h3>
-      <!-- Copy pending. The Givebutter destination is not wired up either, so the
-           control renders inert like the other placeholders: swap this <button>
-           for <a class="btn btn--primary" href="https://givebutter.com/…"> and
-           drop the aria-describedby once the campaign page exists. -->
-      <button class="btn btn--primary ph" type="button" disabled
-              aria-describedby="ph-note" title="Coming soon">
-        Give via Givebutter
-      </button>
+    <div class="newsletter on-dark">
+      <div>
+        <h3 class="newsletter__title">Stay Informed</h3>
+        <p class="newsletter__note">
+          Receive our quarterly digest of policy updates, program news, and new
+          research.
+        </p>
+      </div>
+      <form class="newsletter__form" id="newsletter-form-about" novalidate>
+        <label class="visually-hidden" for="newsletter-email-about">Your email address</label>
+        <div class="newsletter__field">
+          <input class="newsletter__input" id="newsletter-email-about" name="email" type="email"
+                 autocomplete="email" placeholder="your@organisation.eu" required>
+          <button class="btn btn--primary newsletter__submit" type="submit">Subscribe</button>
+        </div>
+        <p class="newsletter__status" id="newsletter-status-about" role="status"></p>
+      </form>
     </div>
 
     <hr class="rule">
@@ -323,9 +330,17 @@
       </div>
     </div>
 
-    <a class="link-rule about__cta" href="#programs">
-      Explore our programs <span aria-hidden="true">&rarr;</span>
-    </a>
+    <div class="about__block" id="contribute">
+      <h3 class="about__subhead about__subhead--peach">Contribute To Our Mission &amp; Work</h3>
+      <!-- Copy pending. The Givebutter destination is not wired up either, so the
+           control renders inert like the other placeholders: swap this <button>
+           for <a class="btn btn--primary" href="https://givebutter.com/…"> and
+           drop the aria-describedby once the campaign page exists. -->
+      <button class="btn btn--primary ph" type="button" disabled
+              aria-describedby="ph-note" title="Coming soon">
+        Donate via Givebutter
+      </button>
+    </div>
   </div>
 </section>
 
@@ -533,7 +548,7 @@
             productive use and recovery of textiles.
           </p>
         <figure class="prog__diagram">
-          <img width="1420" height="1068" loading="lazy" decoding="async"
+          <img width="3000" height="2400" loading="lazy" decoding="async"
                src="assets/img/textile-recovery-infrastructure.webp"
                alt="Hand-drawn diagram of the textile lifecycle. A linear path runs from virgin materials through design, materials manufacture, product production, sale and use to &quot;all done&quot;. From there a recovery loop returns textiles to productive use: recover leads to swap or to recycle, and recycling feeds back into design. Disposal branches to compost or to landfill.">
         </figure>
@@ -901,7 +916,7 @@
     <div class="site-footer__grid">
       <div class="site-footer__brand">
         <div class="brand">
-          <img class="brand__mark" src="assets/img/logo.svg" alt="" width="64" height="40">
+          <img class="brand__mark" src="assets/img/logo.svg" alt="" width="56" height="40">
           <span class="brand__name">
             <span>Circular Textile</span>
             <span>Alliance</span>
@@ -913,8 +928,7 @@
         </p>
         <p class="social">
           <span class="ph" aria-describedby="ph-note" title="Coming soon">LinkedIn</span>
-          <span class="ph" aria-describedby="ph-note" title="Coming soon">X</span>
-          <span class="ph" aria-describedby="ph-note" title="Coming soon">YouTube</span>
+          <span class="ph" aria-describedby="ph-note" title="Coming soon">Instagram</span>
         </p>
       </div>
 

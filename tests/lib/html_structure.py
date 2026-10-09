@@ -91,6 +91,17 @@ for page in PAGES:
     check(not stack, "[%s] never closed: %s"
           % (page, ", ".join("<%s> at line %d" % (t, l) for t, l in stack)))
 
+# --- Unique ids --------------------------------------------------------------
+# Duplicating a block duplicates its ids, and a repeated id makes `for=`,
+# aria-labelledby and getElementById resolve to whichever comes first — the
+# second copy silently stops working. The home page carries two newsletter forms.
+for page in PAGES:
+    seen = {}
+    for m in re.finditer(r'\sid="([^"]+)"', strip_uninteresting(read(page))):
+        seen[m.group(1)] = seen.get(m.group(1), 0) + 1
+    dupes = sorted(k for k, n in seen.items() if n > 1)
+    check(not dupes, "[%s] ids used more than once: %s" % (page, dupes))
+
 # --- index.html specifics -------------------------------------------------
 doc = Document("index.html")
 ids = doc.ids()

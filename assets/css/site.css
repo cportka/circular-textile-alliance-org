@@ -558,7 +558,6 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 }
 /* --- About / Who we are -------------------------------------------------- */
 .about__title { margin-top: 1.25rem; margin-bottom: 3rem; }
-.about__cta { display: inline-flex; margin-top: 2.5rem; }
 
 .about__lede {
   max-width: 54rem;
