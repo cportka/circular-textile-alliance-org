@@ -90,24 +90,27 @@
      letting the form navigate would drop the address on the floor, so the
      submit is intercepted and reported honestly. To go live: give the <form> a
      real `action`/`method` and delete this block. */
-  var form = document.getElementById('newsletter-form');
-  var status = document.getElementById('newsletter-status');
+  // There are two of these forms on the home page, so each one finds its own
+  // field and status from inside itself rather than by a page-wide id.
+  var forms = document.querySelectorAll('.newsletter__form');
+  Array.prototype.forEach.call(forms, function (form) {
+    var field = form.querySelector('.newsletter__input');
+    var status = form.querySelector('.newsletter__status');
+    if (!field || !status) return;
 
-  if (form && status) {
     form.addEventListener('submit', function (event) {
       event.preventDefault();
-      var field = document.getElementById('newsletter-email');
-      var value = field && field.value.trim();
+      var value = field.value.trim();
 
       // Both messages are kept to a single line at the form's 26rem width, so
       // they fit the height reserved for .newsletter__status and the panel
       // never grows on submit.
       if (!value || !field.checkValidity()) {
         status.textContent = 'Please enter a valid email address.';
-        if (field) field.focus();
+        field.focus();
         return;
       }
       status.textContent = 'Subscriptions aren’t live yet — nothing was recorded.';
     });
-  }
+  });
 })();

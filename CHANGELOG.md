@@ -4,6 +4,47 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.14.0] - 2026-10-09
+
+### Changed
+- **The Contribute block moves to the end of Our Approach**, replacing the
+  "Explore our programs →" link — moved, not duplicated; `#contribute` and the
+  footer's *Donate* link travel with it.
+- **"Give via Givebutter" is "Donate via Givebutter"**, matching the footer.
+- **A second *Stay Informed* panel takes the Contribute block's old place** at
+  the end of Who We Are — heading, note, field and Subscribe button. Two forms
+  on one page cannot share ids, so this copy's form, field and status carry an
+  `-about` suffix and its label points at its own field; `site.js` now wires
+  every `.newsletter__form` and finds each one's field and status from inside
+  it, rather than looking up a single form by id.
+- **Socials are LinkedIn and Instagram** on every page. X and YouTube are gone;
+  Instagram is an inert placeholder like LinkedIn until there is an account to
+  link. Placeholder count 4 → 3.
+- `.about__cta` had no markup left and is deleted.
+
+### Fixed
+- **The recovery diagram declared the old file's shape.** The replacement
+  `textile-recovery-infrastructure.webp` is 3000x2400 (5:4); the markup still
+  said 1420x1068 (4:3), so the box reserved before load was the wrong shape and
+  the page shifted as it arrived. It declares 3000x2400 now. The file itself
+  needed nothing — it is served from `assets/img/` like before.
+- **The logo had the same fault, unnoticed since 0.2.1.** Its viewBox is 101x72
+  but the markup declared 64x40. The rendered size comes from CSS, so nothing
+  looked wrong once loaded, but the reserved box was 14% too wide. It declares
+  56x40 now — found by the guard below on its first run.
+
+### Added — tests
+- **Every `<img>`'s width/height must match the file it loads**, read from the
+  WebP, PNG or SVG itself. Verified by restoring the stale 1420x1068 and
+  watching it fail.
+- **Ids must be unique on every page** — duplicating a block duplicates its ids,
+  and a repeated id quietly breaks the second copy's label and script. Verified
+  by giving both newsletter forms the same id.
+- Two newsletter forms on the home page, each with a label pointing at its own
+  field and a status line of its own, and `site.js` wiring all of them; the
+  Contribute block inside Our Approach and nowhere else, reading "Donate"; the
+  socials exactly LinkedIn and Instagram.
+
 ## [0.13.0] - 2026-09-22
 
 ### Added

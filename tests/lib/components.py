@@ -6,11 +6,12 @@ absence caused the bug, so the edit that would silently reintroduce it fails
 here. Confirming how the result actually looks is a matter of opening the page.
 """
 
+import os
 import re
 import sys
 
 sys.path.insert(0, __file__.rsplit("/", 1)[0])
-from sitecheck import Document, check, read, report  # noqa: E402
+from sitecheck import ROOT, Document, check, read, report  # noqa: E402
 
 css = read("assets/css/site.css")
 doc = Document("index.html")
@@ -163,6 +164,95 @@ for page in ("index.html", "publications.html", "news.html"):
     d = Document(page)
     cols = [el for el in d.elements if "footer-col" in el.classes()]
     check(len(cols) == 2, "[%s] expected 2 footer columns, found %d" % (page, len(cols)))
+
+# --- Images are the shape they say they are ----------------------------------
+# width/height reserve the image's box before it loads. When a file is replaced
+# at a different aspect ratio — textile-recovery-infrastructure.webp went from
+# 1420x1068 to 3000x2400 — stale attributes reserve the wrong shape and the page
+# jumps as it loads. Read each file's real size and hold the markup to it.
+import struct  # noqa: E402
+
+def intrinsic(path):
+    data = open(os.path.join(ROOT, path), "rb").read()
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        kind = data[12:16]
+        if kind == b"VP8 ":
+            w, h = struct.unpack("<HH", data[26:30])
+            return w & 0x3FFF, h & 0x3FFF
+        if kind == b"VP8L":
+            v = struct.unpack("<I", data[21:25])[0]
+            return (v & 0x3FFF) + 1, ((v >> 14) & 0x3FFF) + 1
+        if kind == b"VP8X":
+            return (1 + int.from_bytes(data[24:27], "little"),
+                    1 + int.from_bytes(data[27:30], "little"))
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return struct.unpack(">II", data[16:24])
+    if path.endswith(".svg"):
+        vb = re.search(rb'viewBox="\s*[-\d.]+\s+[-\d.]+\s+([\d.]+)\s+([\d.]+)', data)
+        if vb:
+            return float(vb.group(1)), float(vb.group(2))
+    return None
+
+for page in ("index.html", "publications.html", "news.html"):
+    for img in Document(page).find("img"):
+        src, w, h = img.get("src") or "", img.get("width"), img.get("height")
+        if src.startswith("http") or not (w and h):
+            continue
+        real = intrinsic(src)
+        if check(real is not None, "[%s] cannot read the size of %s" % (page, src)):
+            declared, actual = int(w) / int(h), real[0] / real[1]
+            check(abs(declared - actual) / actual < 0.02,
+                  "[%s] %s declares %sx%s but the file is %gx%g — the reserved box is "
+                  "the wrong shape until it loads" % (page, src, w, h, real[0], real[1]))
+
+# --- Two newsletters on the home page ----------------------------------------
+# One after Who We Are, one closing News. Each finds its own field and status
+# from inside its form, so neither depends on a page-wide id.
+forms = [el for el in doc.elements if "newsletter__form" in el.classes()]
+check(len(forms) == 2, "expected 2 newsletter forms on the home page, found %d" % len(forms))
+for form in forms:
+    def inside(el, cls):
+        stack = list(el.children)
+        while stack:
+            node = stack.pop()
+            if cls in node.classes():
+                return node
+            stack.extend(node.children)
+    field, label = inside(form, "newsletter__input"), None
+    stack = list(form.children)
+    while stack:
+        node = stack.pop()
+        if node.tag == "label":
+            label = node
+        stack.extend(node.children)
+    check(field is not None and label is not None and label.get("for") == field.get("id"),
+          "a newsletter form's label does not point at its own email field")
+    check(inside(form, "newsletter__status") is not None,
+          "a newsletter form has no status line of its own")
+js = read("assets/js/site.js")
+check("querySelectorAll('.newsletter__form')" in js,
+      "site.js must wire every newsletter form, not one by id")
+check("getElementById('newsletter-" not in js,
+      "site.js looks a newsletter up by id again — the second form would be ignored")
+
+# --- Contribute lives in Our Approach -----------------------------------------
+src = doc.source
+approach = src[src.index('id="approach"'):src.index('id="programs"')]
+check('id="contribute"' in approach,
+      "the Contribute block belongs at the end of Our Approach")
+check(src.count('id="contribute"') == 1, "the Contribute block exists more than once")
+check("Donate via Givebutter" in approach and "Give via" not in src,
+      "the Givebutter button should read 'Donate via Givebutter'")
+check("Explore our programs" not in src,
+      "'Explore our programs' was replaced by the Contribute block")
+
+# --- Socials -------------------------------------------------------------------
+for page in ("index.html", "publications.html", "news.html"):
+    d = Document(page)
+    social = next((el for el in d.elements if "social" in el.classes()), None)
+    names = [c.text.strip() for c in social.children] if social else []
+    check(names == ["LinkedIn", "Instagram"],
+          "[%s] socials should be LinkedIn and Instagram, found %s" % (page, names))
 
 # --- Spelling ---------------------------------------------------------------
 # The Figma used the British "Programmes"; the alliance uses "Programs".
