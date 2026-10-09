@@ -4,6 +4,26 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.14.1] - 2026-10-09
+
+### Changed
+- **The board listing is updated.** Kevin Ann Jordan as President; Members are
+  now Alix Vasquez (Founder, Herderin Studio), Jaleh Factor (Lezat), Carol
+  Miltimore (Seek Collective), Shobha Phillips (Proclaim), Jake Slayton
+  (Goodwill Bakersfield), Kevin Ann Jordan (Project Management Consultant) and
+  Carley Brandau (Thread Odyssey); Advisory Members add titles for Richard
+  Rojas (City Planning, California) and John Bwarie, who moves there from
+  Members (Made In LA, Social Impact / Engagement). Lindsay Medoff is no longer
+  listed. Entries keep the page's existing "Name, Title, Organization" form.
+
+### Notes
+- **The alpha-channel diagram has not reached the repository.** Commit
+  `60ed28a`, "Update textile recovery image again", changes no files; the
+  diagram on `main` is still the opaque 3000x2400 lossy WebP from `5c5f0f0`.
+  Nothing in the markup needs to change when it arrives: the figure sits on a
+  cream plate, so transparent areas show cream, and the size guard from 0.14.0
+  will fail if the new file's proportions differ from the declared 3000x2400.
+
 ## [0.14.0] - 2026-10-09
 
 ### Changed
