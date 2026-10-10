@@ -4,6 +4,13 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.14.3] - 2026-10-10
+
+### Changed
+- Both newsletter fields' placeholder reads `your@organization.org` rather
+  than `your@organisation.eu`, matching the site's US spelling. A
+  `components` assertion holds both forms to it.
+
 ## [0.14.2] - 2026-10-09
 
 ### Changed
