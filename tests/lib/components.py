@@ -242,6 +242,18 @@ check("querySelectorAll('.newsletter__form')" in js,
 check("getElementById('newsletter-" not in js,
       "site.js looks a newsletter up by id again — the second form would be ignored")
 
+# Both newsletter fields carry the same US-spelled placeholder.
+for form in forms:
+    stack, field = list(form.children), None
+    while stack:
+        node = stack.pop()
+        if "newsletter__input" in node.classes():
+            field = node
+        stack.extend(node.children)
+    check(field is not None and field.get("placeholder") == "your@organization.org",
+          "a newsletter field's placeholder should read your@organization.org, found %r"
+          % (field and field.get("placeholder")))
+
 # --- Contribute lives in Our Approach -----------------------------------------
 src = doc.source
 approach = src[src.index('id="approach"'):src.index('id="programs"')]
