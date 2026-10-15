@@ -38,8 +38,11 @@ Every change bumps the version and adds an entry below.
   Mocked mode walks every outcome above, proves the sandbox holds against a
   hostile reply, checks for CSP violations in every frame, the no-script post,
   and every message fitting the reserved status row at nine widths in the
-  loaded typeface. `--live` signs up an undeliverable `.invalid` address against
-  the real audience to prove the round trip without ever creating a contact.
+  loaded typeface. `--live` runs the real round trip against the audience —
+  the relay, the no-script post and the fallback post — with Mailchimp's bot
+  trap filled, which Mailchimp discards, so it never creates a contact (an
+  undeliverable `.invalid` address alone did not stop Mailchimp accepting it).
+  It traces every request to Mailchimp, redirects included.
   `.github/workflows/newsletter.yml` runs both whenever the signup's files
   change, and on demand.
 

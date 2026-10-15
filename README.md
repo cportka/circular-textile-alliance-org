@@ -89,11 +89,12 @@ double submits and double presses after a handoff, both forms independently,
 the no-script form — with zero CSP violations in any frame. A hostile reply is
 run inside the relay to prove the sandbox holds (no page, storage, cookies or
 `top`), and every message the script can write is measured against the status
-row at nine widths, in the loaded typeface. `--live` signs up an
-address on the reserved `.invalid` TLD, which can never be delivered to, so
-Mailchimp must refuse it and no contact is ever created; what it proves is the
-round trip — the CSP admits the JSONP reply and the form post, and Mailchimp's
-answer reaches the status line.
+row at nine widths, in the loaded typeface. `--live` runs the real
+round trip against the audience — the relay, the no-script post, and the
+fallback post — with Mailchimp's bot-trap field filled. Mailchimp discards any
+signup whose trap is filled, so a live run never creates a contact. (An address
+on the reserved `.invalid` TLD is not enough on its own: Mailchimp accepted one.)
+It traces every request to Mailchimp, redirects included, so a failure says why.
 
 ## Deployment
 

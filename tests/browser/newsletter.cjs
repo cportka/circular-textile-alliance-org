@@ -434,27 +434,58 @@ async function mocked(browser, base) {
 }
 
 // --- Live scenarios ----------------------------------------------------------
+// Every live request fills Mailchimp's bot trap. Mailchimp discards a signup
+// whose trap is filled — that is what the field is for — so these can never
+// add a contact, while still exercising the whole round trip. (An address on a
+// reserved TLD is NOT enough: Mailchimp accepted one, single opt-in, on the
+// first live run.) The address is undeliverable as well, belt and braces.
+const LIVE_ADDRESS = 'newsletter-smoke-test@circulartextilealliance.invalid';
+const LIVE_TRAP = 'smoke-test';
+
+// Log every request to Mailchimp's host, with redirects and failures, so a
+// failing run says why.
+function traceMailchimp(context) {
+  const lines = [];
+  context.on('request', (r) => {
+    if (!r.url().includes('list-manage.com')) return;
+    const from = r.redirectedFrom();
+    lines.push(`→ ${r.method()} ${r.url().slice(0, 140)}${from ? ' (redirected from ' + from.url().slice(0, 80) + ')' : ''}`);
+  });
+  context.on('response', async (r) => {
+    if (!r.url().includes('list-manage.com')) return;
+    const h = r.headers();
+    lines.push(`← ${r.status()} ${r.url().slice(0, 100)} type=${h['content-type'] || ''}${h.location ? ' location=' + h.location : ''}`);
+  });
+  context.on('requestfailed', (r) => {
+    if (r.url().includes('list-manage.com')) lines.push(`✗ ${r.url().slice(0, 120)} ${r.failure() && r.failure().errorText}`);
+  });
+  return lines;
+}
+
 async function live(browser, base) {
-  // .invalid is reserved and can never be delivered to, so Mailchimp refuses it.
-  const address = 'newsletter-smoke-test@circulartextilealliance.invalid';
   const quiet = new Set([MESSAGES.sending, MESSAGES.offline, '']);
 
   {
     const { context, page, csp } = await openPage(browser, base, {});
+    const trace = traceMailchimp(context);
     const replies = [];
     page.on('response', async (r) => {
       if (r.url().startsWith(HOST + '/subscribe/post-json')) {
         replies.push({ status: r.status(), type: r.headers()['content-type'], body: await r.text().catch(() => '') });
       }
     });
-    await submit(page, FORMS[0], address);
+    await page.fill(FORMS[0] + ' input[name="' + TRAP + '"]', LIVE_TRAP, { force: true });
+    await submit(page, FORMS[0], LIVE_ADDRESS);
     await page.waitForFunction((f) => {
       const t = document.querySelector(f + ' .newsletter__status').textContent;
       return t && t !== 'Subscribing…';
     }, FORMS[0], { timeout: 20000 }).catch(() => {});
     const shown = await statusOf(page, FORMS[0]).textContent();
+    console.log('        trace:\n          ' + trace.join('\n          '));
     console.log('        Mailchimp replied: ' + JSON.stringify(replies));
     console.log('        status line: ' + JSON.stringify(shown));
+    const sentTrap = trace.find((l) => l.includes('/subscribe/post-json')) || '';
+    ok(sentTrap.includes(TRAP + '=' + LIVE_TRAP), 'live: the request carried the filled bot trap, so no contact is created', sentTrap);
     ok(replies.length === 1 && replies[0].status === 200, 'live: the JSONP request reached Mailchimp and was answered');
     ok(/^relay\d+\(/.test((replies[0] || {}).body || ''), 'live: the answer is JSONP for our callback');
     ok(!quiet.has(shown) && SHOWN.has(shown), 'live: Mailchimp’s answer reached the status line', shown);
@@ -463,22 +494,38 @@ async function live(browser, base) {
     await context.close();
   }
 
-  {
-    const { context, page, csp } = await openPage(browser, base, { js: false });
-    await page.fill(FORMS[1] + ' .newsletter__input', address);
+  for (const js of [false, true]) {
+    // The hosted page, reached two ways: a no-script post, and the fallback
+    // after the relay is made to fail (its frame never starts).
+    const tag = js ? 'live, fallback' : 'live, no script';
+    const { context, page, csp } = await openPage(browser, base, js
+      ? { frame: (r) => r.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>silent</title>' }) }
+      : { js: false });
+    const trace = traceMailchimp(context);
+    await page.fill(FORMS[1] + ' input[name="' + TRAP + '"]', LIVE_TRAP, { force: true });
+    if (js) {
+      await submit(page, FORMS[1], LIVE_ADDRESS);
+      await waitForStatus(page, FORMS[1], MESSAGES.offline, 8000);
+    } else {
+      await page.fill(FORMS[1] + ' .newsletter__input', LIVE_ADDRESS);
+    }
     const [popup] = await Promise.all([
       context.waitForEvent('page', { timeout: 10000 }).catch(() => null),
       page.click(FORMS[1] + ' .newsletter__submit'),
     ]);
-    let landed = popup ? popup.url() : '';
+    let landed = '';
     if (popup) {
       await popup.waitForLoadState('domcontentloaded', { timeout: 20000 }).catch(() => {});
+      await popup.waitForTimeout(1000);
       landed = popup.url();
-      const text = (await popup.locator('body').innerText().catch(() => '')).replace(/\s+/g, ' ').slice(0, 300);
-      console.log('        hosted page: ' + landed + '\n        says: ' + JSON.stringify(text));
+      const text = (await popup.locator('body').innerText().catch(() => '')).replace(/\s+/g, ' ').slice(0, 400);
+      console.log(`        [${tag}] hosted page: ${landed}\n        says: ${JSON.stringify(text)}`);
     }
-    ok(/^https:\/\/[^/]*list-manage\.com\//.test(landed), 'live, no script: the form post lands on Mailchimp', landed);
-    ok(csp.length === 0, 'live, no script: no CSP violation', csp.join(' | '));
+    console.log(`        [${tag}] trace:\n          ` + trace.join('\n          '));
+    const posted = trace.find((l) => l.startsWith('→ POST')) || '';
+    ok(posted.includes('/subscribe/post?u=' + U), `${tag}: the form posts to Mailchimp's hosted signup`, posted);
+    ok(/^https:\/\/[^/]*list-manage\.com\//.test(landed), `${tag}: the new tab shows Mailchimp's page`, landed);
+    ok(csp.length === 0, `${tag}: no CSP violation`, csp.join(' | '));
     await context.close();
   }
 }
