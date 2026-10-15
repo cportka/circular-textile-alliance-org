@@ -316,6 +316,22 @@ for name, source in (("site.js", js), ("newsletter-frame.js", relay_js)):
         check(sink not in source, "%s uses %s — Mailchimp's reply must never be "
               "parsed as markup" % (name, sink))
 
+# The footer and the three policy dialogs are copied into every page with a
+# footer. Nothing builds them from one source, so hold the copies together:
+# the dialogs byte for byte, the footer apart from the secondary pages'
+# index.html prefix on its in-page links.
+copies = {}
+for page in ["index.html", "publications.html", "news.html"]:
+    text = Document(page).source
+    dialogs = text[text.find("<dialog"):text.rfind("</dialog>") + len("</dialog>")]
+    footer = text[text.find("<footer"):text.find("</footer>")]
+    copies[page] = (dialogs, footer.replace('href="index.html#', 'href="#'))
+for page in ("publications.html", "news.html"):
+    check(copies[page][0] == copies["index.html"][0],
+          "[%s] its policy dialogs differ from index.html's — edit all three copies" % page)
+    check(copies[page][1] == copies["index.html"][1],
+          "[%s] its footer differs from index.html's (beyond the index.html# prefix)" % page)
+
 # Every page's privacy text says where a newsletter address goes.
 for page in ["index.html", "publications.html", "news.html"]:
     text = Document(page).source

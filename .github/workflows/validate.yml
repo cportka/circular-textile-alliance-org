@@ -1,12 +1,18 @@
 name: validate
 
+# Pull requests, and main itself. (Branch pushes used to run too, so every PR
+# push ran the suite twice under two different concurrency groups.)
 on:
   push:
+    branches: [main]
   pull_request:
   # Lets the suite be re-run on demand from the Actions tab. Worth having: when
   # a run is lost to a GitHub incident rather than to a real failure, re-running
   # the stale run can wedge, and an empty commit is a poor way to retrigger.
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 # A newer push supersedes an in-flight run for the same ref instead of queueing
 # behind it — which also stops abandoned runs piling up during an outage.
@@ -17,12 +23,11 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      # Fails closed: a missing runner is a failure, not a pass.
       - name: Run tests
-        run: |
-          if [ -f tests/run-tests.sh ]; then
-            bash tests/run-tests.sh
-          else
-            echo "No tests/run-tests.sh found; nothing to validate."
-          fi
+        run: bash tests/run-tests.sh

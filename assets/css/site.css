@@ -488,7 +488,7 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   /* Backing colour shows through until the photograph paints, so the hero
      degrades to flat ink rather than a blank band. */
   background-color: var(--ink);
-  background-image: url('../img/photos/1711_MEX_HONGHO_GARMENT_02.webp');
+  background-image: url('../img/photos/1711_MEX_HONGHO_GARMENT_02-hero.webp');
   background-size: cover;
   background-position: center 30%;
   opacity: 0.22;
@@ -668,8 +668,7 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 }
 .section-head .eyebrow { margin-bottom: 1.25rem; }
 
-/* --- Programmes ---------------------------------------------------------- */
-/* --- Programmes ---------------------------------------------------------- */
+/* --- Programs ------------------------------------------------------------ */
 /* Long-form now rather than a card grid: seven areas, each a heading and its
    own prose, with the figures that belong to two of them. */
 .programs__title { margin-top: 1.25rem; }
@@ -837,8 +836,6 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   text-decoration: none;
   white-space: nowrap;
 }
-
-/* --- News ---------------------------------------------------------------- */
 
 /* --- Newsletter ---------------------------------------------------------- */
 .newsletter {
@@ -1131,7 +1128,7 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
 
 @media print {
   .site-header, .nav-mobile, .skip-link, .newsletter { display: none !important; }
-  .hero { min-height: auto; }
+  .hero__stage { min-height: auto; }   /* else page 1 is all hero */
   .hero__media, .hero__ring { display: none; }
   body { background: #fff; color: #000; }
 }

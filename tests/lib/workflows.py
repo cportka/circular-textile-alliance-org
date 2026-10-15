@@ -25,6 +25,15 @@ if exists(VALIDATE):
     check("workflow_dispatch:" in validate,
           "validate.yml lost its workflow_dispatch escape hatch")
     check("tests/run-tests.sh" in validate, "validate.yml no longer runs the suite")
+    # Fail closed: a renamed or deleted runner must turn CI red, not green —
+    # the agent merges on green.
+    check("nothing to validate" not in validate and "if [ -f tests/run-tests.sh ]" not in validate,
+          "validate.yml skips the suite when the runner is missing — a false green")
+    check(re.search(r"^permissions:\s*\n\s*contents:\s*read\s*$", validate, re.M),
+          "validate.yml must hold a read-only token")
+    check(re.search(r"push:\s*\n\s*branches:\s*\[\s*main\s*\]", validate),
+          "validate.yml should run on push to main only (PRs cover branches; "
+          "both together run every PR twice)")
 
 if exists(PAGES):
     pages = read(PAGES)
@@ -39,12 +48,36 @@ if exists(PAGES):
           "site could reach production")
 
     build_at = pages.find("tests/run-tests.sh")
-    upload_at = pages.find("upload-pages-artifact")
+    upload_at = pages.find("uses: actions/upload-pages-artifact")
     check(build_at != -1 and upload_at != -1 and build_at < upload_at,
           "pages.yml uploads the artifact before validating it")
 
     for perm in ("pages: write", "id-token: write", "contents: read"):
         check(perm in pages, "pages.yml is missing the '%s' permission" % perm)
+    # Deploy rights belong to the deploy job alone; the build job runs repo
+    # code (the suite) and must not hold them.
+    check(re.search(r"^permissions:\s*\{\}\s*$", pages, re.M),
+          "pages.yml should grant nothing at the workflow level")
+    build_job = pages[pages.find("  build:"):pages.find("  deploy:")]
+    deploy_job = pages[pages.find("  deploy:"):]
+    check("pages: write" not in build_job and "id-token: write" not in build_job,
+          "pages.yml's build job holds deploy permissions while running repo code")
+    check("pages: write" in deploy_job and "id-token: write" in deploy_job,
+          "pages.yml's deploy job lost its deploy permissions")
+    check("if: github.ref == 'refs/heads/main'" in deploy_job,
+          "pages.yml would publish a manual run from any branch")
+
+    # Publish the staged allowlist, dot-paths included — the repo root shipped
+    # internals and left .well-known/security.txt behind.
+    stage_at = pages.find("scripts/stage-site.sh _site")
+    check(build_at != -1 and stage_at > build_at and stage_at < upload_at,
+          "pages.yml must validate, then stage with scripts/stage-site.sh, then upload")
+    check(re.search(r"path:\s*_site\b", pages), "pages.yml uploads something other than _site")
+    check("include-hidden-files: true" in pages,
+          "pages.yml drops dot-paths, so .well-known/security.txt would not be published")
+    m = re.search(r"actions/upload-pages-artifact@v(\d+)", pages)
+    check(m and int(m.group(1)) >= 5,
+          "upload-pages-artifact before v5 has no include-hidden-files input")
 
     for action in ("actions/configure-pages", "actions/upload-pages-artifact",
                    "actions/deploy-pages"):
@@ -78,12 +111,23 @@ if exists(NEWSLETTER):
     check("workflow_dispatch:" in nl, "newsletter.yml cannot be run on demand")
 check(exists("tests/browser/newsletter.cjs"), "the newsletter browser test is missing")
 
-# Node 20 is deprecated on the runners; v4 of checkout still targets it.
+# Node 20 is deprecated on the runners. These are the first majors of each
+# action that run on Node 24; GitHub's own actions are pinned by major tag.
+CURRENT = {"actions/checkout": 7, "actions/configure-pages": 6,
+           "actions/upload-pages-artifact": 5, "actions/deploy-pages": 5}
 for path in (VALIDATE, PAGES, NEWSLETTER):
     if not exists(path):
         continue
-    for ref in re.findall(r"uses:\s*actions/checkout@v(\d+)", read(path)):
-        check(int(ref) >= 5,
-              "%s pins actions/checkout@v%s — v4 targets the deprecated Node 20" % (path, ref))
+    text = read(path)
+    for action, major in re.findall(r"uses:\s*([\w-]+/[\w-]+)@v(\d+)", text):
+        if action in CURRENT:
+            check(int(major) >= CURRENT[action],
+                  "%s uses %s@v%s — older than v%d, which is on the deprecated Node 20"
+                  % (path, action, major, CURRENT[action]))
+    # The token is never needed after checkout; don't leave it in .git/config
+    # while repository scripts run.
+    checkouts = len(re.findall(r"uses:\s*actions/checkout@", text))
+    check(text.count("persist-credentials: false") >= checkouts,
+          "%s leaves the checkout token on disk (persist-credentials)" % path)
 
 report("workflows")

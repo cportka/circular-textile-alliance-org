@@ -2,8 +2,10 @@
 
 ## What this site is
 
-`circulartextilealliance.org` is a **static** site: hand-authored HTML, CSS and a
-single progressive-enhancement script, served by GitHub Pages. There is no
+The Circular Textile Alliance site — served at
+`https://cportka.github.io/circular-textile-alliance-org/` until it moves to
+`circulartextilealliance.org` — is a **static** site: hand-authored HTML, CSS and
+two small progressive-enhancement scripts, served by GitHub Pages. There is no
 backend, no database, no authentication, no session state and no user accounts.
 No personal data is collected, stored or processed by the site itself; the one
 thing a visitor can choose to send anywhere is an email address to the
@@ -58,7 +60,7 @@ Photography is the alliance's own, served from `assets/img/photos/`. There is no
 analytics, no tag manager, no tracking pixel and no cookie of any kind — the
 site sets none and needs no consent banner.
 
-`img-src` in the Content-Security-Policy is `'self' data:`. The test suite fails
+`img-src` in the Content-Security-Policy is `'self'`. The test suite fails
 the build if any page fetches a subresource (`src`, or `href` on `<link>` /
 `<script>`) from a remote host, or if any page's policy names a remote source
 beyond the newsletter's `form-action`, so this cannot regress unnoticed.
@@ -84,8 +86,9 @@ Machine-readable contact details are published at
 
 ## Scope
 
-In scope: anything served from this repository — the markup, stylesheet, script,
-fonts and images, and the GitHub Actions workflow that validates them.
+In scope: anything served from this repository — the markup, stylesheet,
+scripts, fonts and images — and the GitHub Actions workflows that validate and
+publish them. What is served is exactly what `scripts/stage-site.sh` stages.
 
 Out of scope: vulnerabilities that require a compromised GitHub account or a
 modified local clone.

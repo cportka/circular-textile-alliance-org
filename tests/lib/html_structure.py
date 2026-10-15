@@ -72,6 +72,13 @@ for page in PAGES:
         if page not in REMOTE_CSP:
             check(directives.get("form-action") == ["'none'"],
                   "%s has no form, so its CSP should keep form-action 'none'" % tag)
+        # The floor every page keeps, asserted rather than assumed: removing
+        # one of these weakens the policy without tripping any check above.
+        for name, want in (("default-src", ["'self'"]), ("img-src", ["'self'"]),
+                           ("script-src", ["'self'"]), ("style-src", ["'self'"]),
+                           ("object-src", ["'none'"]), ("base-uri", ["'self'"])):
+            check(directives.get(name) == want,
+                  "%s CSP %s is %r, expected %r" % (tag, name, directives.get(name), want))
         # frame-ancestors is inert in a meta CSP; keeping it invites false confidence.
         check("frame-ancestors" not in csp,
               "%s CSP declares frame-ancestors, which meta-delivered CSP ignores" % tag)

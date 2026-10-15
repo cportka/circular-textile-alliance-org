@@ -90,10 +90,26 @@ check(exists(".well-known/security.txt"), "no /.well-known/security.txt")
 if exists(".well-known/security.txt"):
     sec = read(".well-known/security.txt")
     check(re.search(r"^Contact:\s*\S+", sec, re.M), "security.txt has no Contact field")
-    m = re.search(r"^Expires:\s*(\d{4})-", sec, re.M)
+    # RFC 9116: a full RFC 3339 timestamp, in the future, and recommended to be
+    # under a year away. Compared with now, not with a constant year, which
+    # could never fail once that year arrived.
+    m = re.search(r"^Expires:\s*(\S+)\s*$", sec, re.M)
     check(m is not None, "security.txt has no Expires field (required by RFC 9116)")
     if m:
-        check(int(m.group(1)) >= 2027, "security.txt Expires date has lapsed — refresh it")
+        import datetime
+        try:
+            expires = datetime.datetime.fromisoformat(m.group(1).replace("Z", "+00:00"))
+        except ValueError:
+            expires = None
+        check(expires is not None and expires.tzinfo is not None,
+              "security.txt Expires %r is not an RFC 3339 timestamp with a zone" % m.group(1))
+        if expires is not None and expires.tzinfo is not None:
+            left = expires - datetime.datetime.now(datetime.timezone.utc)
+            check(left.total_seconds() > 0,
+                  "security.txt expired on %s — set Expires to under a year ahead" % m.group(1))
+            check(left.days <= 366, "security.txt Expires is more than a year away (RFC 9116 §2.5.5)")
+            if 0 < left.days < 45:
+                print("  note: security.txt expires in %d days (%s) — refresh it" % (left.days, m.group(1)))
 
 # 404 must not be indexable.
 notfound = Document("404.html")

@@ -71,4 +71,6 @@ jobs:
       - name: Live Mailchimp — round trip with an address Mailchimp refuses
         env:
           BASE_URL: ${{ inputs.base_url }}
-        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" node tests/browser/newsletter.cjs --live ${BASE_URL:+--base "$BASE_URL"}
+        # Under a virtual display, so the hosted-page checks can run headed:
+        # Mailchimp resets a headless browser's form post.
+        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" xvfb-run -a node tests/browser/newsletter.cjs --live ${BASE_URL:+--base "$BASE_URL"}
