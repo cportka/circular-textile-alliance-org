@@ -147,8 +147,6 @@ async function mocked(browser, base) {
     ['invalid address', { result: 'error', msg: '0 - The domain portion of the email address is invalid (the portion after the @: nowhere)' }, MESSAGES.invalid, false],
     ['looks fake', { result: 'error', msg: 'This email address looks fake or invalid. Please enter a real email address.' }, MESSAGES.invalid, false],
     ['empty address', { result: 'error', msg: '0 - Please enter a value' }, MESSAGES.invalid, false],
-    ['captcha requested', { result: 'error', msg: 'captcha' }, MESSAGES.captcha, false],
-    ['unrecognised answer', { result: 'error', msg: 'This email cannot be added to this list. Please enter a different email address.' }, MESSAGES.unknown, false],
   ];
 
   for (const [label, payload, expected, clears] of replies) {
@@ -259,15 +257,17 @@ async function mocked(browser, base) {
     await context.close();
   }
 
-  // Unreachable, captcha, a reply that never calls back, and a timeout all
-  // hand the next press to Mailchimp's hosted page.
+  // A fast failure — blocked or unreachable, captcha, an unrecognised answer,
+  // a reply that never calls back — opens Mailchimp's page on the same press,
+  // while the browser still counts it as fresh. (A tracker blocker refuses the
+  // relay this fast.) Slow ones keep the two-press message: see the timeouts.
   const fallbacks = [
-    ['unreachable', (r) => r.abort('internetdisconnected'), MESSAGES.offline],
-    ['captcha requested', (r) => r.fulfill({ status: 200, contentType: 'application/javascript', body: jsonpBody(r.request().url(), { result: 'error', msg: 'captcha' }) }), MESSAGES.captcha],
-    ['unrecognised answer', (r) => r.fulfill({ status: 200, contentType: 'application/javascript', body: jsonpBody(r.request().url(), { result: 'error', msg: 'Something else entirely' }) }), MESSAGES.unknown],
-    ['no callback in reply', (r) => r.fulfill({ status: 200, contentType: 'application/javascript', body: '/* not jsonp */' }), MESSAGES.offline],
+    ['unreachable / blocked', (r) => r.abort('blockedbyclient')],
+    ['captcha requested', (r) => r.fulfill({ status: 200, contentType: 'application/javascript', body: jsonpBody(r.request().url(), { result: 'error', msg: 'captcha' }) })],
+    ['unrecognised answer', (r) => r.fulfill({ status: 200, contentType: 'application/javascript', body: jsonpBody(r.request().url(), { result: 'error', msg: 'This email cannot be added to this list.' }) })],
+    ['no callback in reply', (r) => r.fulfill({ status: 200, contentType: 'application/javascript', body: '/* not jsonp */' })],
   ];
-  for (const [label, jsonpHandler, expected] of fallbacks) {
+  for (const [label, jsonpHandler] of fallbacks) {
     const posts = [];
     const jsonp = [];
     const { context, page, csp } = await openPage(browser, base, {
@@ -281,22 +281,21 @@ async function mocked(browser, base) {
         return jsonpHandler(route);
       },
     });
-    await submit(page, FORMS[1], 'reader@example.org');
-    ok(await waitForStatus(page, FORMS[1], expected), `${label} → "${expected}"`, await statusOf(page, FORMS[1]).textContent());
-    // A double click: the first press hands off, the second must do nothing.
     const [popup] = await Promise.all([
       context.waitForEvent('page', { timeout: 5000 }).catch(() => null),
-      page.dblclick(FORMS[1] + ' .newsletter__submit'),
+      submit(page, FORMS[1], 'reader@example.org'),
     ]);
     if (popup) await popup.waitForLoadState().catch(() => {});
-    await page.waitForTimeout(300);
-    ok(popup && popup.url().startsWith(HOST + '/subscribe/post?'), `${label} → next press opens the hosted page in a new tab`, popup ? popup.url() : 'no popup');
-    ok(context.pages().length === 2 && posts.length === 1 && jsonp.length === 1,
-      `${label} → a double press opens one tab and sends nothing else`, `pages=${context.pages().length} posts=${posts.length} jsonp=${jsonp.length}`);
+    ok(popup && popup.url().startsWith(HOST + '/subscribe/post?'), `${label} → Mailchimp's page opens on the same press`, popup ? popup.url() : 'no popup');
+    ok(await waitForStatus(page, FORMS[1], MESSAGES.handoff), `${label} → status says so`, await statusOf(page, FORMS[1]).textContent());
     const body = new URLSearchParams(posts[0] || '');
     ok(body.get('EMAIL') === 'reader@example.org' && body.get(TRAP) === '', `${label} → hosted page receives EMAIL and the empty trap`, posts[0]);
-    ok(await waitForStatus(page, FORMS[1], MESSAGES.handoff), `${label} → status says so`);
     ok(popup && (await popup.evaluate(() => window.opener)) === null, `${label} → hosted page gets no window.opener`);
+    // A second press straight after must not open another tab or send again.
+    await page.click(FORMS[1] + ' .newsletter__submit');
+    await page.waitForTimeout(300);
+    ok(context.pages().length === 2 && posts.length === 1 && jsonp.length === 1,
+      `${label} → a second press opens nothing else`, `pages=${context.pages().length} posts=${posts.length} jsonp=${jsonp.length}`);
     ok((await cspViolations(page, csp)).length === 0, `${label} → no CSP violation`);
     await context.close();
   }

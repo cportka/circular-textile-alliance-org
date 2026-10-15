@@ -4,6 +4,24 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.15.4] - 2026-10-15
+
+### Changed
+- **One press, not two, when the in-page signup is blocked.** Firefox private
+  windows and Strict mode, and ad-blockers, refuse the relay within a fraction
+  of a second; the browser still counts the visitor's press as fresh then, so
+  Mailchimp's own page now opens in a new tab on that same press ("Continuing
+  on Mailchimp's page, in a new tab"). The same applies to any failure within
+  3 s — unreachable, a captcha, an unrecognised answer. Slower failures keep
+  the "press Subscribe to finish there" message, since by then the browser
+  would block the tab. Guarded by `navigator.userActivation.isActive`, so it
+  never trips a pop-up blocker.
+
+### Changed — tests
+- Fast failures must open Mailchimp's page on the first press, carry `EMAIL`
+  and the empty trap, give it no `window.opener`, and ignore a second press;
+  the timeout tests (fake clock) hold slow failures to the two-press message.
+
 ## [0.15.3] - 2026-10-15
 
 ### Changed

@@ -108,6 +108,7 @@
   var TIMEOUT_MS = 15000;   // Mailchimp answering
   var LATE_MS = 60000;      // how long a late answer still counts
   var GRACE_MS = 2000;      // ignore repeat presses just after a handoff
+  var FAST_MS = 3000;       // a failure this soon after the press can still open a tab
 
   // One line at the form's 26rem width, two on a phone — the height
   // .newsletter__status reserves. tests/browser/newsletter.cjs measures each.
@@ -188,6 +189,7 @@
     var busy = false;      // a request is in flight
     var native = false;    // the next submit goes to Mailchimp's own page
     var handedOff = 0;     // when it last did
+    var pressedAt = 0;     // when Subscribe was last pressed
     var sent = '';         // the address most recently sent
 
     // The script validates and words its own error, in the status line, so the
@@ -196,10 +198,28 @@
     form.noValidate = true;
 
     var say = function (text) { status.textContent = text; };
+
+    // Opening Mailchimp's page needs a press the browser still counts as fresh
+    // (transient user activation, about 5 s). A tracker blocker — Firefox's
+    // private windows and Strict mode, uBlock Origin — refuses the relay
+    // within a fraction of a second, so in that window the hosted page can
+    // open at once instead of asking for a second press.
+    var canOpenNow = function () {
+      var activation = window.navigator.userActivation;
+      return Date.now() - pressedAt < FAST_MS && Boolean(activation && activation.isActive);
+    };
+
     var settle = function (outcome) {
       busy = false;
       field.readOnly = false;
       form.removeAttribute('aria-busy');
+      if (outcome.fallback && canOpenNow()) {
+        native = false;
+        handedOff = Date.now();
+        say(MESSAGES.handoff);
+        form.submit();   // the no-script post, new tab; skips this handler
+        return;
+      }
       native = Boolean(outcome.fallback);
       // Clear only what was sent, not something typed since.
       if (outcome.done && field.value.trim() === sent) field.value = '';
@@ -232,6 +252,7 @@
 
       event.preventDefault();
       busy = true;
+      pressedAt = Date.now();
       sent = email;
       field.readOnly = true;
       form.setAttribute('aria-busy', 'true');
