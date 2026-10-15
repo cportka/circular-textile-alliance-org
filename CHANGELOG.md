@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.15.3] - 2026-10-15
+
+### Changed
+- README and SECURITY.md document that Firefox private windows and Strict
+  tracking protection (and ad-blockers) block the in-page newsletter request,
+  because `list-manage.com` is on Firefox's tracker list. That is expected:
+  the form says so and the next press finishes on Mailchimp's own page, which
+  is not blocked. No static-site design can avoid it.
+
 ## [0.15.2] - 2026-10-15
 
 ### Fixed

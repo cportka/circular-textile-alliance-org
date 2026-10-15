@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.15.2 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.15.3 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -338,6 +338,17 @@ sandboxed to `allow-scripts` alone, an opaque origin from which the reply can
 reach nothing (see [SECURITY.md](./SECURITY.md) for why that matters on a shared
 `github.io` origin). While a request is in flight the field is read-only and
 repeat presses are ignored; success clears the field.
+
+**Expected in private windows and with blockers.** Firefox lists
+`list-manage.com` as an email tracker, so its private windows and Strict
+tracking protection — and ad-blockers like uBlock Origin — block the in-page
+request ("blocked because Enhanced Tracking Protection is enabled" in the
+console). The form then says "Couldn't reach Mailchimp — press Subscribe to
+finish there", and the second press opens Mailchimp's own page, which
+browsers don't block. No static-site design avoids this: any request from the
+page to Mailchimp's domain is blocked, and only a server on this domain could
+proxy it. Firefox's default (Standard) protection labels the request but
+allows it.
 
 If the relay doesn't start within 4 s, Mailchimp can't be reached or doesn't
 answer within 15 s, or the answer is unrecognised (a captcha, say), the next

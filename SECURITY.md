@@ -52,6 +52,10 @@ a page here could read those sites' pages and storage. So no page loads it:
   plain post to Mailchimp's hosted page in a new tab (`rel="noopener"`), which
   runs nothing here.
 
+Privacy tools that block Mailchimp as a tracker (Firefox private windows and
+Strict mode, ad-blockers) refuse the relay's request outright; the visitor is
+told to press Subscribe again and finishes on Mailchimp's own page.
+
 The browser test runs every newsletter path in Chromium, Firefox and WebKit,
 and its mocked runs are sealed off from the network so a missed mock can never
 reach the real Mailchimp. If a browser ever refuses the relay anyway, the 4 s
