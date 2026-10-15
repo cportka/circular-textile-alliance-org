@@ -75,6 +75,7 @@ async function openPage(browser, base, opts = {}) {
     javaScriptEnabled: opts.js !== false,
     viewport: { width: 1280, height: 900 },
     reducedMotion: 'reduce',
+    ...(opts.userAgent ? { userAgent: opts.userAgent } : {}),
   });
   const page = await context.newPage();
   // Violations are gathered from every frame, the sandboxed relay included —
@@ -125,6 +126,7 @@ async function mocked(browser, base) {
   const replies = [
     ['success, double opt-in', { result: 'success', msg: 'Almost finished... We need to confirm your email address. To complete the subscription process, please click the link in the email we just sent you.' }, MESSAGES.confirm, true],
     ['success, single opt-in', { result: 'success', msg: 'Thank you for subscribing!' }, MESSAGES.subscribed, true],
+    ['already subscribed, profile updated', { result: 'success', msg: "You're already subscribed, your profile has been updated. Thank you!" }, MESSAGES.already, true],
     ['already subscribed', { result: 'error', msg: 'reader@example.org is already subscribed to list Circular Textile Alliance. <a href="https://circulartextilealliance.us16.list-manage.com/subscribe/send-email?u=x">Click here to update your profile</a>' }, MESSAGES.already, true],
     ['too many attempts', { result: 'error', msg: 'Too many subscribe attempts for this email address. Please try again in about 5 minutes. (#4567)' }, MESSAGES.tooMany, false],
     ['invalid address', { result: 'error', msg: '0 - The domain portion of the email address is invalid (the portion after the @: nowhere)' }, MESSAGES.invalid, false],
@@ -434,12 +436,13 @@ async function mocked(browser, base) {
 }
 
 // --- Live scenarios ----------------------------------------------------------
-// Every live request fills Mailchimp's bot trap. Mailchimp discards a signup
-// whose trap is filled — that is what the field is for — so these can never
-// add a contact, while still exercising the whole round trip. (An address on a
-// reserved TLD is NOT enough: Mailchimp accepted one, single opt-in, on the
-// first live run.) The address is undeliverable as well, belt and braces.
-const LIVE_ADDRESS = 'newsletter-smoke-test@circulartextilealliance.invalid';
+// The live address must be one Mailchimp REFUSES, so a live run can never add
+// a contact. Two things that looked safe were not: Mailchimp accepted
+// newsletter-smoke-test@circulartextilealliance.invalid (single opt-in, first
+// run), and a filled bot trap still came back "profile updated". An address
+// with no top-level domain fails Mailchimp's own syntax check while passing
+// the browser's, and the test fails loudly if Mailchimp ever accepts it.
+const LIVE_ADDRESS = 'newsletter-smoke-test@localhost';
 const LIVE_TRAP = 'smoke-test';
 
 // Log every request to Mailchimp's host, with redirects and failures, so a
@@ -449,7 +452,7 @@ function traceMailchimp(context) {
   context.on('request', (r) => {
     if (!r.url().includes('list-manage.com')) return;
     const from = r.redirectedFrom();
-    lines.push(`→ ${r.method()} ${r.url().slice(0, 140)}${from ? ' (redirected from ' + from.url().slice(0, 80) + ')' : ''}`);
+    lines.push(`→ ${r.method()} ${r.url()}${from ? ' (redirected from ' + from.url() + ')' : ''}`);
   });
   context.on('response', async (r) => {
     if (!r.url().includes('list-manage.com')) return;
@@ -464,9 +467,13 @@ function traceMailchimp(context) {
 
 async function live(browser, base) {
   const quiet = new Set([MESSAGES.sending, MESSAGES.offline, '']);
+  // An ordinary desktop Chrome, not "HeadlessChrome": Mailchimp's bot
+  // protection resets a headless browser's form post (ERR_HTTP2_PROTOCOL_ERROR).
+  const userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/'
+    + browser.version() + ' Safari/537.36';
 
   {
-    const { context, page, csp } = await openPage(browser, base, {});
+    const { context, page, csp } = await openPage(browser, base, { userAgent });
     const trace = traceMailchimp(context);
     const replies = [];
     page.on('response', async (r) => {
@@ -485,8 +492,12 @@ async function live(browser, base) {
     console.log('        Mailchimp replied: ' + JSON.stringify(replies));
     console.log('        status line: ' + JSON.stringify(shown));
     const sentTrap = trace.find((l) => l.includes('/subscribe/post-json')) || '';
-    ok(sentTrap.includes(TRAP + '=' + LIVE_TRAP), 'live: the request carried the filled bot trap, so no contact is created', sentTrap);
+    ok(sentTrap.includes(TRAP + '=' + LIVE_TRAP), 'live: the request carried the filled bot trap', sentTrap);
     ok(replies.length === 1 && replies[0].status === 200, 'live: the JSONP request reached Mailchimp and was answered');
+    const result = ((replies[0] || {}).body || '').match(/"result":"(\w+)"/);
+    ok(result && result[1] === 'error',
+      'live: Mailchimp refused the smoke-test address (if this fails, Mailchimp ACCEPTED it — remove ' + LIVE_ADDRESS + ' from the audience)',
+      result ? result[1] : 'no result');
     ok(/^relay\d+\(/.test((replies[0] || {}).body || ''), 'live: the answer is JSONP for our callback');
     ok(!quiet.has(shown) && SHOWN.has(shown), 'live: Mailchimp’s answer reached the status line', shown);
     const v = await cspViolations(page, csp);
@@ -499,8 +510,8 @@ async function live(browser, base) {
     // after the relay is made to fail (its frame never starts).
     const tag = js ? 'live, fallback' : 'live, no script';
     const { context, page, csp } = await openPage(browser, base, js
-      ? { frame: (r) => r.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>silent</title>' }) }
-      : { js: false });
+      ? { userAgent, frame: (r) => r.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>silent</title>' }) }
+      : { userAgent, js: false });
     const trace = traceMailchimp(context);
     await page.fill(FORMS[1] + ' input[name="' + TRAP + '"]', LIVE_TRAP, { force: true });
     if (js) {

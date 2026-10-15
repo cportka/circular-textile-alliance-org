@@ -129,10 +129,12 @@
   var interpret = function (reply) {
     if (!reply) return FAILED;
     var msg = String(reply.msg || '');
+    // Mailchimp says this both as an error and, with a profile update, as a
+    // success ("You're already subscribed, your profile has been updated.").
+    if (/already subscribed/i.test(msg)) return { done: true, text: MESSAGES.already };
     if (reply.result === 'success') {
       return { done: true, text: /confirm/i.test(msg) ? MESSAGES.confirm : MESSAGES.subscribed };
     }
-    if (/already subscribed/i.test(msg)) return { done: true, text: MESSAGES.already };
     if (/too many/i.test(msg)) return { text: MESSAGES.tooMany };
     if (/fake or invalid|single @|portion of the email|valid email|enter a value/i.test(msg)) {
       return { text: MESSAGES.invalid };

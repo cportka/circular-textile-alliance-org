@@ -6,10 +6,11 @@ name: newsletter
 #            outcome: success, already subscribed, invalid, captcha, unreachable,
 #            timeout, hostile HTML in a reply, double submits, no script, and
 #            that every message fits the row reserved for it.
-#   live   — the real audience, with Mailchimp's bot-trap field filled, which
-#            Mailchimp discards, so no contact is ever created. Proves the CSP,
-#            the relay's JSONP round trip, and the no-script and fallback posts
-#            work against Mailchimp itself, and traces every request it makes.
+#   live   — the real audience, with an address Mailchimp's own syntax check
+#            refuses, so no contact is ever created (the test fails loudly if
+#            Mailchimp ever accepts it). Proves the CSP, the relay's JSONP round
+#            trip, and the no-script and fallback posts against Mailchimp
+#            itself, and traces every request it makes.
 #
 # Runs when something the signup depends on changes, and on demand.
 

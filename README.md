@@ -91,10 +91,13 @@ run inside the relay to prove the sandbox holds (no page, storage, cookies or
 `top`), and every message the script can write is measured against the status
 row at nine widths, in the loaded typeface. `--live` runs the real
 round trip against the audience — the relay, the no-script post, and the
-fallback post — with Mailchimp's bot-trap field filled. Mailchimp discards any
-signup whose trap is filled, so a live run never creates a contact. (An address
-on the reserved `.invalid` TLD is not enough on its own: Mailchimp accepted one.)
-It traces every request to Mailchimp, redirects included, so a failure says why.
+fallback post — with an address Mailchimp's own syntax check refuses
+(`…@localhost`: no top-level domain, which the browser allows), and fails loudly
+if Mailchimp ever accepts it. Neither an undeliverable `.invalid` address nor a
+filled bot trap kept Mailchimp from processing a signup, so nothing weaker will
+do. It traces every request to Mailchimp, redirects included, and presents as
+ordinary desktop Chrome, since Mailchimp's bot protection resets a headless
+browser's form post.
 
 ## Deployment
 

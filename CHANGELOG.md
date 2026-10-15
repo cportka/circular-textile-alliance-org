@@ -34,15 +34,17 @@ Every change bumps the version and adds an entry below.
   hands off to Mailchimp's hosted page; presses in the 2 s after a handoff are
   ignored, so a double click opens one tab. A success that arrives after the
   timeout still counts unless the visitor has already handed off.
-- **`tests/browser/newsletter.cjs`** — Playwright + Chromium, 196 assertions.
+- **`tests/browser/newsletter.cjs`** — Playwright + Chromium, 206 assertions.
   Mocked mode walks every outcome above, proves the sandbox holds against a
   hostile reply, checks for CSP violations in every frame, the no-script post,
   and every message fitting the reserved status row at nine widths in the
   loaded typeface. `--live` runs the real round trip against the audience —
-  the relay, the no-script post and the fallback post — with Mailchimp's bot
-  trap filled, which Mailchimp discards, so it never creates a contact (an
-  undeliverable `.invalid` address alone did not stop Mailchimp accepting it).
-  It traces every request to Mailchimp, redirects included.
+  the relay, the no-script post and the fallback post — with an address
+  Mailchimp's syntax check refuses (`…@localhost`), failing loudly if Mailchimp
+  ever accepts it; an undeliverable `.invalid` address and a filled bot trap
+  both turned out to be processed. It traces every request to Mailchimp.
+- Mailchimp's "You're already subscribed, your profile has been updated" (sent
+  as a *success*) reads as already subscribed, not as a new subscription.
   `.github/workflows/newsletter.yml` runs both whenever the signup's files
   change, and on demand.
 
