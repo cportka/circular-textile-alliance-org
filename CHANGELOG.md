@@ -4,6 +4,12 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.15.5] - 2026-10-15
+
+### Changed
+- The handoff message reads "Continued on Mailchimp's page, in a new tab."
+  (was "Continuing…"): by the time it shows, the tab is already open.
+
 ## [0.15.4] - 2026-10-15
 
 ### Changed
