@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.15.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.15.1 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -30,7 +30,7 @@ site.webmanifest           PWA/install metadata
 robots.txt  sitemap.xml    crawler metadata
 llms.txt                   plain-language site map for AI crawlers
 .well-known/security.txt   RFC 9116 security contact
-.nojekyll                  serve files verbatim; skip Jekyll processing
+scripts/stage-site.sh      copies exactly the public files into _site/ for the deploy
 tests/                     the check suite CI runs (see below)
 ```
 
@@ -58,7 +58,7 @@ bash tests/run-tests.sh
 
 1,000+ assertions, stdlib Python only, no browser and no network — so the same
 command runs locally, in CI (`.github/workflows/validate.yml`, on every push and
-pull request) and as the gate in front of every deploy. Seven suites live in
+pull request) and as the gate in front of every deploy. Eight suites live in
 `tests/cases/`, backed by `tests/lib/`:
 
 | Suite | What it holds to account |
@@ -68,7 +68,8 @@ pull request) and as the gate in front of every deploy. Seven suites live in
 | `accessibility` | alt attributes, labelled form controls, named buttons, ARIA references that point at real ids, disclosure state, unique nav labels, skip link, live region, decorative layers hidden, reduced-motion and focus styling |
 | `contrast` | every text/background pair in the design measured against WCAG AA, translucent colours composited first, control boundaries against 1.4.11's 3:1, plus a regression guard on the three retuned tokens |
 | `components` | **every `<img>` declares the shape of the file it loads** — width/height are read against the file's real size, so replacing an image at a new aspect ratio fails until the markup follows. **Every class in the markup has a rule in `site.css`** — a deletion that orphans a class is how the 404 lede lost its type in 0.4.0. Plus guards for UI bugs that shipped once: the header CTA's hover rules exist per header state (a specificity trap made the label invisible), the newsletter field is isolated from its status message, the status row reserves its height, and the logo keeps its dash-gap interlock and gradients — with `favicon.svg`'s geometry pinned to `logo.svg`'s. Also that the hero's statement band stays off the photograph, which is what makes its measured contrast the rendered contrast |
-| `workflows` | both workflows still trigger where they should, keep their `workflow_dispatch` escape hatch, hold the Pages permissions and concurrency group, **validate before uploading the artifact**, and pin non-deprecated action versions |
+| `workflows` | the workflows still trigger where they should and keep their `workflow_dispatch` escape hatch; `validate` **fails closed** with a read-only token; Pages deploy rights sit on the deploy job alone, which publishes only from `main`; the deploy **validates, stages, then uploads** `_site` with dot-paths included; no checkout leaves its token on disk; every action is on its Node 24 major |
+| `staging` | runs `scripts/stage-site.sh` and checks **what would actually be published**: every page and `.well-known/security.txt` present, no README/CHANGELOG/tests/scripts/bytecode, and every local reference in the published pages and stylesheet resolving inside the published tree |
 | `seo-metadata` | title/description lengths, canonical, full Open Graph and Twitter sets, manifest and its icons, JSON-LD parses and carries `Organization` + `WebSite`, robots/sitemap/llms.txt agree on one host, `404` is `noindex`, security.txt valid |
 
 The newsletter signup is also tested **in a real browser**, by
@@ -115,7 +116,14 @@ GitHub Pages, published **from GitHub Actions** by
 
 The workflow runs `tests/run-tests.sh` *before* uploading the artifact, so a
 commit that fails validation never reaches the live site — a gate the older
-"deploy from a branch" path had no way to provide. It can also be re-run on
+"deploy from a branch" path had no way to provide. It then publishes an
+**allowlist**, not the repository: `scripts/stage-site.sh` copies the pages,
+`assets/`, `.well-known/` and the crawler files into `_site/`, which is
+uploaded with dot-paths included. (Uploading the repo root, as before 0.15.1,
+published the README, CHANGELOG and tests while silently dropping
+`.well-known/security.txt`.) A new top-level file or folder must be added to
+the script's list to go live; the `staging` suite fails if a page is missing
+from it. It can also be re-run on
 demand from the Actions tab, which matters: when a run is lost to a GitHub
 incident rather than to a real failure, the branch-based
 `pages build and deployment` workflow cannot be retriggered at all.
@@ -123,18 +131,27 @@ incident rather than to a real failure, the branch-based
 **Custom domain.** The site is currently addressed as
 `https://cportka.github.io/circular-textile-alliance-org/`, and that URL is
 baked into the canonical link, Open Graph tags, JSON-LD, `robots.txt`,
-`sitemap.xml` and `llms.txt`. To move to `circulartextilealliance.org`:
+`sitemap.xml`, `llms.txt` and `.well-known/security.txt`. To move to
+`circulartextilealliance.org`, in this order — DNS last, because a domain
+pointed at Pages but not yet claimed by a repository can be claimed by anyone:
 
-1. Point DNS at GitHub Pages **first** (`A` records to GitHub's four apex IPs,
-   or a `CNAME` for `www`).
-2. Add a `CNAME` file at the repository root containing the bare domain.
-3. Replace `https://cportka.github.io/circular-textile-alliance-org` with
+1. **Verify the domain** for the account: GitHub → Settings → Pages → *Add a
+   domain*, then publish the TXT record it gives you. Verification stops any
+   other account from taking it over.
+2. **Claim it for this repository**: the repo's Settings → Pages → *Custom
+   domain*. No `CNAME` file is needed — an Actions deploy ignores one.
+3. **Only then point DNS** at Pages: `A`/`AAAA` records to GitHub's apex
+   addresses, a `CNAME` for `www` to `cportka.github.io`, and no wildcard.
+4. Tick **Enforce HTTPS** once the certificate is issued.
+5. Replace `https://cportka.github.io/circular-textile-alliance-org` with
    `https://circulartextilealliance.org` across the files listed above, and drop
    the `/circular-textile-alliance-org` prefix from the four root-absolute URLs
    in `404.html`.
 
-Committing `CNAME` before DNS resolves takes the site offline, which is why it
-is not committed here.
+Steps 1–4 are GitHub/DNS settings for the owner. The move also gives the site
+an origin of its own, rather than one shared with every other
+`cportka.github.io` site, and puts `security.txt` and `robots.txt` at the
+origin root where scanners and crawlers look for them.
 
 ---
 
@@ -372,43 +389,38 @@ produces at this container width, and it has been left alone.
 
 ## Imagery
 
-The hero and the seven card images are the alliance's own photographs of the
-work — a spinning mill floor, a machinist at an industrial sewing machine, a
-yarn shade card, undyed cotton awaiting processing, and sorted offcut bales.
-They live in `assets/img/photos/` and are served from this origin.
+The photographs are the alliance's own pictures of the work, from garment
+factories in Mexico. They live in `assets/img/photos/` and are served from this
+origin.
 
 **Browsing the site therefore contacts no third party.** Fonts are self-hosted,
 photography is local, there is no analytics, no tag manager, no tracking pixel
-and no cookie. `img-src` in the Content-Security-Policy is `'self' data:`, and
+and no cookie. `img-src` in the Content-Security-Policy is `'self'`, and
 a test fails the build if any page fetches a subresource from a remote host, or
 if a CSP names a remote source beyond the two the newsletter needs (the home
 page's `form-action`, the relay's `script-src`).
 
-Five source photographs cover eight slots, so each is cropped for its slot
-rather than reused whole — the shade card appears once as a wide spread and
-once as a tight column, and the mill floor once as a room and once close on the
-winding frames. Regenerating them is a matter of re-cropping the originals to
-the sizes in the table below and re-exporting as WebP.
+Four images are on the page. Each is sized to the largest box it renders in at
+2x — not to the camera original — and the markup declares its exact size:
 
-| Slot | File | Size |
-| :-- | :-- | :-- |
-| Hero background (`.hero__media`) | `1711_MEX_HONGHO_GARMENT_02.webp` | 1920×1280 |
-| Program — EPR Readiness | `program-epr.webp` | 800×500 |
-| Program — Recycling Pathways | `program-recycling.webp` | 800×500 |
-| Program — Digital Product Passport | `program-passport.webp` | 800×500 |
-| Program — Collection Infrastructure | `program-collection.webp` | 800×500 |
-| News — Policy | `news-policy.webp` | 600×400 |
-| News — Partnership | `news-partnership.webp` | 600×400 |
-| News — Event | `news-event.webp` | 600×400 |
+| Slot | File | Size | Bytes |
+| :-- | :-- | :-- | --: |
+| Hero background (`.hero__media`, drawn at 22% opacity) | `1711_MEX_HONGHO_GARMENT_02-hero.webp` | 1920×1280, q50 | 74 KB |
+| Transparency & Traceability, left | `1711_MEX_VKN_GARMENT_076.webp` | 1280×853, q80 | 76 KB |
+| Transparency & Traceability, right | `1711_MEX_HONGHO_GARMENT_25.webp` | 1280×853, q80 | 40 KB |
+| Textile Recovery Infrastructure diagram | `textile-recovery-infrastructure.webp` (in `assets/img/`) | 1600×1280, alpha | 121 KB |
 
-`assets/img/photos/` may hold more than the page uses — unreferenced shots are
-a library, not an error, and the suite reports how much they add to the
+The hero is a derived file: at 22% opacity under an ink scrim, quality 50 is
+indistinguishable from the original (PSNR ~53 dB on the rendered screen) at
+half the bytes, and it is the one photograph every visit downloads up front.
+`1711_MEX_HONGHO_GARMENT_02.webp`, the full-quality original, stays in the
+library. The two program figures never render wider than ~632 CSS px, so 1280
+wide covers them at 2x; the 1920-wide originals are in git history (0.15.0).
+Everything below the fold is `loading="lazy"` and `decoding="async"`.
+
+`assets/img/photos/` holds more than the page uses — unreferenced shots are a
+library, not an error, and the suite reports how much they add to the
 published artifact so the cost stays visible.
-
-WebP at quality 82 keeps the referenced set to ~516 KB, and every card image is
-`loading="lazy"`, so only the hero is fetched up front. Each card image also
-sits on a brand-coloured backing, so a slot reads as a palette block rather
-than a gap while it loads.
 
 Because these are documentary photographs rather than decorative stock, each
 one carries descriptive `alt` text saying what is pictured — deliberately not a

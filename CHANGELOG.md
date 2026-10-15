@@ -4,6 +4,68 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.15.1] - 2026-10-15
+
+Fixes from a security and efficiency audit of the whole repository.
+
+### Fixed
+- **`/.well-known/security.txt` is published.** It never was: the deploy
+  uploaded the repo root with `upload-pages-artifact@v4`, which drops every
+  dot-path, while publishing README, CHANGELOG, SECURITY.md, VERSION, `tests/`
+  and the suite's `__pycache__`. The deploy now uploads `_site/`, an allowlist
+  staged by the new `scripts/stage-site.sh`, with `include-hidden-files: true`
+  on `upload-pages-artifact@v5`.
+- **`validate.yml` fails closed.** It used to pass with "nothing to validate"
+  when `tests/run-tests.sh` was missing — a false green the merge-on-green
+  workflow would have merged.
+- **The `security.txt` expiry check can fail.** It compared the year with a
+  constant; it now parses the RFC 3339 timestamp, fails once it has passed or
+  if it is more than a year out, and warns 45 days ahead.
+- **Printing** no longer spends page one on the hero: the print rule reset
+  `min-height` on `.hero`, which has none, instead of `.hero__stage`.
+
+### Changed
+- **Least privilege in CI.** `pages.yml` grants nothing at the workflow level;
+  only the deploy job, which runs no repository code, holds `pages: write` and
+  `id-token: write`, and it publishes only from `main`. `validate.yml` holds a
+  read-only token. No checkout leaves its token on disk
+  (`persist-credentials: false`). Job timeouts throughout.
+- **Current actions**: checkout v7, configure-pages v6, upload-pages-artifact
+  v5, deploy-pages v5 — the last majors all run on Node 24, so the Node 20
+  deprecation warnings are gone.
+- `validate.yml` runs on pull requests and on `main`, no longer on every branch
+  push as well, which ran each PR's suite twice.
+- **Images**: about 253 KB less per full visit (−35%), 84 KB of it on first
+  paint. The
+  hero background is a derived quality-50 file (`…_02-hero.webp`, 74 KB from
+  158 KB — invisible at 22% opacity; the original stays in the library). The
+  two Transparency photographs are 1280 wide (116 KB from 286 KB), the most
+  they render at 2x.
+- **CSP**: `img-src` is `'self'` — nothing used `data:`.
+- `.nojekyll` is gone: an Actions deploy never runs Jekyll.
+- README: a custom-domain runbook in the safe order (verify the domain, claim
+  it, *then* point DNS — DNS first leaves a takeover window), the deploy's
+  allowlist, and an Imagery section that matches the page.
+- `.well-known/security.txt` no longer says the site holds no user data.
+
+### Changed — tests
+- New **`staging`** suite: stages the site exactly as the deploy does and
+  checks the result — every page and `security.txt` present, nothing from
+  `tests/`, `scripts/` or the docs, and every local reference resolving inside
+  the published tree.
+- `workflows` holds the new shape: fail-closed validate with a read-only token,
+  deploy rights on the deploy job only, main-only publishing, validate → stage →
+  upload order, `_site` with hidden files, `persist-credentials: false` on every
+  checkout, and a Node 24 major for each action.
+- `html-structure` asserts the CSP floor on every page (`default-src`,
+  `img-src`, `script-src`, `style-src` `'self'`; `object-src 'none'`;
+  `base-uri 'self'`), not just the absence of weakening.
+- `components` holds the three copies of the policy dialogs byte-identical
+  and the footers identical apart from the `index.html#` prefix.
+- The live newsletter test checks Mailchimp's hosted page in a **headed**
+  browser under `xvfb-run`: Mailchimp's bot protection resets a headless
+  browser's form post, whatever its user agent says.
+
 ## [0.15.0] - 2026-10-15
 
 ### Added

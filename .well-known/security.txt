@@ -1,5 +1,5 @@
 # Security contact for circulartextilealliance.org — RFC 9116
-# This is a static site with no backend, no accounts and no user data.
+# A static site: no backend and no accounts. Newsletter signups go to Mailchimp.
 
 Contact: https://github.com/cportka/circular-textile-alliance-org/security/advisories/new
 Expires: 2027-08-06T00:00:00.000Z

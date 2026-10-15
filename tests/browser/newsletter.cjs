@@ -510,11 +510,20 @@ async function live(browser, base) {
     await context.close();
   }
 
+  // Mailchimp's bot protection resets a *headless* browser's form post
+  // (ERR_HTTP2_PROTOCOL_ERROR) whatever its user agent says — headless
+  // Chromium still announces itself in its client hints — while a plain
+  // HTTP/1.1 post from the same origin gets the page. So the hosted-page checks
+  // run headed when there is a display (CI wraps the live run in xvfb-run).
+  const headed = process.env.DISPLAY ? await chromium.launch({ headless: false }) : null;
+  const hostBrowser = headed || browser;
+  console.log(`        hosted-page checks run ${headed ? 'headed (DISPLAY=' + process.env.DISPLAY + ')' : 'headless — expect Mailchimp to reset the post'}`);
+
   for (const js of [false, true]) {
     // The hosted page, reached two ways: a no-script post, and the fallback
     // after the relay is made to fail (its frame never starts).
     const tag = js ? 'live, fallback' : 'live, no script';
-    const { context, page, csp } = await openPage(browser, base, js
+    const { context, page, csp } = await openPage(hostBrowser, base, js
       ? { userAgent, frame: (r) => r.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>silent</title>' }) }
       : { userAgent, js: false });
     const trace = traceMailchimp(context);
@@ -541,14 +550,14 @@ async function live(browser, base) {
     const posted = trace.find((l) => l.startsWith('→ POST')) || '';
     ok(posted.includes('/subscribe/post?u=' + U), `${tag}: the form posts to Mailchimp's hosted signup`, posted);
     ok(csp.length === 0, `${tag}: no CSP violation`, csp.join(' | '));
-    // What Mailchimp's server does with the post depends on where it comes
-    // from: from a local test server's http://127.0.0.1 origin it resets the
-    // connection. Only a deployed copy (--base) shows what visitors get.
+    // Asserted headed, or against a deployed copy; headless it is only
+    // reported, since there Mailchimp refuses the browser, not the site.
     const landedOk = /^https:\/\/[^/]*list-manage\.com\//.test(landed);
-    if (REMOTE_BASE) ok(landedOk, `${tag}: the new tab shows Mailchimp's page`, landed);
-    else console.log(`        note: [${tag}] Mailchimp's page ${landedOk ? 'loaded' : 'did not load (' + landed + ')'} for a local origin; run with --base <deployed url> to check what visitors get`);
+    if (REMOTE_BASE || headed) ok(landedOk, `${tag}: the new tab shows Mailchimp's page`, landed);
+    else console.log(`        note: [${tag}] Mailchimp's page ${landedOk ? 'loaded' : 'did not load (' + landed + ')'} headless; run under a display to check what visitors get`);
     await context.close();
   }
+  if (headed) await headed.close();
 
   await diagnose(base);
 }

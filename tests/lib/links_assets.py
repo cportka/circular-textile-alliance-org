@@ -124,7 +124,9 @@ check(all(f.endswith(".webp") for f in on_disk_photos),
                                                  if not f.endswith(".webp")))
 
 # --- Files GitHub Pages needs ---------------------------------------------
-for required in [".nojekyll", "robots.txt", "sitemap.xml", "404.html", "site.webmanifest",
+# (No .nojekyll: an Actions deploy publishes the staged files as they are and
+# never runs Jekyll. What actually ships is checked in tests/lib/staging.py.)
+for required in ["robots.txt", "sitemap.xml", "404.html", "site.webmanifest",
                  "llms.txt", "index.html"]:
     check(exists(required), "%s is missing from the repository root" % required)
 

@@ -17,10 +17,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+# Nothing by default; each job asks for exactly what it needs. Only the deploy
+# job, which runs no repository code, can publish.
+permissions: {}
 
 # Never run two publishes at once. cancel-in-progress stays false so an
 # in-flight deploy is allowed to finish rather than leaving Pages half-updated.
@@ -31,28 +30,47 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read   # actions/checkout
+      pages: read      # actions/configure-pages reads the Pages configuration
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       # The gate: publishing a site that fails its own checks is worse than
       # not publishing. Same suite CI runs on every PR.
       - name: Validate the site
         run: bash tests/run-tests.sh
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
 
-      # upload-pages-artifact excludes .git and .github itself; everything else
-      # at the root is the site, exactly as the branch-based deploy served it.
-      - uses: actions/upload-pages-artifact@v4
+      # Publish an allowlist, not the repo root: README, CHANGELOG, tests/ and
+      # the bytecode the suite just wrote stay out of production, and
+      # .well-known/ goes in (upload-pages-artifact drops dot-paths unless told
+      # otherwise, which is how security.txt went unpublished until 0.15.1).
+      - name: Stage the public site
+        run: bash scripts/stage-site.sh _site
+
+      - uses: actions/upload-pages-artifact@v5
         with:
-          path: .
+          path: _site
+          include-hidden-files: true
 
   deploy:
     needs: build
+    # A manual run from a feature branch validates and stages, but never
+    # publishes.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write      # create the Pages deployment
+      id-token: write   # OIDC proof that the deployment comes from this workflow
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
