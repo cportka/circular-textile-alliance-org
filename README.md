@@ -79,7 +79,15 @@ scripts, `site.css` or the test itself changes, and on demand:
 ```sh
 NODE_PATH="$(npm root -g)" node tests/browser/newsletter.cjs          # mocked Mailchimp
 NODE_PATH="$(npm root -g)" node tests/browser/newsletter.cjs --live   # the real audience
+NODE_PATH="$(npm root -g)" node tests/browser/newsletter.cjs --live \
+  --base https://cportka.github.io/circular-textile-alliance-org         # …from the deployed site
 ```
+
+Mailchimp's server treats the no-script post differently by origin — from a
+local `http://127.0.0.1` test server it resets the connection — so against a
+local server the live run only reports whether Mailchimp's page loaded, and
+`--base` (or the workflow's `base_url` input on a manual run) is the check of
+what visitors actually get.
 
 The default mode answers Mailchimp from inside the browser and walks every
 outcome — success with and without double opt-in, already subscribed, too many

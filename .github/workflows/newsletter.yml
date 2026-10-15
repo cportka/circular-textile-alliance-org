@@ -35,6 +35,11 @@ on:
       - tests/browser/**
       - .github/workflows/newsletter.yml
   workflow_dispatch:
+    inputs:
+      base_url:
+        description: Run the live checks against this deployed URL (e.g. the Pages site) instead of a local server
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -62,5 +67,8 @@ jobs:
       - name: Mocked Mailchimp — every outcome
         run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" node tests/browser/newsletter.cjs
 
-      - name: Live Mailchimp — round trip with an undeliverable address
-        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" node tests/browser/newsletter.cjs --live
+      # The URL arrives through env, never spliced into the script.
+      - name: Live Mailchimp — round trip with an address Mailchimp refuses
+        env:
+          BASE_URL: ${{ inputs.base_url }}
+        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" node tests/browser/newsletter.cjs --live ${BASE_URL:+--base "$BASE_URL"}

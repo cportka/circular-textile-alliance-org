@@ -23,10 +23,15 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { chromium } = require('playwright');
+const { chromium, request: apiRequest } = require('playwright');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const LIVE = process.argv.includes('--live');
+// --base <url>: run the live checks against a deployed copy of the site (e.g.
+// the GitHub Pages URL) instead of a local server, so Mailchimp sees the real
+// origin. Mocked mode always uses the local server.
+const BASE_ARG = process.argv.indexOf('--base');
+const REMOTE_BASE = BASE_ARG > -1 ? String(process.argv[BASE_ARG + 1] || '').replace(/\/+$/, '') : '';
 const HOST = 'https://circulartextilealliance.us16.list-manage.com';
 const U = 'ea29d1a908ff6356342abbd84';
 const ID = '81fed3ffc1';
@@ -535,10 +540,38 @@ async function live(browser, base) {
     console.log(`        [${tag}] trace:\n          ` + trace.join('\n          '));
     const posted = trace.find((l) => l.startsWith('→ POST')) || '';
     ok(posted.includes('/subscribe/post?u=' + U), `${tag}: the form posts to Mailchimp's hosted signup`, posted);
-    ok(/^https:\/\/[^/]*list-manage\.com\//.test(landed), `${tag}: the new tab shows Mailchimp's page`, landed);
     ok(csp.length === 0, `${tag}: no CSP violation`, csp.join(' | '));
+    // What Mailchimp's server does with the post depends on where it comes
+    // from: from a local test server's http://127.0.0.1 origin it resets the
+    // connection. Only a deployed copy (--base) shows what visitors get.
+    const landedOk = /^https:\/\/[^/]*list-manage\.com\//.test(landed);
+    if (REMOTE_BASE) ok(landedOk, `${tag}: the new tab shows Mailchimp's page`, landed);
+    else console.log(`        note: [${tag}] Mailchimp's page ${landedOk ? 'loaded' : 'did not load (' + landed + ')'} for a local origin; run with --base <deployed url> to check what visitors get`);
     await context.close();
   }
+
+  await diagnose(base);
+}
+
+// Printed, never asserted: how Mailchimp answers the hosted post depending on
+// the Origin it sees and the HTTP version. Plain HTTP/1.1 requests from Node,
+// not a browser, with no redirects followed.
+async function diagnose(base) {
+  const api = await apiRequest.newContext();
+  const action = HOST + '/subscribe/post?u=' + U + '&id=' + ID + '&f_id=00fcc2e1f0';
+  const form = { EMAIL: LIVE_ADDRESS, [TRAP]: LIVE_TRAP };
+  for (const origin of ['', base, 'https://cportka.github.io']) {
+    const headers = origin ? { Origin: origin, Referer: origin + '/' } : {};
+    try {
+      const r = await api.post(action, { form, headers, maxRedirects: 0, timeout: 15000 });
+      const body = (await r.text()).replace(/\s+/g, ' ');
+      const title = (body.match(/<title>([^<]*)/i) || [])[1] || '';
+      console.log(`        diagnose: Origin ${origin || '(none)'} → ${r.status()} ${r.headers()['content-type'] || ''}${r.headers().location ? ' location=' + r.headers().location : ''} title=${JSON.stringify(title.trim())}`);
+    } catch (e) {
+      console.log(`        diagnose: Origin ${origin || '(none)'} → ${String(e.message).split('\n')[0]}`);
+    }
+  }
+  await api.dispose();
 }
 
 (async () => {
@@ -547,7 +580,7 @@ async function live(browser, base) {
   const browser = await chromium.launch();
   try {
     console.log(LIVE ? 'newsletter — live against Mailchimp' : 'newsletter — mocked Mailchimp');
-    await (LIVE ? live : mocked)(browser, base);
+    await (LIVE ? live : mocked)(browser, LIVE && REMOTE_BASE ? REMOTE_BASE : base);
   } finally {
     await browser.close();
     server.close();
