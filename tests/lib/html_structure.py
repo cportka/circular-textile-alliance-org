@@ -93,10 +93,10 @@ frame_csp = None
 for el in frame.find("meta"):
     if (el.get("http-equiv") or "").lower() == "content-security-policy":
         frame_csp = el.get("content")
-check(frame_csp == "default-src 'none'; script-src 'self' %s/subscribe/post-json; "
-      "base-uri 'none'; form-action 'none'" % MAILCHIMP,
-      "[%s] CSP is %r — it must admit only its own script and Mailchimp's "
-      "post-json endpoint" % (FRAME, frame_csp))
+# script-src is * because WebKit refuses 'self' inside a sandboxed frame (the
+# relay never started in Safari); everything else stays 'none'.
+check(frame_csp == "default-src 'none'; script-src *; base-uri 'none'; form-action 'none'",
+      "[%s] CSP is %r — scripts only, nothing else" % (FRAME, frame_csp))
 check(frame.meta(name="robots") == "noindex", "[%s] must be noindex" % FRAME)
 scripts = frame.find("script")
 check([s.get("src") for s in scripts] == ["assets/js/newsletter-frame.js"],

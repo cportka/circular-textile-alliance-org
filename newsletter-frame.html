@@ -5,10 +5,13 @@
 <!-- The newsletter relay. index.html loads this into a sandboxed frame
      (sandbox="allow-scripts", no allow-same-origin), so it runs in an opaque
      origin of its own: Mailchimp's JSONP reply executes here, where it cannot
-     reach the page, its storage, or anything else on the site's origin. This
-     page's policy admits Mailchimp's post-json endpoint and nothing else; with
-     default-src 'none' it can fetch, frame or submit nothing at all. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://circulartextilealliance.us16.list-manage.com/subscribe/post-json; base-uri 'none'; form-action 'none'">
+     reach the page, its storage, or anything else on the site's origin.
+     This page's policy lets scripts load — the relay's own, and Mailchimp's
+     reply — and nothing else: with default-src 'none' it can fetch, frame or
+     submit nothing. script-src is * rather than 'self' plus Mailchimp because
+     WebKit does not match 'self' inside a sandboxed frame, so Safari refused
+     the relay's own script; the sandbox, not this list, contains the reply. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src *; base-uri 'none'; form-action 'none'">
 <meta name="robots" content="noindex">
 <title>Newsletter relay</title>
 <script src="assets/js/newsletter-frame.js"></script>

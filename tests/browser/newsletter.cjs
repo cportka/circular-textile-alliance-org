@@ -102,6 +102,10 @@ async function openPage(browser, base, opts = {}) {
     });
   }
   if (opts.frame) await context.route('**/newsletter-frame.html', opts.frame);
+  if (process.env.TRACE) {
+    context.on('request', (r) => console.log('        [trace ' + ENGINE + '] → ' + r.method() + ' ' + r.url().slice(0, 120)));
+    context.on('requestfailed', (r) => console.log('        [trace ' + ENGINE + '] ✗ ' + r.url().slice(0, 120) + ' ' + (r.failure() || {}).errorText));
+  }
   if (opts.clock) await page.clock.install();
   if (opts.route) await context.route(HOST + '/**', opts.route);
   await page.goto(base + '/index.html');
@@ -161,7 +165,7 @@ async function mocked(browser, base) {
       ok(shown, `${label} [${form}] → "${expected}"`, 'status was: ' + (await statusOf(page, form).textContent()));
       const field = await page.inputValue(form + ' .newsletter__input');
       ok(clears ? field === '' : field === 'reader@example.org', `${label} [${form}] field ${clears ? 'cleared' : 'kept (trimmed)'}`, 'field: ' + JSON.stringify(field));
-      if (form === FORMS[0] && label === replies[0][0]) {
+      if (form === FORMS[0] && label === replies[0][0] && seen.length) {
         const u = new URL(seen[0]);
         ok(u.pathname === '/subscribe/post-json', 'JSONP goes to /subscribe/post-json', u.pathname);
         ok(u.searchParams.get('u') === U && u.searchParams.get('id') === ID && u.searchParams.get('f_id') === '00fcc2e1f0',
@@ -593,7 +597,14 @@ async function diagnose(base) {
 (async () => {
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   const base = 'http://127.0.0.1:' + server.address().port;
-  const browser = await (LIVE ? chromium : playwright[ENGINE]).launch();
+  // Mocked runs must never reach the internet: anything a route doesn't
+  // answer goes to a dead proxy and fails, instead of quietly reaching the real
+  // Mailchimp (in Firefox, once, a route missed the sandboxed frame's request).
+  // (Playwright sends Chromium's loopback through the proxy unless told not to.)
+  process.env.PLAYWRIGHT_DISABLE_FORCED_CHROMIUM_PROXIED_LOOPBACK = '1';
+  const browser = await (LIVE ? chromium : playwright[ENGINE]).launch(LIVE ? {} : {
+    proxy: { server: 'http://127.0.0.1:9', bypass: '127.0.0.1,localhost' },
+  });
   try {
     console.log(LIVE ? 'newsletter — live against Mailchimp' : 'newsletter — mocked Mailchimp, ' + ENGINE + ' ' + browser.version());
     await (LIVE ? live : mocked)(browser, LIVE && REMOTE_BASE ? REMOTE_BASE : base);

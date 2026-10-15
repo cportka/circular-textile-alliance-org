@@ -214,13 +214,13 @@
         return;
       }
       var email = field.value.trim();
+      field.value = email;   // validate what will be sent, not stray spaces
       if (!email || !field.checkValidity()) {
         event.preventDefault();
         say(MESSAGES.invalid);
         field.focus();
         return;
       }
-      field.value = email;
 
       if (native) {
         // Let this submit open the hosted page, which a click is allowed to do.
