@@ -23,7 +23,13 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { chromium, request: apiRequest } = require('playwright');
+const playwright = require('playwright');
+const { chromium, request: apiRequest } = playwright;
+// BROWSER=chromium|firefox|webkit picks the engine for the mocked run; CI runs
+// all three, since the relay depends on how each engine treats a sandboxed
+// frame. The live run is Chromium only.
+const ENGINE = process.env.BROWSER || 'chromium';
+if (!['chromium', 'firefox', 'webkit'].includes(ENGINE)) throw new Error('unknown BROWSER ' + ENGINE);
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const LIVE = process.argv.includes('--live');
@@ -86,7 +92,7 @@ async function openPage(browser, base, opts = {}) {
   // Violations are gathered from every frame, the sandboxed relay included —
   // through the console, and through a binding the init script reports to.
   const csp = [];
-  page.on('console', (msg) => { if (/Content Security Policy/i.test(msg.text())) csp.push(msg.text()); });
+  page.on('console', (msg) => { if (/Content.Security.Policy/i.test(msg.text())) csp.push(msg.text()); });
   if (opts.js !== false) {
     await context.exposeBinding('__cspReport', (source, line) => csp.push(line));
     await context.addInitScript(() => {
@@ -207,7 +213,8 @@ async function mocked(browser, base) {
     console.log('        inside the relay: ' + JSON.stringify(r));
     ok(r.parent === 'SecurityError', 'hostile reply: cannot touch the page', r.parent);
     ok(r.storage === 'SecurityError', 'hostile reply: has no storage of its own to reach', r.storage);
-    ok(r.cookie === 'SecurityError', 'hostile reply: has no cookies to read', r.cookie);
+    // Chromium throws; other engines may hand an opaque origin an empty jar.
+    ok(r.cookie === 'SecurityError' || r.cookie === '', 'hostile reply: has no cookies to read', r.cookie);
     ok(r.top === 'SecurityError', 'hostile reply: cannot read where the visitor is', r.top);
     ok(r.origin === 'null', 'hostile reply: runs in an opaque origin', r.origin);
     ok((await page.evaluate(() => document.body.getAttribute('data-pwned'))) === null, 'hostile reply: page DOM untouched');
@@ -586,9 +593,9 @@ async function diagnose(base) {
 (async () => {
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   const base = 'http://127.0.0.1:' + server.address().port;
-  const browser = await chromium.launch();
+  const browser = await (LIVE ? chromium : playwright[ENGINE]).launch();
   try {
-    console.log(LIVE ? 'newsletter — live against Mailchimp' : 'newsletter — mocked Mailchimp');
+    console.log(LIVE ? 'newsletter — live against Mailchimp' : 'newsletter — mocked Mailchimp, ' + ENGINE + ' ' + browser.version());
     await (LIVE ? live : mocked)(browser, LIVE && REMOTE_BASE ? REMOTE_BASE : base);
   } finally {
     await browser.close();

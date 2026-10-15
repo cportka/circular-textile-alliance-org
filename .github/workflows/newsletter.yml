@@ -62,13 +62,22 @@ jobs:
       - name: Install Playwright and Chromium
         run: |
           npm install --prefix "$RUNNER_TEMP/pw" --no-save --no-audit --no-fund playwright@1.56.1
-          "$RUNNER_TEMP/pw/node_modules/.bin/playwright" install --with-deps chromium
+          "$RUNNER_TEMP/pw/node_modules/.bin/playwright" install --with-deps chromium firefox webkit
 
-      - name: Mocked Mailchimp — every outcome
-        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" node tests/browser/newsletter.cjs
+      # Every engine: the relay leans on how each one treats a sandboxed frame
+      # and its CSP, and that is exactly where browsers have disagreed.
+      - name: Mocked Mailchimp — every outcome, Chromium
+        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" BROWSER=chromium node tests/browser/newsletter.cjs
+      - name: Mocked Mailchimp — every outcome, Firefox
+        if: success() || failure()
+        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" BROWSER=firefox xvfb-run -a node tests/browser/newsletter.cjs
+      - name: Mocked Mailchimp — every outcome, WebKit (Safari)
+        if: success() || failure()
+        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" BROWSER=webkit xvfb-run -a node tests/browser/newsletter.cjs
 
       # The URL arrives through env, never spliced into the script.
       - name: Live Mailchimp — round trip with an address Mailchimp refuses
+        if: success() || failure()
         env:
           BASE_URL: ${{ inputs.base_url }}
         # Under a virtual display, so the hosted-page checks can run headed:
