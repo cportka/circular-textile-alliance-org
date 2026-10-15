@@ -70,10 +70,10 @@ jobs:
         run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" BROWSER=chromium node tests/browser/newsletter.cjs
       - name: Mocked Mailchimp — every outcome, Firefox
         if: success() || failure()
-        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" BROWSER=firefox TRACE=1 xvfb-run -a node tests/browser/newsletter.cjs
+        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" BROWSER=firefox xvfb-run -a node tests/browser/newsletter.cjs
       - name: Mocked Mailchimp — every outcome, WebKit (Safari)
         if: success() || failure()
-        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" BROWSER=webkit TRACE=1 xvfb-run -a node tests/browser/newsletter.cjs
+        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" BROWSER=webkit xvfb-run -a node tests/browser/newsletter.cjs
 
       # The URL arrives through env, never spliced into the script.
       - name: Live Mailchimp — round trip with an address Mailchimp refuses

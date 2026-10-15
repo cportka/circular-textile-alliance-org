@@ -422,6 +422,11 @@ async function mocked(browser, base) {
     ok(await page.evaluate(() => document.fonts.check('400 13px Inter')), 'Inter has loaded before measuring');
     for (const width of [1440, 1024, 768, 600, 481, 480, 390, 360, 320]) {
       await page.setViewportSize({ width, height: 900 });
+      // WebKit re-evaluates media queries a frame after a resize, so measure
+      // only once the page agrees on the new width (and two frames have run).
+      await page.waitForFunction((w) => window.innerWidth === w
+        && window.matchMedia('(max-width: 30em)').matches === (w <= 480), width);
+      await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
       for (const form of FORMS) {
         const overflow = await page.evaluate(([f, texts]) => {
           const el = document.querySelector(f + ' .newsletter__status');

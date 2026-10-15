@@ -893,7 +893,8 @@
          assets/js/site.js relays the same fields to Mailchimp's JSONP endpoint
          through the sandboxed newsletter-frame.html and reports the result in
          the status line. Changing the audience means changing both form
-         actions, the trap's name, and the host in both pages' CSPs. -->
+         actions, the trap's name, form-action in this page's CSP, and the host
+         in assets/js/newsletter-frame.js. -->
     <div class="newsletter on-dark">
       <div>
         <h3 class="newsletter__title">Stay Informed</h3>
