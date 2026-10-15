@@ -85,32 +85,186 @@
     });
   });
 
-  /* --- Newsletter --------------------------------------------------------
-     There is no subscription endpoint yet. Claiming success would be a lie and
-     letting the form navigate would drop the address on the floor, so the
-     submit is intercepted and reported honestly. To go live: give the <form> a
-     real `action`/`method` and delete this block. */
+  /* --- Newsletter ------------------------------------------------------
+     Both forms are complete without this: they post to Mailchimp's hosted
+     signup page in a new tab. With script, the same fields go to Mailchimp's
+     post-json endpoint instead, so the answer appears in the form's own status
+     line and the visitor stays on the page.
+
+     Mailchimp sends no CORS headers, so its answer can only be read as JSONP,
+     and a JSONP reply is a script that runs with the rights of whatever
+     document loads it. So this page never loads it. Each request goes through
+     newsletter-frame.html in a sandboxed frame (allow-scripts, no
+     allow-same-origin): an opaque origin of its own, from which the reply can
+     reach nothing here or anywhere else on the site's origin. All the frame
+     can hand back is a message, and Mailchimp's wording in it is only ever
+     matched against known answers, never shown. This page's CSP admits no
+     third-party script at all.
+
+     If the frame doesn't start, Mailchimp can't be reached or doesn't answer,
+     or the answer is one we don't recognise (a captcha, say), the next press of
+     Subscribe goes through natively and finishes on Mailchimp's own page. */
+  var READY_MS = 4000;      // the relay frame announcing itself
+  var TIMEOUT_MS = 15000;   // Mailchimp answering
+  var LATE_MS = 60000;      // how long a late answer still counts
+  var GRACE_MS = 2000;      // ignore repeat presses just after a handoff
+
+  // One line at the form's 26rem width, two on a phone — the height
+  // .newsletter__status reserves. tests/browser/newsletter.cjs measures each.
+  var MESSAGES = {
+    invalid: 'Please enter a valid email address.',
+    sending: 'Subscribing…',
+    confirm: 'Almost done — please confirm via the email we just sent.',
+    subscribed: 'Thank you — you’re subscribed.',
+    already: 'You’re already subscribed — thank you!',
+    tooMany: 'Too many attempts — please try again in a few minutes.',
+    offline: 'Couldn’t reach Mailchimp — press Subscribe to finish there.',
+    captcha: 'One more step — press Subscribe to finish on Mailchimp.',
+    unknown: 'Mailchimp didn’t accept that — press Subscribe to see why.',
+    handoff: 'Continuing on Mailchimp’s page, in a new tab.'
+  };
+  var FAILED = { fallback: true, text: MESSAGES.offline };
+
+  // Mailchimp's reply is { result: 'success' | 'error', msg: <HTML> }.
+  var interpret = function (reply) {
+    if (!reply) return FAILED;
+    var msg = String(reply.msg || '');
+    if (reply.result === 'success') {
+      return { done: true, text: /confirm/i.test(msg) ? MESSAGES.confirm : MESSAGES.subscribed };
+    }
+    if (/already subscribed/i.test(msg)) return { done: true, text: MESSAGES.already };
+    if (/too many/i.test(msg)) return { text: MESSAGES.tooMany };
+    if (/fake or invalid|single @|portion of the email|valid email|enter a value/i.test(msg)) {
+      return { text: MESSAGES.invalid };
+    }
+    if (/captcha/i.test(msg)) return { fallback: true, text: MESSAGES.captcha };
+    return { fallback: true, text: MESSAGES.unknown };
+  };
+
+  // One sandboxed frame per request, removed once it has answered. Returns a
+  // function that removes it early. onReply gets { result, msg } or null.
+  var relays = 0;
+  var relay = function (action, fields, onReady, onReply) {
+    var id = ++relays;
+    var frame = document.createElement('iframe');
+    var listener = function (event) {
+      if (event.source !== frame.contentWindow) return;
+      var data = event.data || {};
+      if (data.relay === 'ready') {
+        onReady();
+        // The frame's origin is opaque, so '*' is the only target there is;
+        // event.source has already pinned the recipient to this frame.
+        frame.contentWindow.postMessage({ relay: 'subscribe', id: id, action: action, fields: fields }, '*');
+      } else if (data.relay === 'reply' && data.id === id) {
+        close();
+        onReply(data.ok ? { result: String(data.result), msg: String(data.msg) } : null);
+      }
+    };
+    var close = function () {
+      window.removeEventListener('message', listener);
+      frame.remove();
+    };
+    window.addEventListener('message', listener);
+    frame.setAttribute('sandbox', 'allow-scripts');
+    frame.setAttribute('aria-hidden', 'true');
+    frame.title = 'Newsletter relay';
+    frame.tabIndex = -1;
+    frame.hidden = true;
+    frame.src = 'newsletter-frame.html';
+    document.body.appendChild(frame);
+    return close;
+  };
+
   // There are two of these forms on the home page, so each one finds its own
   // field and status from inside itself rather than by a page-wide id.
   var forms = document.querySelectorAll('.newsletter__form');
   Array.prototype.forEach.call(forms, function (form) {
     var field = form.querySelector('.newsletter__input');
     var status = form.querySelector('.newsletter__status');
-    if (!field || !status) return;
+    if (!field || !status || !form.getAttribute('action')) return;
+
+    var busy = false;      // a request is in flight
+    var native = false;    // the next submit goes to Mailchimp's own page
+    var handedOff = 0;     // when it last did
+    var sent = '';         // the address most recently sent
+
+    // The script validates and words its own error, in the status line, so the
+    // browser's bubble is turned off — but only once this has run: without
+    // script the markup still asks the browser to check the address.
+    form.noValidate = true;
+
+    var say = function (text) { status.textContent = text; };
+    var settle = function (outcome) {
+      busy = false;
+      field.readOnly = false;
+      form.removeAttribute('aria-busy');
+      native = Boolean(outcome.fallback);
+      // Clear only what was sent, not something typed since.
+      if (outcome.done && field.value.trim() === sent) field.value = '';
+      say(outcome.text);
+    };
 
     form.addEventListener('submit', function (event) {
-      event.preventDefault();
-      var value = field.value.trim();
-
-      // Both messages are kept to a single line at the form's 26rem width, so
-      // they fit the height reserved for .newsletter__status and the panel
-      // never grows on submit.
-      if (!value || !field.checkValidity()) {
-        status.textContent = 'Please enter a valid email address.';
+      // In flight, or just handed to Mailchimp: a double click or a held Enter
+      // must not start a second request or open a second tab.
+      if (busy || Date.now() - handedOff < GRACE_MS) {
+        event.preventDefault();
+        return;
+      }
+      var email = field.value.trim();
+      if (!email || !field.checkValidity()) {
+        event.preventDefault();
+        say(MESSAGES.invalid);
         field.focus();
         return;
       }
-      status.textContent = 'Subscriptions aren’t live yet — nothing was recorded.';
+      field.value = email;
+
+      if (native) {
+        // Let this submit open the hosted page, which a click is allowed to do.
+        native = false;
+        handedOff = Date.now();
+        say(MESSAGES.handoff);
+        return;
+      }
+
+      event.preventDefault();
+      busy = true;
+      sent = email;
+      field.readOnly = true;
+      form.setAttribute('aria-busy', 'true');
+      say(MESSAGES.sending);
+
+      var fields = {};
+      new FormData(form).forEach(function (value, key) { fields[key] = String(value); });
+
+      var gaveUp = false;
+      var giveUp = function () {
+        if (gaveUp) return;
+        gaveUp = true;
+        window.clearTimeout(notReady);
+        window.clearTimeout(noAnswer);
+        settle(FAILED);
+        // Hold the relay open a while: a slow success still counts (below).
+        window.setTimeout(close, LATE_MS);
+      };
+      var close = relay(form.action, fields, function () {
+        window.clearTimeout(notReady);
+      }, function (reply) {
+        var outcome = interpret(reply);
+        if (!gaveUp) {
+          gaveUp = true;
+          window.clearTimeout(notReady);
+          window.clearTimeout(noAnswer);
+          settle(outcome);
+        } else if (outcome.done && native && !busy) {
+          // Answered after we gave up, and the visitor hasn't acted on the
+          // fallback since: the signup went through after all.
+          settle(outcome);
+        }
+      });
+      var notReady = window.setTimeout(giveUp, READY_MS);
+      var noAnswer = window.setTimeout(giveUp, TIMEOUT_MS);
     });
   });
 })();

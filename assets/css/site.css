@@ -897,6 +897,15 @@ button.ph[disabled] { opacity: 1; }   /* keep the designed contrast, not the UA'
   line-height: 1.35;
   color: var(--sage-light);
 }
+.newsletter__form[aria-busy="true"] .newsletter__submit { cursor: progress; }
+
+/* Mailchimp's honeypot field. Moved off-canvas, the way Mailchimp's own embed
+   does it, rather than display:none, which form-filling bots look for. Overflow
+   to the left of the page is not scrollable, so this adds no scrollbar. */
+.newsletter__trap {
+  position: absolute;
+  left: -5000px;
+}
 
 /* --- Footer -------------------------------------------------------------- */
 .site-footer { background: var(--ink-deep); color: var(--cream); }

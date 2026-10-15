@@ -242,6 +242,89 @@ check("querySelectorAll('.newsletter__form')" in js,
 check("getElementById('newsletter-" not in js,
       "site.js looks a newsletter up by id again — the second form would be ignored")
 
+# --- Mailchimp signup ----------------------------------------------------------
+# Both forms post to the alliance's Mailchimp audience, carry its bot trap, and
+# work without script (a native post in a new tab); site.js upgrades them to
+# JSONP. The audience lives in three places that must agree: the form action,
+# the trap's name, and index.html's CSP (held in html_structure).
+MC_HOST = "https://circulartextilealliance.us16.list-manage.com"
+MC_U, MC_ID, MC_FID = "ea29d1a908ff6356342abbd84", "81fed3ffc1", "00fcc2e1f0"
+MC_ACTION = "%s/subscribe/post?u=%s&id=%s&f_id=%s" % (MC_HOST, MC_U, MC_ID, MC_FID)
+for form in forms:
+    fid = form.get("id")
+    check(form.get("action") == MC_ACTION,
+          "[%s] posts to %r, not the alliance's Mailchimp audience" % (fid, form.get("action")))
+    check((form.get("method") or "").lower() == "post", "[%s] must use method=post" % fid)
+    check(form.get("target") == "_blank" and "noopener" in (form.get("rel") or ""),
+          "[%s] should open Mailchimp's page in a new tab with rel=noopener" % fid)
+    # The script switches validation off once it is there to do it itself;
+    # baked into the markup, it would leave no-script visitors with none.
+    check(form.get("novalidate") is None,
+          "[%s] has novalidate in the markup — no-script visitors lose validation" % fid)
+    inputs, stack = [], list(form.children)
+    while stack:
+        node = stack.pop()
+        if node.tag == "input":
+            inputs.append(node)
+        stack.extend(node.children)
+    emails = [i for i in inputs if "newsletter__input" in i.classes()]
+    check(len(emails) == 1 and emails[0].get("name") == "EMAIL",
+          "[%s] the address field must be named EMAIL for Mailchimp" % fid)
+    traps = [i for i in inputs if i.get("name") == "b_%s_%s" % (MC_U, MC_ID)]
+    check(len(traps) == 1, "[%s] lost Mailchimp's bot-trap field" % fid)
+    if traps:
+        trap = traps[0]
+        check(trap.get("tabindex") == "-1" and trap.get("value") == ""
+              and trap.get("autocomplete") == "off",
+              "[%s] the bot trap must be empty, untabbable and never autofilled" % fid)
+        wrapper = trap.parent
+        check(wrapper is not None and "newsletter__trap" in wrapper.classes()
+              and wrapper.get("aria-hidden") == "true",
+              "[%s] the bot trap must sit in an aria-hidden .newsletter__trap" % fid)
+    check(len(inputs) == 2, "[%s] has %d inputs; Mailchimp only takes EMAIL and the trap"
+          % (fid, len(inputs)))
+
+trap_rule = rule_body(".newsletter__trap") or ""
+check("position: absolute" in trap_rule and re.search(r"left:\s*-\d", trap_rule),
+      ".newsletter__trap must move the bot trap off-canvas (not display:none, "
+      "which bots check for)")
+
+# The JSONP runs only in the sandboxed relay. site.js frames it with scripts
+# allowed and nothing else — allow-same-origin would hand the reply this
+# origin — and trusts a message only from that frame.
+relay_js = read("assets/js/newsletter-frame.js")
+js_code = re.sub(r"(?m)^\s*//.*$", "", re.sub(r"/\*.*?\*/", "", js, flags=re.S))
+check("setAttribute('sandbox', 'allow-scripts')" in js_code and "allow-same-origin" not in js_code,
+      "site.js must frame the relay with sandbox=\"allow-scripts\" and nothing more")
+check("frame.src = 'newsletter-frame.html'" in js, "site.js no longer uses the relay frame")
+check("event.source !== frame.contentWindow" in js,
+      "site.js must ignore messages that do not come from its own relay frame")
+check("document.createElement('script')" not in js,
+      "site.js injects a script itself — the JSONP belongs in the sandboxed relay")
+check("url.pathname = '/subscribe/post-json'" in relay_js
+      and "url.pathname !== '/subscribe/post'" in relay_js,
+      "the relay must accept only the hosted signup and turn it into post-json")
+check("url.searchParams.set('c', name)" in relay_js, "the relay no longer names a JSONP callback")
+check("event.source !== window.parent" in relay_js,
+      "the relay must take requests only from the page that framed it")
+check("Subscriptions aren’t live yet" not in js, "the not-live-yet guard is back in site.js")
+# Nothing Mailchimp says is ever parsed as HTML, by either script.
+for name, source in (("site.js", js), ("newsletter-frame.js", relay_js)):
+    for sink in ("innerHTML", "outerHTML", "insertAdjacentHTML", "document.write", "eval(",
+                 "new Function", "createContextualFragment", "setHTMLUnsafe",
+                 "parseHTMLUnsafe", "srcdoc", "DOMParser"):
+        check(sink not in source, "%s uses %s — Mailchimp's reply must never be "
+              "parsed as markup" % (name, sink))
+
+# Every page's privacy text says where a newsletter address goes.
+for page in ["index.html", "publications.html", "news.html"]:
+    text = Document(page).source
+    privacy = text[text.find('id="policy-privacy"'):text.find('id="policy-terms"')]
+    check("Mailchimp" in privacy,
+          "[%s] the privacy policy does not say that signups go to Mailchimp" % page)
+    check("not connected to anything" not in privacy,
+          "[%s] the privacy policy still says the newsletter is not connected" % page)
+
 # Both newsletter fields carry the same US-spelled placeholder.
 for form in forms:
     stack, field = list(form.children), None

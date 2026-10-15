@@ -17,7 +17,7 @@ from sitecheck import ROOT, Document, check, exists, read, report  # noqa: E402
 ALLOWED_REMOTE_HOSTS = set()
 outbound = set()
 
-for page in ["index.html", "404.html", "publications.html", "news.html"]:
+for page in ["index.html", "404.html", "publications.html", "news.html", "newsletter-frame.html"]:
     doc = Document(page)
     tag = "[%s]" % page
     ids = doc.ids()

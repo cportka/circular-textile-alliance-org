@@ -61,8 +61,25 @@ if exists(PAGES):
     check(re.search(r"group:\s*pages\s*\n\s*cancel-in-progress:\s*false", pages),
           "pages.yml cancels in-flight deploys, which can leave Pages half-updated")
 
+# The newsletter's browser tests: both modes, read-only token, and triggered by
+# every file the signup depends on.
+NEWSLETTER = ".github/workflows/newsletter.yml"
+check(exists(NEWSLETTER), "%s is missing" % NEWSLETTER)
+if exists(NEWSLETTER):
+    nl = read(NEWSLETTER)
+    check("tests/browser/newsletter.cjs\n" in nl and "tests/browser/newsletter.cjs --live" in nl,
+          "newsletter.yml must run the browser test both mocked and --live")
+    check(re.search(r"^permissions:\s*\n\s*contents:\s*read\s*$", nl, re.M),
+          "newsletter.yml should hold a read-only token")
+    for dep in ("index.html", "newsletter-frame.html", "assets/js/site.js",
+                "assets/js/newsletter-frame.js", "assets/css/site.css", "tests/browser/**"):
+        check(nl.count("- " + dep) == 2,
+              "newsletter.yml does not run on changes to %s (push and pull_request)" % dep)
+    check("workflow_dispatch:" in nl, "newsletter.yml cannot be run on demand")
+check(exists("tests/browser/newsletter.cjs"), "the newsletter browser test is missing")
+
 # Node 20 is deprecated on the runners; v4 of checkout still targets it.
-for path in (VALIDATE, PAGES):
+for path in (VALIDATE, PAGES, NEWSLETTER):
     if not exists(path):
         continue
     for ref in re.findall(r"uses:\s*actions/checkout@v(\d+)", read(path)):

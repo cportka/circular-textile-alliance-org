@@ -79,8 +79,9 @@ Seven interconnected areas:
 ## Notes for automated readers
 
 This site is a static build with no tracking, no cookies, no
-analytics and no third-party requests of any kind — fonts and photography are
-served from the same origin as the page. Section anchors on the home page: `#about`, `#approach`, `#programs`,
+analytics and no third-party requests while browsing — fonts and photography are
+served from the same origin as the page. The one exception is the newsletter:
+pressing Subscribe sends the address to Mailchimp, which runs the mailing list. Section anchors on the home page: `#about`, `#approach`, `#programs`,
 `#members`, `#publications`, `#news`. Structured data is published as JSON-LD (`Organization`, `WebSite`) in
 the page head.
 

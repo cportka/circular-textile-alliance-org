@@ -9,6 +9,12 @@ from sitecheck import Document, check, read, report  # noqa: E402
 PAGES = ["index.html", "404.html", "publications.html", "news.html"]
 SECTIONS = ["about", "approach", "programs", "members", "publications", "news"]
 
+MAILCHIMP = "https://circulartextilealliance.us16.list-manage.com"
+REMOTE_CSP = {
+    # The newsletter forms' no-script post. No page admits a remote script.
+    "index.html": {"form-action": [MAILCHIMP]},
+}
+
 for page in PAGES:
     doc = Document(page)
     tag = "[%s]" % page
@@ -45,13 +51,51 @@ for page in PAGES:
     if csp:
         check("'unsafe-inline'" not in csp, "%s CSP weakened with 'unsafe-inline'" % tag)
         check("'unsafe-eval'" not in csp, "%s CSP weakened with 'unsafe-eval'" % tag)
-        # Every directive should be same-origin now that the photography is local.
-        check("http://" not in csp and "https://" not in csp,
-              "%s CSP names a remote origin; the site is meant to be fully "
-              "same-origin" % tag)
+        # Everything is same-origin except the newsletter: the home page — the
+        # one page with a form — may post to Mailchimp's host (paths stop
+        # counting after a redirect, so a path there buys nothing). Its JSONP
+        # runs in the sandboxed relay, checked below, never in a page.
+        directives = {}
+        for part in csp.split(";"):
+            bits = part.split()
+            if bits:
+                directives[bits[0]] = bits[1:]
+        remote = {}
+        for name, sources in directives.items():
+            far = [src for src in sources if re.match(r"^(https?:|\*|[\w-]+\.)", src)]
+            if far:
+                remote[name] = far
+        expected = REMOTE_CSP.get(page, {})
+        check(remote == expected,
+              "%s CSP names remote sources %r; the only deliberate ones are %r"
+              % (tag, remote, expected))
+        if page not in REMOTE_CSP:
+            check(directives.get("form-action") == ["'none'"],
+                  "%s has no form, so its CSP should keep form-action 'none'" % tag)
         # frame-ancestors is inert in a meta CSP; keeping it invites false confidence.
         check("frame-ancestors" not in csp,
               "%s CSP declares frame-ancestors, which meta-delivered CSP ignores" % tag)
+
+# --- The newsletter relay ------------------------------------------------------
+# newsletter-frame.html is the only document that may run Mailchimp's JSONP,
+# and it runs sandboxed in an opaque origin. Its policy admits exactly that
+# endpoint and its own script, and nothing else at all.
+FRAME = "newsletter-frame.html"
+frame = Document(FRAME)
+frame_csp = None
+for el in frame.find("meta"):
+    if (el.get("http-equiv") or "").lower() == "content-security-policy":
+        frame_csp = el.get("content")
+check(frame_csp == "default-src 'none'; script-src 'self' %s/subscribe/post-json; "
+      "base-uri 'none'; form-action 'none'" % MAILCHIMP,
+      "[%s] CSP is %r — it must admit only its own script and Mailchimp's "
+      "post-json endpoint" % (FRAME, frame_csp))
+check(frame.meta(name="robots") == "noindex", "[%s] must be noindex" % FRAME)
+scripts = frame.find("script")
+check([s.get("src") for s in scripts] == ["assets/js/newsletter-frame.js"],
+      "[%s] should load assets/js/newsletter-frame.js and nothing else" % FRAME)
+check(not frame.find("style") and not re.search(r'\sstyle\s*=\s*"', frame.source),
+      "[%s] has inline style" % FRAME)
 
 # --- Well-formedness --------------------------------------------------------
 # This suite's parser repairs a mismatched close by searching the stack, the way
