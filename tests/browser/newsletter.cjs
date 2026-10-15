@@ -23,7 +23,13 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { chromium, request: apiRequest } = require('playwright');
+const playwright = require('playwright');
+const { chromium, request: apiRequest } = playwright;
+// BROWSER=chromium|firefox|webkit picks the engine for the mocked run; CI runs
+// all three, since the relay depends on how each engine treats a sandboxed
+// frame. The live run is Chromium only.
+const ENGINE = process.env.BROWSER || 'chromium';
+if (!['chromium', 'firefox', 'webkit'].includes(ENGINE)) throw new Error('unknown BROWSER ' + ENGINE);
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const LIVE = process.argv.includes('--live');
@@ -86,7 +92,7 @@ async function openPage(browser, base, opts = {}) {
   // Violations are gathered from every frame, the sandboxed relay included —
   // through the console, and through a binding the init script reports to.
   const csp = [];
-  page.on('console', (msg) => { if (/Content Security Policy/i.test(msg.text())) csp.push(msg.text()); });
+  page.on('console', (msg) => { if (/Content.Security.Policy/i.test(msg.text())) csp.push(msg.text()); });
   if (opts.js !== false) {
     await context.exposeBinding('__cspReport', (source, line) => csp.push(line));
     await context.addInitScript(() => {
@@ -96,6 +102,10 @@ async function openPage(browser, base, opts = {}) {
     });
   }
   if (opts.frame) await context.route('**/newsletter-frame.html', opts.frame);
+  if (process.env.TRACE) {
+    context.on('request', (r) => console.log('        [trace ' + ENGINE + '] → ' + r.method() + ' ' + r.url().slice(0, 120)));
+    context.on('requestfailed', (r) => console.log('        [trace ' + ENGINE + '] ✗ ' + r.url().slice(0, 120) + ' ' + (r.failure() || {}).errorText));
+  }
   if (opts.clock) await page.clock.install();
   if (opts.route) await context.route(HOST + '/**', opts.route);
   await page.goto(base + '/index.html');
@@ -155,7 +165,7 @@ async function mocked(browser, base) {
       ok(shown, `${label} [${form}] → "${expected}"`, 'status was: ' + (await statusOf(page, form).textContent()));
       const field = await page.inputValue(form + ' .newsletter__input');
       ok(clears ? field === '' : field === 'reader@example.org', `${label} [${form}] field ${clears ? 'cleared' : 'kept (trimmed)'}`, 'field: ' + JSON.stringify(field));
-      if (form === FORMS[0] && label === replies[0][0]) {
+      if (form === FORMS[0] && label === replies[0][0] && seen.length) {
         const u = new URL(seen[0]);
         ok(u.pathname === '/subscribe/post-json', 'JSONP goes to /subscribe/post-json', u.pathname);
         ok(u.searchParams.get('u') === U && u.searchParams.get('id') === ID && u.searchParams.get('f_id') === '00fcc2e1f0',
@@ -207,7 +217,8 @@ async function mocked(browser, base) {
     console.log('        inside the relay: ' + JSON.stringify(r));
     ok(r.parent === 'SecurityError', 'hostile reply: cannot touch the page', r.parent);
     ok(r.storage === 'SecurityError', 'hostile reply: has no storage of its own to reach', r.storage);
-    ok(r.cookie === 'SecurityError', 'hostile reply: has no cookies to read', r.cookie);
+    // Chromium throws; other engines may hand an opaque origin an empty jar.
+    ok(r.cookie === 'SecurityError' || r.cookie === '', 'hostile reply: has no cookies to read', r.cookie);
     ok(r.top === 'SecurityError', 'hostile reply: cannot read where the visitor is', r.top);
     ok(r.origin === 'null', 'hostile reply: runs in an opaque origin', r.origin);
     ok((await page.evaluate(() => document.body.getAttribute('data-pwned'))) === null, 'hostile reply: page DOM untouched');
@@ -411,6 +422,11 @@ async function mocked(browser, base) {
     ok(await page.evaluate(() => document.fonts.check('400 13px Inter')), 'Inter has loaded before measuring');
     for (const width of [1440, 1024, 768, 600, 481, 480, 390, 360, 320]) {
       await page.setViewportSize({ width, height: 900 });
+      // WebKit re-evaluates media queries a frame after a resize, so measure
+      // only once the page agrees on the new width (and two frames have run).
+      await page.waitForFunction((w) => window.innerWidth === w
+        && window.matchMedia('(max-width: 30em)').matches === (w <= 480), width);
+      await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
       for (const form of FORMS) {
         const overflow = await page.evaluate(([f, texts]) => {
           const el = document.querySelector(f + ' .newsletter__status');
@@ -586,9 +602,16 @@ async function diagnose(base) {
 (async () => {
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   const base = 'http://127.0.0.1:' + server.address().port;
-  const browser = await chromium.launch();
+  // Mocked runs must never reach the internet: anything a route doesn't
+  // answer goes to a dead proxy and fails, instead of quietly reaching the real
+  // Mailchimp (in Firefox, once, a route missed the sandboxed frame's request).
+  // (Playwright sends Chromium's loopback through the proxy unless told not to.)
+  process.env.PLAYWRIGHT_DISABLE_FORCED_CHROMIUM_PROXIED_LOOPBACK = '1';
+  const browser = await (LIVE ? chromium : playwright[ENGINE]).launch(LIVE ? {} : {
+    proxy: { server: 'http://127.0.0.1:9', bypass: '127.0.0.1,localhost' },
+  });
   try {
-    console.log(LIVE ? 'newsletter — live against Mailchimp' : 'newsletter — mocked Mailchimp');
+    console.log(LIVE ? 'newsletter — live against Mailchimp' : 'newsletter — mocked Mailchimp, ' + ENGINE + ' ' + browser.version());
     await (LIVE ? live : mocked)(browser, LIVE && REMOTE_BASE ? REMOTE_BASE : base);
   } finally {
     await browser.close();

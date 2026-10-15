@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.15.1 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.15.2 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -72,8 +72,9 @@ pull request) and as the gate in front of every deploy. Eight suites live in
 | `staging` | runs `scripts/stage-site.sh` and checks **what would actually be published**: every page and `.well-known/security.txt` present, no README/CHANGELOG/tests/scripts/bytecode, and every local reference in the published pages and stylesheet resolving inside the published tree |
 | `seo-metadata` | title/description lengths, canonical, full Open Graph and Twitter sets, manifest and its icons, JSON-LD parses and carries `Organization` + `WebSite`, robots/sitemap/llms.txt agree on one host, `404` is `noindex`, security.txt valid |
 
-The newsletter signup is also tested **in a real browser**, by
-`tests/browser/newsletter.cjs` (Playwright + Chromium), which
+The newsletter signup is also tested **in real browsers** — Chromium, Firefox
+and WebKit (Safari's engine) — by `tests/browser/newsletter.cjs` (Playwright;
+`BROWSER=firefox|webkit` picks the engine), which
 `.github/workflows/newsletter.yml` runs whenever the home page, the relay, their
 scripts, `site.css` or the test itself changes, and on demand:
 
@@ -343,10 +344,10 @@ answer within 15 s, or the answer is unrecognised (a captcha, say), the next
 press of Subscribe goes through natively and finishes on Mailchimp's page —
 and a success that arrives late still counts unless the visitor has already
 done that. The home page's CSP admits Mailchimp's host for `form-action` only;
-the relay's admits its `post-json` endpoint for scripts; the other pages keep
+the relay's admits scripts and nothing else; the other pages keep
 `form-action 'none'`. The audience is named in places that must change together:
-both forms' `action`, the trap field's `name`, the host in both CSPs, and the
-host in `newsletter-frame.js`.
+both forms' `action`, the trap field's `name`, the host in `index.html`'s
+`form-action`, and the host in `newsletter-frame.js`.
 
 **Fonts.** The design loads Inter and Playfair Display from
 `static.figma.com`, which is not a public font CDN. Both are SIL OFL, so they

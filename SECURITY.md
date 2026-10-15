@@ -18,7 +18,7 @@ origin. **Subscribing: Mailchimp**, and only after someone presses Subscribe.
 
 | Host | When | What it receives | CSP source |
 | :-- | :-- | :-- | :-- |
-| `circulartextilealliance.us16.list-manage.com` (Intuit Mailchimp) | a visitor presses **Subscribe** on the home page | the address typed, Mailchimp's empty bot-trap field, and what every request carries (IP address, user agent, this site's origin as referrer) | `form-action` the host, on `index.html` (the no-script post); `script-src …/subscribe/post-json`, on `newsletter-frame.html` only (the JSONP reply) |
+| `circulartextilealliance.us16.list-manage.com` (Intuit Mailchimp) | a visitor presses **Subscribe** on the home page | the address typed, Mailchimp's empty bot-trap field, and what every request carries (IP address, user agent, this site's origin as referrer) | `form-action` the host, on `index.html` (the no-script post); scripts only inside the sandboxed `newsletter-frame.html` (the JSONP reply) |
 
 **Why the newsletter runs in a sandboxed frame.** Mailchimp sends no CORS
 headers, so the only way to read its answer in-page is JSONP — a reply that is
@@ -32,10 +32,11 @@ a page here could read those sites' pages and storage. So no page loads it:
   frame's origin is opaque: a reply running there gets `SecurityError` on the
   page, on storage, on cookies and on `top.location` (the browser test proves
   each). The frame is created on Subscribe and removed once it has answered.
-- The frame's own policy is `default-src 'none'; script-src 'self'
-  …/subscribe/post-json` — it can fetch, frame or submit nothing else. (CSP
-  stops comparing paths after a redirect, so within the frame this trusts
-  Mailchimp's host rather than one path; the sandbox is what contains it.)
+- The frame's own policy is `default-src 'none'; script-src *` — it can load
+  scripts and fetch, frame or submit nothing else. The script list is open on
+  purpose: WebKit (Safari) does not match `'self'` inside a sandboxed frame, so
+  a tighter list refused the relay's own script and Safari never used it. The
+  sandbox, not the script list, is what contains Mailchimp's reply.
 - The pages' policies admit **no third-party script at all**. `index.html`
   adds only `form-action` for the no-script post, by host because paths stop
   counting after a redirect.
@@ -51,9 +52,10 @@ a page here could read those sites' pages and storage. So no page loads it:
   plain post to Mailchimp's hosted page in a new tab (`rel="noopener"`), which
   runs nothing here.
 
-The relay's `script-src 'self'` relies on `'self'` matching the sandboxed
-document's URL, as CSP specifies; old Safari releases got this wrong, and in
-any browser that refuses the relay's script the 4 s fallback takes over.
+The browser test runs every newsletter path in Chromium, Firefox and WebKit,
+and its mocked runs are sealed off from the network so a missed mock can never
+reach the real Mailchimp. If a browser ever refuses the relay anyway, the 4 s
+fallback hands the visitor to Mailchimp's own page.
 
 Fonts are self-hosted, so no request reaches Google Fonts or any other font CDN.
 Photography is the alliance's own, served from `assets/img/photos/`. There is no

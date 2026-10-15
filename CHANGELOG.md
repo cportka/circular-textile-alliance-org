@@ -4,6 +4,33 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.15.2] - 2026-10-15
+
+### Fixed
+- **The newsletter works in Safari.** WebKit does not match CSP `'self'`
+  inside a sandboxed frame, so the relay's own script was refused and every
+  Safari signup fell back to Mailchimp's page after 4 s. The relay's policy is
+  now `default-src 'none'; script-src *`: it can load scripts and fetch, frame
+  or submit nothing else, and the sandbox — unchanged — is what contains
+  Mailchimp's reply (a hostile reply still gets `SecurityError` on the page,
+  storage, cookies and `top`, now proven in all three engines).
+- The address is trimmed before it is validated, so stray spaces around a
+  valid address no longer read as invalid.
+
+### Changed
+- `.claude/settings.json` allows the read-only commands, this repo's tooling
+  and the GitHub PR/CI tools the workflow uses, and **denies** what the
+  standard forbids: force-pushes, pushes to `main`, tags and releases, admin
+  merges, disabling workflows. (Allow rules apply in sessions with only this
+  repository attached.)
+
+### Changed — tests
+- The browser suite runs in **Chromium, Firefox and WebKit** on every relevant
+  change. Its mocked runs send anything a route misses to a dead proxy, so a
+  missed mock can never reach the real Mailchimp, and the width checks wait for
+  a resize to take effect before measuring (WebKit applies media queries a
+  frame later).
+
 ## [0.15.1] - 2026-10-15
 
 Fixes from a security and efficiency audit of the whole repository.
