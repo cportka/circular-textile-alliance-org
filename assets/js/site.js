@@ -122,7 +122,7 @@
     offline: 'Couldn’t reach Mailchimp — press Subscribe to finish there.',
     captcha: 'One more step — press Subscribe to finish on Mailchimp.',
     unknown: 'Mailchimp didn’t accept that — press Subscribe to see why.',
-    handoff: 'Continuing on Mailchimp’s page, in a new tab.'
+    handoff: 'Continued on Mailchimp’s page, in a new tab.'
   };
   var FAILED = { fallback: true, text: MESSAGES.offline };
 

@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.15.4 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.15.5 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -346,7 +346,7 @@ request ("blocked because Enhanced Tracking Protection is enabled" in the
 console). The block arrives within a fraction of a second, while the browser
 still counts the visitor's press as fresh (transient user activation, ~5 s),
 so `site.js` opens Mailchimp's own page in a new tab on that same press — a
-tab the visitor opens is not blocked — and the form says "Continuing on
+tab the visitor opens is not blocked — and the form says "Continued on
 Mailchimp's page, in a new tab". No static-site design avoids this: any request from the
 page to Mailchimp's domain is blocked, and only a server on this domain could
 proxy it. Firefox's default (Standard) protection labels the request but
