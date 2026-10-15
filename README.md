@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.15.3 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.15.4 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -343,16 +343,20 @@ repeat presses are ignored; success clears the field.
 `list-manage.com` as an email tracker, so its private windows and Strict
 tracking protection — and ad-blockers like uBlock Origin — block the in-page
 request ("blocked because Enhanced Tracking Protection is enabled" in the
-console). The form then says "Couldn't reach Mailchimp — press Subscribe to
-finish there", and the second press opens Mailchimp's own page, which
-browsers don't block. No static-site design avoids this: any request from the
+console). The block arrives within a fraction of a second, while the browser
+still counts the visitor's press as fresh (transient user activation, ~5 s),
+so `site.js` opens Mailchimp's own page in a new tab on that same press — a
+tab the visitor opens is not blocked — and the form says "Continuing on
+Mailchimp's page, in a new tab". No static-site design avoids this: any request from the
 page to Mailchimp's domain is blocked, and only a server on this domain could
 proxy it. Firefox's default (Standard) protection labels the request but
 allows it.
 
-If the relay doesn't start within 4 s, Mailchimp can't be reached or doesn't
-answer within 15 s, or the answer is unrecognised (a captcha, say), the next
-press of Subscribe goes through natively and finishes on Mailchimp's page —
+Any failure within 3 s of the press — blocked, unreachable, a captcha or an
+unrecognised answer — opens Mailchimp's page the same way. A slower one (the
+relay not starting within 4 s, no answer within 15 s) can no longer open a
+tab by itself, so the form says "Couldn't reach Mailchimp — press Subscribe to
+finish there" and the next press goes through natively —
 and a success that arrives late still counts unless the visitor has already
 done that. The home page's CSP admits Mailchimp's host for `form-action` only;
 the relay's admits scripts and nothing else; the other pages keep

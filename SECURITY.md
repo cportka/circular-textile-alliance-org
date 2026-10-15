@@ -54,7 +54,8 @@ a page here could read those sites' pages and storage. So no page loads it:
 
 Privacy tools that block Mailchimp as a tracker (Firefox private windows and
 Strict mode, ad-blockers) refuse the relay's request outright; the visitor is
-told to press Subscribe again and finishes on Mailchimp's own page.
+taken straight to Mailchimp's own page in a new tab on the same press (or,
+if the failure is slow, asked to press once more).
 
 The browser test runs every newsletter path in Chromium, Firefox and WebKit,
 and its mocked runs are sealed off from the network so a missed mock can never
