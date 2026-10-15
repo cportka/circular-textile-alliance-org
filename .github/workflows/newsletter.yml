@@ -1,0 +1,74 @@
+name: newsletter
+
+# The Mailchimp signup in a real browser (tests/browser/newsletter.cjs).
+#
+#   mocked — answers every Mailchimp request inside the browser and walks each
+#            outcome: success, already subscribed, invalid, captcha, unreachable,
+#            timeout, hostile HTML in a reply, double submits, no script, and
+#            that every message fits the row reserved for it.
+#   live   — the real audience, with an address Mailchimp's own syntax check
+#            refuses, so no contact is ever created (the test fails loudly if
+#            Mailchimp ever accepts it). Proves the CSP, the relay's JSONP round
+#            trip, and the no-script and fallback posts against Mailchimp
+#            itself, and traces every request it makes.
+#
+# Runs when something the signup depends on changes, and on demand.
+
+on:
+  pull_request:
+    paths:
+      - index.html
+      - newsletter-frame.html
+      - assets/js/site.js
+      - assets/js/newsletter-frame.js
+      - assets/css/site.css
+      - tests/browser/**
+      - .github/workflows/newsletter.yml
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - newsletter-frame.html
+      - assets/js/site.js
+      - assets/js/newsletter-frame.js
+      - assets/css/site.css
+      - tests/browser/**
+      - .github/workflows/newsletter.yml
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Run the live checks against this deployed URL (e.g. the Pages site) instead of a local server
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: newsletter-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # Into a temp prefix, not the repo: no package.json appears at the root
+      # (which tests/run-tests.sh would then treat as the version source).
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --prefix "$RUNNER_TEMP/pw" --no-save --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/pw/node_modules/.bin/playwright" install --with-deps chromium
+
+      - name: Mocked Mailchimp — every outcome
+        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" node tests/browser/newsletter.cjs
+
+      # The URL arrives through env, never spliced into the script.
+      - name: Live Mailchimp — round trip with an address Mailchimp refuses
+        env:
+          BASE_URL: ${{ inputs.base_url }}
+        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" node tests/browser/newsletter.cjs --live ${BASE_URL:+--base "$BASE_URL"}

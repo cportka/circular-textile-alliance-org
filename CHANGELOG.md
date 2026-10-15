@@ -4,6 +4,74 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.15.0] - 2026-10-15
+
+### Added
+- **The newsletter is live.** Both "Stay Informed" forms sign up to the
+  alliance's Mailchimp audience. Built from Mailchimp's embed code, keeping only
+  what the audience uses — the `EMAIL` field and Mailchimp's bot trap (hidden
+  off-canvas by a CSS class, `aria-hidden`, untabbable, never autofilled). The
+  embed's stylesheet, jQuery, `mc-validate.js`, inline styles and script, the
+  disabled SMS/phone fields and the referral badge are not used; the forms keep
+  the site's design.
+- **Without script** each form is a plain post to Mailchimp's hosted signup page
+  in a new tab (`rel="noopener"`), and the browser validates the address.
+- **With script** the answer appears in the form's own status line, always in
+  the site's own copy: "Almost done — please confirm via the email we just
+  sent.", "Thank you — you're subscribed.", "You're already subscribed",
+  "Too many attempts", or an invalid-address message. While a request is in
+  flight the field is read-only and repeat presses are ignored (`aria-busy`);
+  success clears the field (only if it still holds what was sent).
+- **A sandboxed relay, `newsletter-frame.html` + `assets/js/newsletter-frame.js`.**
+  Mailchimp only answers in-page as JSONP, which is a script, and this site's
+  origin (`cportka.github.io`) is shared with the account's other Pages sites.
+  So the JSONP runs only inside a per-request frame sandboxed to
+  `allow-scripts` — an opaque origin that can reach no page, storage, cookies or
+  `top` — and the page trusts its messages only by `event.source`. Mailchimp's
+  wording is matched, never parsed or shown.
+- **Fallbacks.** If the relay doesn't start within 4 s, Mailchimp doesn't answer
+  within 15 s, or the answer is unrecognised (a captcha, say), the next press
+  hands off to Mailchimp's hosted page; presses in the 2 s after a handoff are
+  ignored, so a double click opens one tab. A success that arrives after the
+  timeout still counts unless the visitor has already handed off.
+- **`tests/browser/newsletter.cjs`** — Playwright + Chromium, 206 assertions.
+  Mocked mode walks every outcome above, proves the sandbox holds against a
+  hostile reply, checks for CSP violations in every frame, the no-script post,
+  and every message fitting the reserved status row at nine widths in the
+  loaded typeface. `--live` runs the real round trip against the audience —
+  the relay, the no-script post and the fallback post — with an address
+  Mailchimp's syntax check refuses (`…@localhost`), failing loudly if Mailchimp
+  ever accepts it; an undeliverable `.invalid` address and a filled bot trap
+  both turned out to be processed. It traces every request to Mailchimp.
+- Mailchimp's "You're already subscribed, your profile has been updated" (sent
+  as a *success*) reads as already subscribed, not as a new subscription.
+  `.github/workflows/newsletter.yml` runs both whenever the signup's files
+  change, and on demand.
+
+### Changed
+- **CSP.** `index.html` adds `form-action` for Mailchimp's host (by host: CSP
+  ignores paths after a redirect) and still admits **no third-party script**.
+  The relay's own policy is `default-src 'none'` plus its script and
+  Mailchimp's `post-json` endpoint. The other pages keep `form-action 'none'`.
+- **Privacy and Cookie text** (all three pages) now says that reading the site
+  contacts no third party but pressing Subscribe sends the address to
+  Mailchimp, whose own policies then apply.
+- `SECURITY.md` lists Mailchimp as the one third party and explains the relay;
+  `README.md` and `llms.txt` follow.
+
+### Changed — tests
+- `html-structure` parses each page's CSP and holds its remote sources to an
+  exact allowlist (only `index.html`'s `form-action`), and holds the relay's
+  policy, `noindex` and single script exactly.
+- `components` holds both forms to the audience's action, `method=post`, a new
+  tab with `noopener`, no baked-in `novalidate`, the `EMAIL` name, the bot
+  trap's name/attributes/wrapper and its off-canvas rule; `site.js` to a
+  `sandbox="allow-scripts"` relay, `event.source` checks both ways, no script
+  injection of its own; both scripts to **no HTML sinks**; every privacy dialog
+  to naming Mailchimp.
+- `links-assets` covers the relay page; `workflows` holds `newsletter.yml` to
+  both modes, a read-only token, and its path triggers.
+
 ## [0.14.3] - 2026-10-10
 
 ### Changed

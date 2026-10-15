@@ -29,12 +29,14 @@
 <meta name="twitter:description" content="An independent nonprofit bridging the gap between people and the textile industry through education, research, collaboration, and practical implementation.">
 <meta name="twitter:image" content="https://cportka.github.io/circular-textile-alliance-org/assets/img/og-cover.png">
 
-<!-- Fully same-origin: no third-party host is contacted at all. The page also
-     carries no inline <style>/style="" and no inline <script>, so no
-     'unsafe-inline' is needed — keep it that way when editing.
+<!-- Same-origin, with one exception: the newsletter forms may post to
+     Mailchimp's host (form-action). No third-party script runs here — the
+     newsletter's JSONP runs in the sandboxed newsletter-frame.html, under that
+     page's own policy. The page carries no inline <style>/style="" and no
+     inline <script>, so no 'unsafe-inline' is needed — keep it that way.
      (frame-ancestors is deliberately absent: it is ignored in a meta CSP. Set it
      as a response header at the CDN/host if you need clickjacking protection.) -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; form-action 'none'; base-uri 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; form-action https://circulartextilealliance.us16.list-manage.com; base-uri 'self'; object-src 'none'">
 
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
@@ -256,12 +258,20 @@
           research.
         </p>
       </div>
-      <form class="newsletter__form" id="newsletter-form-about" novalidate>
+      <form class="newsletter__form" id="newsletter-form-about"
+            action="https://circulartextilealliance.us16.list-manage.com/subscribe/post?u=ea29d1a908ff6356342abbd84&amp;id=81fed3ffc1&amp;f_id=00fcc2e1f0"
+            method="post" target="_blank" rel="noopener">
         <label class="visually-hidden" for="newsletter-email-about">Your email address</label>
         <div class="newsletter__field">
-          <input class="newsletter__input" id="newsletter-email-about" name="email" type="email"
+          <input class="newsletter__input" id="newsletter-email-about" name="EMAIL" type="email"
                  autocomplete="email" placeholder="your@organization.org" required>
           <button class="btn btn--primary newsletter__submit" type="submit">Subscribe</button>
+        </div>
+        <!-- Mailchimp's bot trap. People never see it; a script that fills every
+             field fills this one too, and Mailchimp drops the signup. -->
+        <div class="newsletter__trap" aria-hidden="true">
+          <input type="text" name="b_ea29d1a908ff6356342abbd84_81fed3ffc1" tabindex="-1"
+                 value="" autocomplete="off" aria-label="Leave this field empty">
         </div>
         <p class="newsletter__status" id="newsletter-status-about" role="status"></p>
       </form>
@@ -878,9 +888,12 @@
     </div>
 
     <!-- Newsletter --------------------------------------------------------
-         No subscription endpoint exists yet. Rather than fake a success state,
-         the form is inert and says so on submit. Point `action` at a real
-         handler and delete the guard in assets/js/site.js to activate it. -->
+         Both forms sign up to the alliance's Mailchimp audience. Without
+         JavaScript they post to Mailchimp's hosted page in a new tab; with it,
+         assets/js/site.js relays the same fields to Mailchimp's JSONP endpoint
+         through the sandboxed newsletter-frame.html and reports the result in
+         the status line. Changing the audience means changing both form
+         actions, the trap's name, and the host in both pages' CSPs. -->
     <div class="newsletter on-dark">
       <div>
         <h3 class="newsletter__title">Stay Informed</h3>
@@ -889,15 +902,23 @@
           research.
         </p>
       </div>
-      <form class="newsletter__form" id="newsletter-form" novalidate>
+      <form class="newsletter__form" id="newsletter-form"
+            action="https://circulartextilealliance.us16.list-manage.com/subscribe/post?u=ea29d1a908ff6356342abbd84&amp;id=81fed3ffc1&amp;f_id=00fcc2e1f0"
+            method="post" target="_blank" rel="noopener">
         <label class="visually-hidden" for="newsletter-email">Your email address</label>
         <!-- Input and button live in their own flex row. Keeping them out of the
              form's main flow is what stops the status message below from ever
              reflowing the button. -->
         <div class="newsletter__field">
-          <input class="newsletter__input" id="newsletter-email" name="email" type="email"
+          <input class="newsletter__input" id="newsletter-email" name="EMAIL" type="email"
                  autocomplete="email" placeholder="your@organization.org" required>
           <button class="btn btn--primary newsletter__submit" type="submit">Subscribe</button>
+        </div>
+        <!-- Mailchimp's bot trap. People never see it; a script that fills every
+             field fills this one too, and Mailchimp drops the signup. -->
+        <div class="newsletter__trap" aria-hidden="true">
+          <input type="text" name="b_ea29d1a908ff6356342abbd84_81fed3ffc1" tabindex="-1"
+                 value="" autocomplete="off" aria-label="Leave this field empty">
         </div>
         <!-- role="status" is an implicitly polite live region; the space it will
              need is reserved in CSS so the panel does not grow on submit. -->
@@ -976,14 +997,16 @@
     <h2 class="policy__title" id="policy-privacy-title">Privacy Policy</h2>
     <div class="policy__body">
       <p>
-        This site collects nothing about you. There is no analytics, no tracking,
-        no advertising, no session recording and no fingerprinting. Nothing you
-        do here is logged, stored or profiled by us.
+        This site collects nothing about you unless you sign up for the
+        newsletter. There is no analytics, no tracking, no advertising, no
+        session recording and no fingerprinting. Nothing you do here is logged,
+        stored or profiled by us.
       </p>
       <p>
-        Every file the page loads — the stylesheet, the script, the typefaces and
-        the photography — is served from this site's own domain. No request is
-        made to any third party, so no third party learns that you visited.
+        Every file a page loads as you read it — the stylesheet, the script, the
+        typefaces and the photography — is served from this site's own domain.
+        Reading the site makes no request to any third party, so no third party
+        learns that you visited.
       </p>
       <p>
         The site is published with GitHub Pages, which like any web host receives
@@ -991,10 +1014,14 @@
         outside our control and we have no access to them.
       </p>
       <p>
-        The newsletter field is not connected to anything: submitting it reports
-        that nothing was recorded, because nothing was. Links to other
-        organisations' sites are ordinary links — once you follow one, that site's
-        own policies apply.
+        The newsletter is the one exception, and only if you use it. Pressing
+        Subscribe sends the address you typed to Mailchimp, the service that runs
+        our mailing list, and Mailchimp's own privacy policy then applies to it.
+        Every newsletter it sends carries a link to unsubscribe.
+      </p>
+      <p>
+        Links to other organisations' sites are ordinary links — once you follow
+        one, that site's own policies apply.
       </p>
     </div>
     <form method="dialog">
@@ -1050,6 +1077,12 @@
       <p>
         That is why you have never seen a cookie banner here. There is no consent
         to give, because nothing is being asked of you.
+      </p>
+      <p>
+        Signing up for the newsletter is the one time a page talks to another
+        service: your browser contacts Mailchimp, which runs our mailing list.
+        Anything Mailchimp keeps in your browser for its own domain is covered by
+        Mailchimp's cookie policy rather than this one.
       </p>
     </div>
     <form method="dialog">

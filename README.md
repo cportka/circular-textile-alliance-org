@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.14.3 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.15.0 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -18,9 +18,11 @@ index.html                 the home page — eight sections
 publications.html          Reports & Publications — the full library
 news.html                  News — the full list
 404.html                   styled not-found page
+newsletter-frame.html      sandboxed relay for the newsletter's Mailchimp JSONP (never shown)
 assets/
   css/site.css             every style, including the @font-face block
-  js/site.js               progressive enhancement only (header state, menu, form guard)
+  js/site.js               progressive enhancement only (header state, menu, dialogs, newsletter)
+  js/newsletter-frame.js   the relay's script — the only code that talks to Mailchimp
   fonts/*.woff2            self-hosted Inter + Playfair Display (SIL OFL, licences alongside)
   img/                     logo, favicon, app icons, Open Graph card
   img/photos/*.webp        the alliance's own photography (see below)
@@ -54,7 +56,7 @@ so prefer the server.
 bash tests/run-tests.sh
 ```
 
-400+ assertions, stdlib Python only, no browser and no network — so the same
+1,000+ assertions, stdlib Python only, no browser and no network — so the same
 command runs locally, in CI (`.github/workflows/validate.yml`, on every push and
 pull request) and as the gate in front of every deploy. Seven suites live in
 `tests/cases/`, backed by `tests/lib/`:
@@ -68,6 +70,42 @@ pull request) and as the gate in front of every deploy. Seven suites live in
 | `components` | **every `<img>` declares the shape of the file it loads** — width/height are read against the file's real size, so replacing an image at a new aspect ratio fails until the markup follows. **Every class in the markup has a rule in `site.css`** — a deletion that orphans a class is how the 404 lede lost its type in 0.4.0. Plus guards for UI bugs that shipped once: the header CTA's hover rules exist per header state (a specificity trap made the label invisible), the newsletter field is isolated from its status message, the status row reserves its height, and the logo keeps its dash-gap interlock and gradients — with `favicon.svg`'s geometry pinned to `logo.svg`'s. Also that the hero's statement band stays off the photograph, which is what makes its measured contrast the rendered contrast |
 | `workflows` | both workflows still trigger where they should, keep their `workflow_dispatch` escape hatch, hold the Pages permissions and concurrency group, **validate before uploading the artifact**, and pin non-deprecated action versions |
 | `seo-metadata` | title/description lengths, canonical, full Open Graph and Twitter sets, manifest and its icons, JSON-LD parses and carries `Organization` + `WebSite`, robots/sitemap/llms.txt agree on one host, `404` is `noindex`, security.txt valid |
+
+The newsletter signup is also tested **in a real browser**, by
+`tests/browser/newsletter.cjs` (Playwright + Chromium), which
+`.github/workflows/newsletter.yml` runs whenever the home page, the relay, their
+scripts, `site.css` or the test itself changes, and on demand:
+
+```sh
+NODE_PATH="$(npm root -g)" node tests/browser/newsletter.cjs          # mocked Mailchimp
+NODE_PATH="$(npm root -g)" node tests/browser/newsletter.cjs --live   # the real audience
+NODE_PATH="$(npm root -g)" node tests/browser/newsletter.cjs --live \
+  --base https://cportka.github.io/circular-textile-alliance-org         # …from the deployed site
+```
+
+Mailchimp's server treats the no-script post differently by origin — from a
+local `http://127.0.0.1` test server it resets the connection — so against a
+local server the live run only reports whether Mailchimp's page loaded, and
+`--base` (or the workflow's `base_url` input on a manual run) is the check of
+what visitors actually get.
+
+The default mode answers Mailchimp from inside the browser and walks every
+outcome — success with and without double opt-in, already subscribed, too many
+attempts, invalid, captcha, an unrecognised answer, unreachable, no callback, a
+relay that never starts and a timeout (both on a fake clock), a late success,
+double submits and double presses after a handoff, both forms independently,
+the no-script form — with zero CSP violations in any frame. A hostile reply is
+run inside the relay to prove the sandbox holds (no page, storage, cookies or
+`top`), and every message the script can write is measured against the status
+row at nine widths, in the loaded typeface. `--live` runs the real
+round trip against the audience — the relay, the no-script post, and the
+fallback post — with an address Mailchimp's own syntax check refuses
+(`…@localhost`: no top-level domain, which the browser allows), and fails loudly
+if Mailchimp ever accepts it. Neither an undeliverable `.invalid` address nor a
+filled bot trap kept Mailchimp from processing a signup, so nothing weaker will
+do. It traces every request to Mailchimp, redirects included, and presents as
+ordinary desktop Chrome, since Mailchimp's bot protection resets a headless
+browser's form post.
 
 ## Deployment
 
@@ -237,8 +275,9 @@ tells a reader the link leaves the site.
 Settings open a native `<dialog>` via `showModal()`, which supplies the
 centring, backdrop, focus containment and Escape handling; only the appearance
 and the animation are ours. Their text describes what this site actually does —
-no cookies, no storage, no analytics, no third-party requests — which is the
-same claim the `links-assets` suite enforces. **It has not been through a
+no cookies, no storage, no analytics, no third-party requests while browsing — which is the
+same claim the `links-assets` suite enforces — save the newsletter, which
+both the privacy and the cookie text name. **It has not been through a
 lawyer**; treat it as an accurate technical description rather than a reviewed
 legal notice.
 
@@ -265,9 +304,32 @@ photographs and the whole `.card` family went with the change — `.card`,
 `.card-grid`, `.card__media`, `.card__title` and the four `.news-card__*` rules
 had no markup left once Programs and News both stopped using them.
 
-**Newsletter form.** No subscription endpoint exists. Rather than fake a success
-state, submitting reports plainly that nothing was recorded. Give the `<form>` a
-real `action` and delete the guard in `assets/js/site.js` to activate it.
+**Newsletter form.** Both forms sign up to the alliance's Mailchimp audience,
+built from Mailchimp's embed code but keeping only what the audience uses — the
+`EMAIL` field and Mailchimp's bot trap. The embed's stylesheet, jQuery,
+`mc-validate.js`, inline styles and script, SMS/phone fields (all disabled on
+the audience) and referral badge are gone; the forms keep the site's own look.
+
+Without script, each form is a plain `POST` to Mailchimp's hosted signup page in
+a new tab. With script, the same fields go to Mailchimp's `post-json` endpoint as
+**JSONP** — Mailchimp sends no CORS headers, so `fetch` could not read the
+answer — and the result appears in the form's own status line, always in the
+site's own short copy. A JSONP reply is a script, so it never runs in the page:
+`site.js` relays each request through `newsletter-frame.html` in a frame
+sandboxed to `allow-scripts` alone, an opaque origin from which the reply can
+reach nothing (see [SECURITY.md](./SECURITY.md) for why that matters on a shared
+`github.io` origin). While a request is in flight the field is read-only and
+repeat presses are ignored; success clears the field.
+
+If the relay doesn't start within 4 s, Mailchimp can't be reached or doesn't
+answer within 15 s, or the answer is unrecognised (a captcha, say), the next
+press of Subscribe goes through natively and finishes on Mailchimp's page —
+and a success that arrives late still counts unless the visitor has already
+done that. The home page's CSP admits Mailchimp's host for `form-action` only;
+the relay's admits its `post-json` endpoint for scripts; the other pages keep
+`form-action 'none'`. The audience is named in places that must change together:
+both forms' `action`, the trap field's `name`, the host in both CSPs, and the
+host in `newsletter-frame.js`.
 
 **Fonts.** The design loads Inter and Playfair Display from
 `static.figma.com`, which is not a public font CDN. Both are SIL OFL, so they
@@ -315,10 +377,12 @@ work — a spinning mill floor, a machinist at an industrial sewing machine, a
 yarn shade card, undyed cotton awaiting processing, and sorted offcut bales.
 They live in `assets/img/photos/` and are served from this origin.
 
-**The site therefore contacts no third party at all.** Fonts are self-hosted,
+**Browsing the site therefore contacts no third party.** Fonts are self-hosted,
 photography is local, there is no analytics, no tag manager, no tracking pixel
 and no cookie. `img-src` in the Content-Security-Policy is `'self' data:`, and
-a test fails the build if any remote host reappears in the markup or the CSP.
+a test fails the build if any page fetches a subresource from a remote host, or
+if a CSP names a remote source beyond the two the newsletter needs (the home
+page's `form-action`, the relay's `script-src`).
 
 Five source photographs cover eight slots, so each is cropped for its slot
 rather than reused whole — the shade card appears once as a wide spread and
