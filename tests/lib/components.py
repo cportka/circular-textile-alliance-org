@@ -365,6 +365,18 @@ check('id="contribute"' in approach,
 check(src.count('id="contribute"') == 1, "the Contribute block exists more than once")
 check("Donate via Givebutter" in approach and "Give via" not in src,
       "the Givebutter button should read 'Donate via Givebutter'")
+# Get Involved ends with a Connect button styled like Donate, opening a
+# membership email.
+src_members = src[src.index('id="members"'):src.index('id="publications"')]
+involved = src_members[src_members.index("Get Involved"):]
+connect = [el for el in doc.elements if el.tag == "a" and el.all_text() == "Connect with Us"]
+check(len(connect) == 1
+      and connect[0].get("href") == "mailto:hello@circulartextile.org?subject=CTA%20Membership"
+      and "btn--primary" in connect[0].classes(),
+      "Connect with Us must be a btn--primary mailto: hello@circulartextile.org, subject CTA Membership")
+check("Connect with Us" in involved and involved.index("Connect with Us") > involved.rindex("circular textile economy"),
+      "Connect with Us must sit at the bottom of Get Involved")
+
 # The Donate button is a plain link to the hosted campaign page: no Givebutter
 # widget script (third-party code with full page rights) on the site.
 donate = [el for el in doc.elements if el.tag == "a" and "Donate via Givebutter" in el.all_text()]

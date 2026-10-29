@@ -4,6 +4,14 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.15.8] - 2026-10-29
+
+### Added
+- **Connect with Us** at the bottom of *Get Involved*, styled like the Donate
+  button: it opens the visitor's mail app with an email to
+  hello@circulartextile.org, subject "CTA Membership". A `components`
+  assertion holds the address, subject, style and placement.
+
 ## [0.15.7] - 2026-10-29
 
 ### Added
