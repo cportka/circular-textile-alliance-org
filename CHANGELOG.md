@@ -4,6 +4,14 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.15.6] - 2026-10-29
+
+### Added
+- **Contribute To Our Mission & Work** has its copy, ahead of the Donate
+  button: "This is a community led effort and every bit helps our drive to
+  help lead the way in textile circularity become a reality. Join in!" A
+  `components` assertion holds the text and its place before the button.
+
 ## [0.15.5] - 2026-10-15
 
 ### Changed
