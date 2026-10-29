@@ -365,6 +365,16 @@ check('id="contribute"' in approach,
 check(src.count('id="contribute"') == 1, "the Contribute block exists more than once")
 check("Donate via Givebutter" in approach and "Give via" not in src,
       "the Givebutter button should read 'Donate via Givebutter'")
+# The Donate button is a plain link to the hosted campaign page: no Givebutter
+# widget script (third-party code with full page rights) on the site.
+donate = [el for el in doc.elements if el.tag == "a" and "Donate via Givebutter" in el.all_text()]
+check(len(donate) == 1 and donate[0].get("href") == "https://givebutter.com/CTA-campaign"
+      and "btn--primary" in donate[0].classes() and "ph" not in donate[0].classes(),
+      "Donate via Givebutter must be a live btn--primary link to givebutter.com/CTA-campaign")
+check(donate and donate[0].get("target") == "_blank" and "noopener" in (donate[0].get("rel") or ""),
+      "the Donate link opens a new tab and must carry rel=noopener")
+check("givebutter.com" not in "".join(el.get("src") or "" for el in doc.find("script")),
+      "a Givebutter script is back on the page — the Donate link needs none")
 check("Explore our programs" not in src,
       "'Explore our programs' was replaced by the Contribute block")
 

@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.15.7] - 2026-10-29
+
+### Added
+- **Donate via Givebutter is live**: a plain link to the campaign page,
+  https://givebutter.com/CTA-campaign, opening in a new tab (`rel="noopener"`).
+  Givebutter's widget `<script>` is deliberately not added — it would put
+  third-party code with full page rights on every page, need the CSP widened,
+  change the privacy text, be blocked by tracker blockers, and lose Apple Pay;
+  the hosted page needs none of that.
+
+### Changed — tests
+- `links-assets` expects two inert placeholders (the socials), not three.
+- `components` holds the Donate link to the campaign URL, `btn--primary`, a new
+  tab with `noopener`, and no Givebutter script on the page.
+
 ## [0.15.6] - 2026-10-29
 
 ### Added
