@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.15.6 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.15.7 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -201,9 +201,8 @@ page that does not open on a dark hero needs that class**, and a `components`
 assertion holds `publications.html` to it.
 
 **Dead links.** The design carries 25 links pointing at `href="#"`, which
-scrolls to the top of the page. Three still read as controls (the LinkedIn
-and Instagram links, and the pending Givebutter button); they render identically
-but are inert `<span>`/`disabled` elements described by a shared
+scrolls to the top of the page. Two still read as controls (the LinkedIn
+and Instagram links); they render identically but are inert `<span>` elements described by a shared
 visually-hidden note. The rest gained real destinations as their sections gained
 real content, and the footer's link lists are now genuine in-page anchors rather
 than plain text. To wire one up, swap the
@@ -241,12 +240,14 @@ supplied *Who We Are* copy says **2025**, so 2025 is what the page, the JSON-LD
 `foundingDate`, the hero eyebrow and `llms.txt` all now say — a date stated in
 four places cannot disagree with itself.
 
-**The Givebutter button is inert.** *Contribute To Our Mission & Work* has a
-heading and a control but no copy and no destination yet. Rather than publish
-the literal "Tbd copy + GIVE BUTTER LINK", the control renders as a disabled
-placeholder like the other 14, described by the shared visually-hidden note.
-Swap the `<button>` for `<a class="btn btn--primary" href="https://givebutter.com/…">`
-and drop the `aria-describedby` when the campaign page exists.
+**Donate is a plain link.** *Contribute To Our Mission & Work* links to the
+Givebutter campaign page, `https://givebutter.com/CTA-campaign`, in a new tab
+(`rel="noopener"`). Givebutter also offers a widget library — a `<script>` "for
+the header" plus a `<givebutter-widget>` tag for a donation pop-up — but that
+would run third-party code with full rights on every page, change the privacy
+claims, need the CSP widened, be blocked by tracker blockers, and lose Apple Pay
+(which Givebutter's embedded widgets can't offer). The link needs none of it;
+a test fails if a Givebutter script reappears.
 
 **Programs is long-form, not cards.** The Figma gave it four image cards with
 region badges and tags. The supplied copy is seven areas of prose, each with its

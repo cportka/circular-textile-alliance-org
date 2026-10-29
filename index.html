@@ -346,14 +346,11 @@
         This is a community led effort and every bit helps our drive to help
         lead the way in textile circularity become a reality. Join in!
       </p>
-      <!-- The Givebutter destination is not wired up yet, so the control
-           renders inert like the other placeholders: swap this <button>
-           for <a class="btn btn--primary" href="https://givebutter.com/…"> and
-           drop the aria-describedby once the campaign page exists. -->
-      <button class="btn btn--primary ph" type="button" disabled
-              aria-describedby="ph-note" title="Coming soon">
-        Donate via Givebutter
-      </button>
+      <!-- A plain link to the hosted campaign page, not Givebutter's widget
+           script: no third-party code on the site, and the hosted page keeps
+           Apple Pay, which Givebutter's embedded widgets cannot offer. -->
+      <a class="btn btn--primary" href="https://givebutter.com/CTA-campaign"
+         target="_blank" rel="noopener">Donate via Givebutter</a>
     </div>
   </div>
 </section>
