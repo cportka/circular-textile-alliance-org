@@ -354,6 +354,10 @@ for form in forms:
           % (field and field.get("placeholder")))
 
 # --- Contribute lives in Our Approach -----------------------------------------
+contribute_copy = re.sub(r"\s+", " ", doc.source[doc.source.index('id="contribute"'):doc.source.index('Donate via Givebutter')])
+check("This is a community led effort and every bit helps our drive to help lead the way in "
+      "textile circularity become a reality. Join in!" in contribute_copy,
+      "the Contribute block lost its invitation copy, or it no longer sits before the Donate button")
 src = doc.source
 approach = src[src.index('id="approach"'):src.index('id="programs"')]
 check('id="contribute"' in approach,
