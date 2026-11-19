@@ -67,6 +67,11 @@ if raw:
             t = node.get("@type")
             types.extend(t if isinstance(t, list) else [t])
         check("Organization" in types, "JSON-LD has no Organization node")
+        org = next((n for n in data.get("@graph", []) if "Organization" in
+                    (n.get("@type") if isinstance(n.get("@type"), list) else [n.get("@type")])), {})
+        check(org.get("sameAs") == ["https://www.linkedin.com/company/110528108/",
+                                    "https://www.instagram.com/circular_textile_alliance/"],
+              "JSON-LD Organization sameAs should list the LinkedIn and Instagram accounts")
         check("WebSite" in types, "JSON-LD has no WebSite node")
 
 # robots.txt and sitemap must agree with the canonical host.

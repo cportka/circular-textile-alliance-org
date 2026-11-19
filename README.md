@@ -1,6 +1,6 @@
 # circular-textile-alliance-org
 
-> **Version:** 0.15.8 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+> **Version:** 0.15.9 · **Design:** [Figma Make — Redesign Institutional Website](https://www.figma.com/make/pYrwXChqTORzVAjL3X3DI5/Redesign-Institutional-Website) · **Security:** [SECURITY.md](./SECURITY.md) · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 The website for the **Circular Textile Alliance** — a static, single-page
 institutional site built from the Figma design above, published to GitHub Pages
@@ -201,12 +201,12 @@ page that does not open on a dark hero needs that class**, and a `components`
 assertion holds `publications.html` to it.
 
 **Dead links.** The design carries 25 links pointing at `href="#"`, which
-scrolls to the top of the page. Two still read as controls (the LinkedIn
-and Instagram links); they render identically but are inert `<span>` elements described by a shared
-visually-hidden note. The rest gained real destinations as their sections gained
-real content, and the footer's link lists are now genuine in-page anchors rather
-than plain text. To wire one up, swap the
-`<span class="ph">` for an `<a href="…">` and drop the `aria-describedby`.
+scrolls to the top of the page. All of them now have real destinations: the
+last two, the footer's LinkedIn and Instagram links, were wired up in 0.15.9.
+The footer's link lists are genuine in-page anchors rather than plain text. If a
+destination is ever pending again, render it as an inert
+`<span class="ph" aria-describedby="ph-note">` with a visually-hidden
+`#ph-note` on the page; the `.ph` styles are still in `site.css`.
 
 **Responsive corrections.** The design sets a fixed inline
 `gridTemplateColumns` that overrides the responsive class beside it on the

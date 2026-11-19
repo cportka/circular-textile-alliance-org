@@ -4,6 +4,28 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.15.9] - 2026-11-19
+
+### Added
+- **LinkedIn and Instagram are live.** The footer's two social chips, the last
+  inert placeholders, now link to
+  https://www.linkedin.com/company/110528108/ and
+  https://www.instagram.com/circular_textile_alliance/ on every page, opening in
+  a new tab (`rel="noopener"`). The Instagram link drops the share-tracking
+  `?evlk=` parameter.
+- The `Organization` JSON-LD lists both accounts under `sameAs`, and
+  `llms.txt` names them instead of calling them unpublished.
+
+### Changed
+- `.social` styles cover `<a>` as well as `<span>`, with a hover/focus state.
+- The now-unused visually-hidden `#ph-note` is removed from each page.
+
+### Changed — tests
+- `links-assets` expects no `.ph` placeholders.
+- `components` holds each page's socials to the two account URLs, a new tab
+  and `noopener`.
+- `seo-metadata` holds the `Organization` node's `sameAs` to both accounts.
+
 ## [0.15.8] - 2026-10-29
 
 ### Added

@@ -86,8 +86,9 @@ pressing Subscribe sends the address to Mailchimp, which runs the mailing list. 
 the page head.
 
 Donations go to the alliance's Givebutter campaign page
-(https://givebutter.com/CTA-campaign). The social accounts are not yet published
-and are rendered as inert placeholders. The policy notices are
+(https://givebutter.com/CTA-campaign). The alliance is on LinkedIn
+(https://www.linkedin.com/company/110528108/) and Instagram
+(https://www.instagram.com/circular_textile_alliance/). The policy notices are
 dialogs on the page rather than separate URLs.
 The publication entries link out to the third-party sources they describe
 (calpsc.org, anthesisgroup.com, leginfo.legislature.ca.gov, europarl.europa.eu);
