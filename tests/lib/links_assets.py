@@ -82,17 +82,17 @@ check(exists("assets/fonts/PlayfairDisplay-LICENSE.txt"),
 # --- Placeholders are inert, not fake links -------------------------------
 doc = Document("index.html")
 placeholders = [el for el in doc.elements if "ph" in el.classes()]
-# 2 social links (LinkedIn, Instagram). Every other dead destination the Figma
-# carried has gone as its section gained real content (Givebutter in 0.15.7),
-# and X and YouTube were dropped from the socials outright.
-check(len(placeholders) == 2,
-      "expected 2 .ph placeholders — the two social links, found %d" % len(placeholders))
+# None left: the socials were the last two, wired up in 0.15.9. If one comes
+# back it must be inert and described by a #ph-note on the same page.
+check(len(placeholders) == 0,
+      "expected no .ph placeholders, found %d" % len(placeholders))
 for el in placeholders:
     check(el.get("href") is None,
           "a .ph placeholder carries an href (%r) — it should be inert" % el.get("href"))
     check(el.get("aria-describedby") == "ph-note",
           "a .ph placeholder is not described by #ph-note")
-check("ph-note" in doc.ids(), "#ph-note explanation node is missing")
+if placeholders:
+    check("ph-note" in doc.ids(), "#ph-note explanation node is missing")
 
 # --- Photography ----------------------------------------------------------
 photos_dir = os.path.join(ROOT, "assets/img/photos")

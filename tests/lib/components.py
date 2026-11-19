@@ -397,6 +397,11 @@ for page in ("index.html", "publications.html", "news.html"):
     names = [c.text.strip() for c in social.children] if social else []
     check(names == ["LinkedIn", "Instagram"],
           "[%s] socials should be LinkedIn and Instagram, found %s" % (page, names))
+    links = [(c.tag, c.get("href"), c.get("target"), c.get("rel")) for c in social.children] if social else []
+    check(links == [("a", "https://www.linkedin.com/company/110528108/", "_blank", "noopener"),
+                    ("a", "https://www.instagram.com/circular_textile_alliance/", "_blank", "noopener")],
+          "[%s] socials should link to the LinkedIn and Instagram accounts in a new tab "
+          "with noopener, found %s" % (page, links))
 
 # --- Spelling ---------------------------------------------------------------
 # The Figma used the British "Programmes"; the alliance uses "Programs".
